@@ -1,0 +1,67 @@
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - cpython-3.7
+      - cpython-3.9
+
+jobs:
+  cpython-3.7: &test-template
+    docker:
+      - image: cimg/python:3.7
+
+    working_directory: /mnt/ramdisk
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-{{ .Environment.CIRCLE_JOB }}
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: run flake8
+          command: |
+            . venv/bin/activate
+            flake8 irrexplorer
+
+      - run:
+          name: run mypy
+          command: |
+            . venv/bin/activate
+            mypy irrexplorer --ignore-missing-imports
+
+      # TODO: enable once we have actual tests
+#      - run:
+#          name: run regular tests
+#          command: |
+#            . venv/bin/activate
+#            py.test -s -vvvv --cov=irrexplorer irrexplorer --junitxml=test-reports/junit.xml --cov-fail-under=100 --cov-report term-missing:skip-covered
+
+      - store_test_results:
+          path: test-reports
+
+      - store_artifacts:
+          path: /tmp/pytest-of-circleci/
+
+  cpython-3.9:
+    <<: *test-template
+    docker:
+      - image: cimg/python:3.9
