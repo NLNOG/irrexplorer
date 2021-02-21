@@ -42,7 +42,7 @@ jobs:
       - run:
           name: run mypy
           command: |
-            poetry run mypy irrexplorer --ignore-missing-imports
+            poetry run mypy irrexplorer
 
       # TODO: enable once we have actual tests
 #      - run:

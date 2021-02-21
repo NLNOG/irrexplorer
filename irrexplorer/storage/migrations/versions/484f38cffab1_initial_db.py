@@ -19,6 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table(
         'bgp',
+        sa.Column("ip_version", sa.Integer(), index=True, nullable=False),
         sa.Column('asn', sa.Integer(), nullable=False),
         sa.Column('prefix', postgresql.CIDR(), nullable=False)
     )
@@ -29,7 +30,8 @@ def upgrade():
 
     op.create_table(
         'rirstats',
-        sa.Column('rir', sa.Enum('RIPENCC', 'ARIN', 'AFRNIC', 'LACNIC', 'APNIC', name='rir'),
+        sa.Column("ip_version", sa.Integer(), index=True, nullable=False),
+        sa.Column('rir', sa.Enum('RIPENCC', 'ARIN', 'AFRINIC', 'LACNIC', 'APNIC', name='rir'),
                   nullable=False),
         sa.Column('prefix', postgresql.CIDR(), nullable=False)
     )

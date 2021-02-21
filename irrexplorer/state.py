@@ -4,7 +4,7 @@ import enum
 class RIR(enum.Enum):
     RIPENCC = 'RIPE NCC'
     ARIN = 'ARIN'
-    AFRNIC = 'AfriNIC'
+    AFRINIC = 'AFRINIC'
     LACNIC = 'LACNIC'
     APNIC = 'APNIC'
 

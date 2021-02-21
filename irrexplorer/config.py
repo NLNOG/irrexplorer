@@ -4,7 +4,11 @@ BGP_SOURCE = 'http://lg01.infra.ring.nlnog.net/table.txt'
 DATABASE_URL = 'postgresql://localhost/irrexplorer'
 
 RIRSTATS_URL = {
-    RIR.RIPENCC: 'https://ftp.ripe.net/ripe/stats/delegated-ripencc-latest'
+    RIR.RIPENCC: 'https://ftp.ripe.net/ripe/stats/delegated-ripencc-latest',
+    RIR.ARIN: 'https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest',
+    RIR.AFRINIC: 'https://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest',
+    RIR.LACNIC: 'https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-latest',
+    RIR.APNIC: 'https://ftp.apnic.net/stats/apnic/delegated-apnic-latest',
 }
 
 SPECIAL_USE_SPACE = [
