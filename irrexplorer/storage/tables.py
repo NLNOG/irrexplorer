@@ -9,7 +9,7 @@ bgp = sa.Table(
     "bgp",
     metadata,
     sa.Column("ip_version", sa.Integer, index=True, nullable=False),
-    sa.Column("asn", sa.Integer, index=True, nullable=False),
+    sa.Column("asn", sa.BigInteger, index=True, nullable=False),
     sa.Column("prefix", pg.CIDR, nullable=False),
     sa.Index("ix_bgp_prefix", sa.text('prefix inet_ops'), postgresql_using='spgist'),
 )

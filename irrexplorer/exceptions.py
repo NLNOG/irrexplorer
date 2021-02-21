@@ -1,0 +1,2 @@
+class ImporterException(Exception):
+    pass

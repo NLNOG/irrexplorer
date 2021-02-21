@@ -1,13 +1,13 @@
-import asyncio
 import ipaddress
-from typing import List, Tuple
+from typing import List
 
 import aggregate6
-
 import aiohttp
+from asgiref.sync import sync_to_async
 from databases import Database
 
 from irrexplorer.config import RIRSTATS_URL, DATABASE_URL
+from irrexplorer.exceptions import ImporterException
 from irrexplorer.state import RIR
 from irrexplorer.storage.tables import rirstats
 
@@ -18,41 +18,40 @@ ADDRESS_FAMILY_MAPPING = {
 RELEVANT_STATUSES = ['allocated', 'assigned']
 
 
-class ImporterException(Exception):
-    pass
-
-
 class RIRStatsImporter:
     def __init__(self, rir: RIR):
         self.rir = rir
 
     async def run_import(self):
         url = RIRSTATS_URL[self.rir]
+        print(f'retrieving {self.rir}')
         text = await self._retrieve_rirstats(url)
-        prefixes4, prefixes6 = self._parse_rirstats(text)
+        print(f'parsing {self.rir}')
+        prefixes4, prefixes6 = await self._parse_rirstats(text)
+        print(f'loading {self.rir}')
         await self._load_prefixes(prefixes4, prefixes6)
+        print(f'done {self.rir}')
 
     async def _retrieve_rirstats(self, url: str):
-        # TODO: create a shared session?
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:
                     raise ImporterException(f'Failed import from {url}: status {response.status}')
                 return await response.text()
 
-    def _parse_rirstats(self, text: str) -> Tuple[List[str], List[str]]:
+    @sync_to_async
+    def _parse_rirstats(self, text: str):
         prefixes4 = []
         prefixes6 = []
         for line in text.splitlines():
-            if line.startswith('#'):  # APNIC uses comments
-                continue
-            if line.startswith('2|'):  # Header
-                continue
+            if line.startswith('#') or line.startswith('2|'):
+                continue  # Comments or header
             try:
+                # ARIN includes a signature, so extra fields are ignored
                 rir, country, af_string, start_ip, size, date, status = line.split('|')[:7]
             except ValueError:
                 if line.split('|')[-1] == 'summary':
-                    continue
+                    continue  # The summary line has a different length and can be ignored
                 raise ImporterException(f"Invalid rirstats line: {line.split('|')}")
 
             if status not in RELEVANT_STATUSES:
@@ -74,7 +73,6 @@ class RIRStatsImporter:
                 prefixes6.append(f'{start_ip}/{size}')
 
         return aggregate6.aggregate(prefixes4), aggregate6.aggregate(prefixes6)
-        # return [], aggregate6.aggregate(prefixes6)
 
     async def _load_prefixes(self, prefixes4: List[str], prefixes6: List[str]):
         def prefixes_to_insert(ip_version, prefixes):
@@ -101,12 +99,3 @@ class RIRStatsImporter:
                         query=rirstats.insert(),
                         values=prefixes_to_insert(6, prefixes6)
                     )
-
-
-async def main():
-    for rir in RIR:
-        print(f'Starting {rir}')
-        await RIRStatsImporter(rir).run_import()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())

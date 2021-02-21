@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         'bgp',
         sa.Column("ip_version", sa.Integer(), index=True, nullable=False),
-        sa.Column('asn', sa.Integer(), nullable=False),
+        sa.Column('asn', sa.BigInteger(), nullable=False),
         sa.Column('prefix', postgresql.CIDR(), nullable=False)
     )
     op.create_index(op.f('ix_bgp_asn'), 'bgp', ['asn'], unique=False)

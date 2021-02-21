@@ -17,6 +17,7 @@ SQLAlchemy = "^1.3.23"
 psycopg2-binary = "^2.8.6"
 aiohttp = "^3.7.3"
 aggregate6 = "^1.0.12"
+asgiref = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
 # Testing and related packages
