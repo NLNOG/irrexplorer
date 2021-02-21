@@ -202,6 +202,36 @@ python-versions = "*"
 flake8 = "*"
 
 [[package]]
+name = "gql"
+version = "3.0.0a5"
+description = "GraphQL client for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+aiohttp = {version = ">=3.7.1,<3.8.0", optional = true, markers = "extra == \"aiohttp\""}
+graphql-core = ">=3.1,<3.2"
+yarl = ">=1.6,<2.0"
+
+[package.extras]
+aiohttp = ["aiohttp (>=3.7.1,<3.8.0)"]
+all = ["aiohttp (>=3.7.1,<3.8.0)", "requests (>=2.23,<3)", "websockets (>=8.1,<9)"]
+dev = ["aiohttp (>=3.7.1,<3.8.0)", "requests (>=2.23,<3)", "websockets (>=8.1,<9)", "black (==19.10b0)", "check-manifest (>=0.42,<1)", "flake8 (==3.8.1)", "isort (==4.3.21)", "mypy (==0.770)", "sphinx (>=3.0.0,<4)", "sphinx_rtd_theme (>=0.4,<1)", "sphinx-argparse (==0.2.5)", "parse (==1.15.0)", "pytest (==5.4.2)", "pytest-asyncio (==0.11.0)", "pytest-cov (==2.8.1)", "mock (==4.0.2)", "vcrpy (==4.0.2)"]
+requests = ["requests (>=2.23,<3)"]
+test = ["aiohttp (>=3.7.1,<3.8.0)", "requests (>=2.23,<3)", "websockets (>=8.1,<9)", "parse (==1.15.0)", "pytest (==5.4.2)", "pytest-asyncio (==0.11.0)", "pytest-cov (==2.8.1)", "mock (==4.0.2)", "vcrpy (==4.0.2)"]
+test_no_transport = ["parse (==1.15.0)", "pytest (==5.4.2)", "pytest-asyncio (==0.11.0)", "pytest-cov (==2.8.1)", "mock (==4.0.2)", "vcrpy (==4.0.2)"]
+websockets = ["websockets (>=8.1,<9)"]
+
+[[package]]
+name = "graphql-core"
+version = "3.1.3"
+description = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[[package]]
 name = "h11"
 version = "0.12.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -693,7 +723,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "1d4325d846e4d90cf6bc12d40c0d79bc4e801cd54a523574527e987b0ba30cb4"
+content-hash = "af547da95b551591e292d8a53df154e7a0e8ef78d28a4c0d009238e9dd15e8fc"
 
 [metadata.files]
 aggregate6 = [
@@ -860,6 +890,13 @@ flake8 = [
 flake8-polyfill = [
     {file = "flake8-polyfill-1.0.2.tar.gz", hash = "sha256:e44b087597f6da52ec6393a709e7108b2905317d0c0b744cdca6208e670d8eda"},
     {file = "flake8_polyfill-1.0.2-py2.py3-none-any.whl", hash = "sha256:12be6a34ee3ab795b19ca73505e7b55826d5f6ad7230d31b18e106400169b9e9"},
+]
+gql = [
+    {file = "gql-3.0.0a5.tar.gz", hash = "sha256:a87bc42934a70902c005a317567cc57e460b160a9c606db8be62e618e29c336c"},
+]
+graphql-core = [
+    {file = "graphql-core-3.1.3.tar.gz", hash = "sha256:db599b57b0f7dc13541922a83b30192be573b7143330ef3613813942ce4073a0"},
+    {file = "graphql_core-3.1.3-py3-none-any.whl", hash = "sha256:95b0d6510bb5532dcac5927f5dfd674a580b33d6ba6417c3dc75086d9a210c83"},
 ]
 h11 = [
     {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},

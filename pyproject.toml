@@ -18,6 +18,7 @@ psycopg2-binary = "^2.8.6"
 aiohttp = "^3.7.3"
 aggregate6 = "^1.0.12"
 asgiref = "^3.3.1"
+gql = {extras = ["aiohttp"], version = "^2.0.0", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 # Testing and related packages

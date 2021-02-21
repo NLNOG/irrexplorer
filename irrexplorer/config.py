@@ -2,6 +2,7 @@ from irrexplorer.state import RIR
 
 BGP_SOURCE = 'http://lg01.infra.ring.nlnog.net/table.txt'
 DATABASE_URL = 'postgresql://localhost/irrexplorer'
+IRRD_ENDPOINT = 'https://irrd.as213279.net/graphql/'
 
 RIRSTATS_URL = {
     RIR.RIPENCC: 'https://ftp.ripe.net/ripe/stats/delegated-ripencc-latest',
