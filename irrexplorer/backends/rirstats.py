@@ -1,24 +1,23 @@
-import asyncio
 import ipaddress
 from typing import List
 
 import aggregate6
 import aiohttp
-from asgiref.sync import sync_to_async
-from databases import Database
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
+from asgiref.sync import sync_to_async
+from databases import Database
 
-from irrexplorer.config import RIRSTATS_URL, DATABASE_URL
+from irrexplorer.config import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import RIR, RouteInfo, DataSource
+from irrexplorer.state import RIR, DataSource, RouteInfo
 from irrexplorer.storage.tables import rirstats
 
 ADDRESS_FAMILY_MAPPING = {
-    'ipv4': 4,
-    'ipv6': 6,
+    "ipv4": 4,
+    "ipv6": 6,
 }
-RELEVANT_STATUSES = ['allocated', 'assigned']
+RELEVANT_STATUSES = ["allocated", "assigned"]
 
 
 class RIRStatsImporter:
@@ -27,19 +26,19 @@ class RIRStatsImporter:
 
     async def run_import(self):
         url = RIRSTATS_URL[self.rir]
-        print(f'retrieving {self.rir}')
+        print(f"retrieving {self.rir}")
         text = await self._retrieve_rirstats(url)
-        print(f'parsing {self.rir}')
+        print(f"parsing {self.rir}")
         prefixes4, prefixes6 = await self._parse_rirstats(text)
-        print(f'loading {self.rir}')
+        print(f"loading {self.rir}")
         await self._load_prefixes(prefixes4, prefixes6)
-        print(f'done {self.rir}')
+        print(f"done {self.rir}")
 
     async def _retrieve_rirstats(self, url: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:
-                    raise ImporterException(f'Failed import from {url}: status {response.status}')
+                    raise ImporterException(f"Failed import from {url}: status {response.status}")
                 return await response.text()
 
     @sync_to_async
@@ -47,13 +46,13 @@ class RIRStatsImporter:
         prefixes4 = []
         prefixes6 = []
         for line in text.splitlines():
-            if line.startswith('#') or line.startswith('2|'):
+            if line.startswith("#") or line.startswith("2|"):
                 continue  # Comments or header
             try:
                 # ARIN includes a signature, so extra fields are ignored
-                rir, country, af_string, start_ip, size, date, status = line.split('|')[:7]
+                rir, country, af_string, start_ip, size, date, status = line.split("|")[:7]
             except ValueError:
-                if line.split('|')[-1] == 'summary':
+                if line.split("|")[-1] == "summary":
                     continue  # The summary line has a different length and can be ignored
                 raise ImporterException(f"Invalid rirstats line: {line.split('|')}")
 
@@ -73,7 +72,7 @@ class RIRStatsImporter:
                 for prefix in cidrs:
                     prefixes4.append(str(prefix))
             else:
-                prefixes6.append(f'{start_ip}/{size}')
+                prefixes6.append(f"{start_ip}/{size}")
 
         return aggregate6.aggregate(prefixes4), aggregate6.aggregate(prefixes6)
 
@@ -94,38 +93,38 @@ class RIRStatsImporter:
                 await database.execute(query)
                 if prefixes4:
                     await database.execute_many(
-                        query=rirstats.insert(),
-                        values=prefixes_to_insert(4, prefixes4)
+                        query=rirstats.insert(), values=prefixes_to_insert(4, prefixes4)
                     )
                 if prefixes6:
                     await database.execute_many(
-                        query=rirstats.insert(),
-                        values=prefixes_to_insert(6, prefixes6)
+                        query=rirstats.insert(), values=prefixes_to_insert(6, prefixes6)
                     )
 
 
 class RIRStatsQuery:
     async def query_prefix(self, ip_version: int, prefix: str):
-        print('running rirstats')
+        print("running rirstats")
         results = []
         async with Database(DATABASE_URL) as database:
-            print('connected rirstats')
+            print("connected rirstats")
             # TODO: extract common SQL
             prefix_cidr = sa.cast(prefix, pg.CIDR)
             query = rirstats.select(
                 sa.and_(
                     sa.or_(
-                        rirstats.c.prefix.op('<<=')(prefix_cidr),
-                        rirstats.c.prefix.op('>>')(prefix_cidr),
+                        rirstats.c.prefix.op("<<=")(prefix_cidr),
+                        rirstats.c.prefix.op(">>")(prefix_cidr),
                     ),
                     rirstats.c.ip_version == ip_version,
                 )
             )
             async for row in database.iterate(query=query):
-                results.append(RouteInfo(
-                    source=DataSource.RIRSTATS,
-                    prefix=row['prefix'],
-                    rir=row['rir'],
-                ))
-        print('completed rirstats')
+                results.append(
+                    RouteInfo(
+                        source=DataSource.RIRSTATS,
+                        prefix=row["prefix"],
+                        rir=row["rir"],
+                    )
+                )
+        print("completed rirstats")
         return results

@@ -10,9 +10,9 @@ from irrexplorer.state import PrefixSourceDetail, PrefixSummary
 
 async def main():
     ip_version = 4
-    prefix = '193.0.0.0/20'
+    prefix = "193.0.0.0/20"
     irrd_query = IRRDQuery()
-    print('running!')
+    print("running!")
     start = time.perf_counter()
     results_nested = await asyncio.gather(
         RIRStatsQuery().query_prefix(ip_version, prefix),
@@ -29,26 +29,31 @@ async def main():
     for prefix, entries in gathered.items():
         details = []
         for entry in entries:
-            details.append(PrefixSourceDetail(
-                source=entry.source,
-                asn=entry.asn,
-                irr_source=entry.irr_source,
-                rpsl_pk=entry.rpsl_pk,
-            ))
-        summaries.append(PrefixSummary(
-            prefix=prefix,
-            details=details,
-            rir=rirstats[0].rir,  # TODO: breaks for zero or multiple RIRstats
-        ))
+            details.append(
+                PrefixSourceDetail(
+                    source=entry.source,
+                    asn=entry.asn,
+                    irr_source=entry.irr_source,
+                    rpsl_pk=entry.rpsl_pk,
+                )
+            )
+        summaries.append(
+            PrefixSummary(
+                prefix=prefix,
+                details=details,
+                rir=rirstats[0].rir,  # TODO: breaks for zero or multiple RIRstats
+            )
+        )
 
     for summary in summaries:
         print(summary)
-    print(f'complete in {time.perf_counter()-start}')
+    print(f"complete in {time.perf_counter()-start}")
     # async for p in tasks:
     # async for bgp in :
     #     print(bgp)
     #
     # async for rpsl in :
     #     print(rpsl)
+
 
 asyncio.run(main())
