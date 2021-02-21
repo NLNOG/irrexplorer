@@ -1,7 +1,6 @@
 # IRR explorer: explore IRR & BGP data in near real time
 
 [![CI](https://circleci.com/gh/dashcare/irrexplorer.svg?style=svg)](https://circleci.com/gh/dashcare/irrexplorer)
-[![PyUp](https://pyup.io/repos/github/dashcare/irrexplorer/shield.svg)](https://pyup.io/repos/github/dashcare/irrexplorer)
 
 The first version of IRR explorer was written by
 [Job Snijders](https://github.com/job/irrexplorer) to make it easier to debug
