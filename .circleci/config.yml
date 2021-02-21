@@ -20,33 +20,29 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
+          - v2-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-{{ .Environment.CIRCLE_JOB }}
+          - v2-dependencies-{{ .Environment.CIRCLE_JOB }}
 
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+            poetry install
 
       - save_cache:
           paths:
-            - ./venv
-          key: v1-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
+            - /home/circleci/.cache/pypoetry/virtualenvs
+          key: v2-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}
 
       - run:
           name: run flake8
           command: |
-            . venv/bin/activate
-            flake8 irrexplorer
+            poetry run flake8 irrexplorer
 
       - run:
           name: run mypy
           command: |
-            . venv/bin/activate
-            mypy irrexplorer --ignore-missing-imports
+            poetry run mypy irrexplorer --ignore-missing-imports
 
       # TODO: enable once we have actual tests
 #      - run:
