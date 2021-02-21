@@ -272,14 +272,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "ipy"
-version = "1.01"
-description = "Class and tools for handling of IPv4 and IPv6 addresses and networks"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "ipython"
 version = "7.20.0"
 description = "IPython: Productive Interactive Computing"
@@ -723,7 +715,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "af547da95b551591e292d8a53df154e7a0e8ef78d28a4c0d009238e9dd15e8fc"
+content-hash = "7e0c907fefc0aa206f59f910d3eb44711af57de84b639eadf5f3868171d60fbe"
 
 [metadata.files]
 aggregate6 = [
@@ -913,9 +905,6 @@ importlib-metadata = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
-]
-ipy = [
-    {file = "IPy-1.01.tar.gz", hash = "sha256:edeca741dea2d54aca568fa23740288c3fe86c0f3ea700344571e9ef14a7cc1a"},
 ]
 ipython = [
     {file = "ipython-7.20.0-py3-none-any.whl", hash = "sha256:1918dea4bfdc5d1a830fcfce9a710d1d809cbed123e85eab0539259cb0f56640"},

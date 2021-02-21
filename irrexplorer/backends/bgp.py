@@ -2,11 +2,14 @@ import ipaddress
 from typing import List, Tuple
 
 import aiohttp
+import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as pg
 from asgiref.sync import sync_to_async
 from databases import Database
 
 from irrexplorer.config import DATABASE_URL, BGP_SOURCE
 from irrexplorer.exceptions import ImporterException
+from irrexplorer.state import RouteInfo, DataSource
 from irrexplorer.storage.tables import bgp
 
 
@@ -65,3 +68,38 @@ class BGPImporter:
                         query=bgp.insert(),
                         values=values
                     )
+
+
+class BGPQuery:
+    async def query_asn(self, asn: int):
+        # TODO: share database pool
+        async with Database(DATABASE_URL) as database:
+            async with database.transaction():
+                query = bgp.select(bgp.c.asn == asn)
+                result = await database.fetch_all(query=query)
+                print(result[0]['prefix'])
+
+    async def query_prefix(self, ip_version: int, prefix: str):
+        print('running BGP')
+        results = []
+        async with Database(DATABASE_URL) as database:
+            print('connected BGP')
+            # TODO: extract common SQL
+            prefix_cidr = sa.cast(prefix, pg.CIDR)
+            query = bgp.select(
+                sa.and_(
+                    sa.or_(
+                        bgp.c.prefix.op('<<=')(prefix_cidr),
+                        bgp.c.prefix.op('>>')(prefix_cidr),
+                    ),
+                    bgp.c.ip_version == ip_version,
+                )
+            )
+            async for row in database.iterate(query=query):
+                results.append(RouteInfo(
+                    source=DataSource.BGP,
+                    prefix=row['prefix'],
+                    asn=row['asn'],
+                ))
+        print('completed BGP')
+        return results

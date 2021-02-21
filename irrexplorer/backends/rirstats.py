@@ -1,3 +1,4 @@
+import asyncio
 import ipaddress
 from typing import List
 
@@ -5,10 +6,12 @@ import aggregate6
 import aiohttp
 from asgiref.sync import sync_to_async
 from databases import Database
+import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as pg
 
 from irrexplorer.config import RIRSTATS_URL, DATABASE_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import RIR
+from irrexplorer.state import RIR, RouteInfo, DataSource
 from irrexplorer.storage.tables import rirstats
 
 ADDRESS_FAMILY_MAPPING = {
@@ -99,3 +102,30 @@ class RIRStatsImporter:
                         query=rirstats.insert(),
                         values=prefixes_to_insert(6, prefixes6)
                     )
+
+
+class RIRStatsQuery:
+    async def query_prefix(self, ip_version: int, prefix: str):
+        print('running rirstats')
+        results = []
+        async with Database(DATABASE_URL) as database:
+            print('connected rirstats')
+            # TODO: extract common SQL
+            prefix_cidr = sa.cast(prefix, pg.CIDR)
+            query = rirstats.select(
+                sa.and_(
+                    sa.or_(
+                        rirstats.c.prefix.op('<<=')(prefix_cidr),
+                        rirstats.c.prefix.op('>>')(prefix_cidr),
+                    ),
+                    rirstats.c.ip_version == ip_version,
+                )
+            )
+            async for row in database.iterate(query=query):
+                results.append(RouteInfo(
+                    source=DataSource.RIRSTATS,
+                    prefix=row['prefix'],
+                    rir=row['rir'],
+                ))
+        print('completed rirstats')
+        return results
