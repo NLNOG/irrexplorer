@@ -2,8 +2,9 @@ import enum
 from collections import defaultdict
 from dataclasses import dataclass, field
 from ipaddress import IPv4Network, IPv6Network, ip_network
-from typing import List, Optional, Union, Dict, Set
-from dataclasses_json import dataclass_json, LetterCase, config
+from typing import Dict, List, Optional, Set, Union
+
+from dataclasses_json import LetterCase, config, dataclass_json
 from marshmallow import fields
 
 IPNetwork = Union[IPv4Network, IPv6Network]
@@ -35,6 +36,7 @@ RIR_EXPECTED_IRR = {
 }
 
 
+# Prepare the serializer for dataclass_json for IPv4/6Network
 ip_field_metadata = config(
     encoder=str,
     decoder=ip_network,
@@ -71,5 +73,3 @@ class PrefixSummary:
     bgp_origins: Set[int] = field(default_factory=set)
     rir: Optional[RIR] = None
     special_use_type: Optional[str] = None
-
-

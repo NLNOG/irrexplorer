@@ -6,6 +6,10 @@ from irrexplorer.state import RIR
 
 
 async def main():
+    """
+    Run an import for all backends with local data.
+    All imports are run "simultaneously" (one CPU, but async)
+    """
     tasks = []
     for rir in RIR:
         tasks.append(RIRStatsImporter(rir).run_import())

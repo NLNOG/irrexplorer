@@ -13,9 +13,9 @@ from irrexplorer import api
 
 async def prefix(request):
     try:
-        parameter = ip_network(request.path_params['prefix'])
+        parameter = ip_network(request.path_params["prefix"])
     except ValueError as ve:
-        return PlainTextResponse(status_code=400, content=f'Invalid prefix: {ve}')
+        return PlainTextResponse(status_code=400, content=f"Invalid prefix: {ve}")
     result = await api.prefix(parameter)
     return DataClassJSONResponse(result)
 
@@ -24,7 +24,7 @@ class DataClassJSONResponse(Response):
     media_type = "application/json"
 
     def render(self, content: typing.Any) -> bytes:
-        return content[0].schema().dumps(content, many=True).encode('utf-8')
+        return content[0].schema().dumps(content, many=True).encode("utf-8")
 
 
 def startup():
@@ -36,8 +36,6 @@ routes = [
     Mount("/", StaticFiles(directory="frontend/build", html=True)),
 ]
 
-middleware = [
-    Middleware(CORSMiddleware, allow_origins=['*'])
-]
+middleware = [Middleware(CORSMiddleware, allow_origins=["*"])]
 
 app = Starlette(debug=True, routes=routes, middleware=middleware, on_startup=[startup])

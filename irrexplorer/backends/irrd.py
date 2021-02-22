@@ -4,7 +4,7 @@ from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 from irrexplorer.config import IRRD_ENDPOINT
-from irrexplorer.state import DataSource, RouteInfo, RPKIStatus, IPNetwork
+from irrexplorer.state import DataSource, IPNetwork, RouteInfo, RPKIStatus
 
 
 class IRRDQuery:

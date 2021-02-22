@@ -2,15 +2,15 @@ import ipaddress
 from typing import List
 
 import aggregate6
-import aiohttp
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 from asgiref.sync import sync_to_async
 from databases import Database
 
+from backends.utils import retrieve_url_text
 from irrexplorer.config import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import RIR, DataSource, RouteInfo, IPNetwork
+from irrexplorer.state import RIR, DataSource, IPNetwork, RouteInfo
 from irrexplorer.storage.tables import rirstats
 
 ADDRESS_FAMILY_MAPPING = {
@@ -26,28 +26,36 @@ class RIRStatsImporter:
 
     async def run_import(self):
         url = RIRSTATS_URL[self.rir]
-        print(f"retrieving {self.rir}")
-        text = await self._retrieve_rirstats(url)
-        print(f"parsing {self.rir}")
+        text = await retrieve_url_text(url)
         prefixes4, prefixes6 = await self._parse_rirstats(text)
-        print(f"loading {self.rir}")
         await self._load_prefixes(prefixes4, prefixes6)
-        print(f"done {self.rir}")
-
-    async def _retrieve_rirstats(self, url: str):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status != 200:
-                    raise ImporterException(f"Failed import from {url}: status {response.status}")
-                return await response.text()
 
     @sync_to_async
     def _parse_rirstats(self, text: str):
         prefixes4 = []
         prefixes6 = []
+        for ip_version, start_ip, size, status in self._rirstats_lines(text):
+            if ip_version == 4:
+                first_ip = ipaddress.ip_address(start_ip)
+                last = int(first_ip) + int(size) - 1
+                last_ip = ipaddress.ip_address(last)
+                cidrs = ipaddress.summarize_address_range(first_ip, last_ip)
+                for prefix in cidrs:
+                    prefixes4.append(str(prefix))
+            else:
+                prefixes6.append(f"{start_ip}/{size}")
+
+        return aggregate6.aggregate(prefixes4), aggregate6.aggregate(prefixes6)
+
+    def _rirstats_lines(self, text: str):
+        """
+        Read RIRstats lines from the RIRstats in `text`.
+        Returns a generator producing tuples with ip_version, start ip and size.
+        """
         for line in text.splitlines():
             if line.startswith("#") or line.startswith("2|"):
                 continue  # Comments or header
+
             try:
                 # ARIN includes a signature, so extra fields are ignored
                 rir, country, af_string, start_ip, size, date, status = line.split("|")[:7]
@@ -60,24 +68,14 @@ class RIRStatsImporter:
                 continue
 
             try:
-                address_family = ADDRESS_FAMILY_MAPPING[af_string]
+                ip_version = ADDRESS_FAMILY_MAPPING[af_string]
             except KeyError:
-                continue
+                raise ImporterException(f"Invalid rirstats line: {line.split('|')}")
 
-            if address_family == 4:
-                first_ip = ipaddress.ip_address(start_ip)
-                last = int(first_ip) + int(size) - 1
-                last_ip = ipaddress.ip_address(last)
-                cidrs = ipaddress.summarize_address_range(first_ip, last_ip)
-                for prefix in cidrs:
-                    prefixes4.append(str(prefix))
-            else:
-                prefixes6.append(f"{start_ip}/{size}")
-
-        return aggregate6.aggregate(prefixes4), aggregate6.aggregate(prefixes6)
+            yield ip_version, start_ip, size
 
     async def _load_prefixes(self, prefixes4: List[str], prefixes6: List[str]):
-        def prefixes_to_insert(ip_version, prefixes):
+        def prefixes_to_sql_values(ip_version, prefixes):
             return [
                 {
                     "ip_version": ip_version,
@@ -93,11 +91,11 @@ class RIRStatsImporter:
                 await database.execute(query)
                 if prefixes4:
                     await database.execute_many(
-                        query=rirstats.insert(), values=prefixes_to_insert(4, prefixes4)
+                        query=rirstats.insert(), values=prefixes_to_sql_values(4, prefixes4)
                     )
                 if prefixes6:
                     await database.execute_many(
-                        query=rirstats.insert(), values=prefixes_to_insert(6, prefixes6)
+                        query=rirstats.insert(), values=prefixes_to_sql_values(6, prefixes6)
                     )
 
 

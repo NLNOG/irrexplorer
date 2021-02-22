@@ -12,6 +12,9 @@ RIRSTATS_URL = {
     RIR.APNIC: "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
 }
 
+BGP_IPV4_LENGTH_CUTOFF = 29
+BGP_IPV6_LENGTH_CUTOFF = 124
+
 SPECIAL_USE_SPACE = [
     ("RFC1122", "0.0.0.0/8", 4),
     ("RFC1918", "10.0.0.0/8", 4),
