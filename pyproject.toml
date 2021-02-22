@@ -18,6 +18,9 @@ aiohttp = "^3.7.3"
 aggregate6 = "^1.0.12"
 asgiref = "^3.3.1"
 gql = {extras = ["aiohttp"], version = "^2.0.0", allow-prereleases = true}
+requests = "^2.25.1"
+aiofiles = "^0.6.0"
+dataclasses-json = "^0.5.2"
 
 [tool.poetry.dev-dependencies]
 # Testing and related packages
@@ -41,4 +44,4 @@ build-backend = "poetry.core.masonry.api"
 reformat = "scripts:reformat"
 lint = "scripts:lint"
 build = "scripts:build"
-frontend-install = "scripts:frontend_install"
+frontend-build = "scripts:frontend_install"

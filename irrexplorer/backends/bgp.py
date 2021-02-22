@@ -9,7 +9,7 @@ from databases import Database
 
 from irrexplorer.config import BGP_SOURCE, DATABASE_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import DataSource, RouteInfo
+from irrexplorer.state import DataSource, RouteInfo, IPNetwork
 from irrexplorer.storage.tables import bgp
 
 
@@ -76,20 +76,20 @@ class BGPQuery:
                 result = await database.fetch_all(query=query)
                 print(result[0]["prefix"])
 
-    async def query_prefix(self, ip_version: int, prefix: str):
+    async def query_prefix(self, prefix: IPNetwork):
         print("running BGP")
         results = []
         async with Database(DATABASE_URL) as database:
             print("connected BGP")
             # TODO: extract common SQL
-            prefix_cidr = sa.cast(prefix, pg.CIDR)
+            prefix_cidr = sa.cast(str(prefix), pg.CIDR)
             query = bgp.select(
                 sa.and_(
                     sa.or_(
                         bgp.c.prefix.op("<<=")(prefix_cidr),
                         bgp.c.prefix.op(">>")(prefix_cidr),
                     ),
-                    bgp.c.ip_version == ip_version,
+                    bgp.c.ip_version == prefix.version,
                 )
             )
             async for row in database.iterate(query=query):

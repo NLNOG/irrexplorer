@@ -4,7 +4,7 @@ from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 from irrexplorer.config import IRRD_ENDPOINT
-from irrexplorer.state import DataSource, RouteInfo, RPKIStatus
+from irrexplorer.state import DataSource, RouteInfo, RPKIStatus, IPNetwork
 
 
 class IRRDQuery:
@@ -66,14 +66,14 @@ class IRRDQuery:
             result = await session.execute(self.query_asn, {"asn": asn})
             print(result)
 
-    async def query_routes(self, ip_version: int, prefix: str):
+    async def query_routes(self, prefix: IPNetwork):
         results = []
-        object_class = ["route"] if ip_version == 4 else ["route6"]
+        object_class = ["route"] if prefix.version == 4 else ["route6"]
         print("running IRRd")
         result = await self.client.execute_async(
             self.gql_query_prefix,
             {
-                "prefix": prefix,
+                "prefix": str(prefix),
                 "object_class": object_class,
             },
         )

@@ -1,23 +1,23 @@
 import asyncio
 import time
 from collections import defaultdict
+from ipaddress import IPv6Network, IPv4Network
+from typing import Union
 
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.state import PrefixSourceDetail, PrefixSummary
+from irrexplorer.state import PrefixSourceDetail, PrefixSummary, IPNetwork
 
 
-async def main():
-    ip_version = 4
-    prefix = "193.0.0.0/20"
+async def prefix(prefix: IPNetwork):
     irrd_query = IRRDQuery()
     print("running!")
     start = time.perf_counter()
     results_nested = await asyncio.gather(
-        RIRStatsQuery().query_prefix(ip_version, prefix),
-        irrd_query.query_routes(ip_version, prefix),
-        BGPQuery().query_prefix(ip_version, prefix),
+        RIRStatsQuery().query_prefix(prefix),
+        irrd_query.query_routes(prefix),
+        BGPQuery().query_prefix(prefix),
     )
     rirstats, others = results_nested[0], results_nested[1:]
     results = [item for sublist in others for item in sublist]
@@ -35,25 +35,24 @@ async def main():
                     asn=entry.asn,
                     irr_source=entry.irr_source,
                     rpsl_pk=entry.rpsl_pk,
+                    rpki_status=entry.rpki_status,
                 )
             )
+        relevant_rirstats = (rirstat for rirstat in rirstats if rirstat.prefix.overlaps(prefix))
+        rir = next(relevant_rirstats).rir
         summaries.append(
             PrefixSummary(
                 prefix=prefix,
                 details=details,
-                rir=rirstats[0].rir,  # TODO: breaks for zero or multiple RIRstats
+                rir=rir,
             )
         )
 
-    for summary in summaries:
-        print(summary)
     print(f"complete in {time.perf_counter()-start}")
+    return summaries
     # async for p in tasks:
     # async for bgp in :
     #     print(bgp)
     #
     # async for rpsl in :
     #     print(rpsl)
-
-
-asyncio.run(main())

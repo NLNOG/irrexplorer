@@ -10,7 +10,7 @@ from databases import Database
 
 from irrexplorer.config import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import RIR, DataSource, RouteInfo
+from irrexplorer.state import RIR, DataSource, RouteInfo, IPNetwork
 from irrexplorer.storage.tables import rirstats
 
 ADDRESS_FAMILY_MAPPING = {
@@ -102,20 +102,20 @@ class RIRStatsImporter:
 
 
 class RIRStatsQuery:
-    async def query_prefix(self, ip_version: int, prefix: str):
+    async def query_prefix(self, prefix: IPNetwork):
         print("running rirstats")
         results = []
         async with Database(DATABASE_URL) as database:
             print("connected rirstats")
             # TODO: extract common SQL
-            prefix_cidr = sa.cast(prefix, pg.CIDR)
+            prefix_cidr = sa.cast(str(prefix), pg.CIDR)
             query = rirstats.select(
                 sa.and_(
                     sa.or_(
                         rirstats.c.prefix.op("<<=")(prefix_cidr),
                         rirstats.c.prefix.op(">>")(prefix_cidr),
                     ),
-                    rirstats.c.ip_version == ip_version,
+                    rirstats.c.ip_version == prefix.version,
                 )
             )
             async for row in database.iterate(query=query):
