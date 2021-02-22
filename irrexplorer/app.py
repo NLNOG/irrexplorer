@@ -9,7 +9,7 @@ from starlette.responses import PlainTextResponse, Response
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from irrexplorer import api
+from irrexplorer import report
 from irrexplorer.config import DATABASE_URL, DEBUG
 
 
@@ -18,7 +18,7 @@ async def prefix(request):
         parameter = ip_network(request.path_params["prefix"])
     except ValueError as ve:
         return PlainTextResponse(status_code=400, content=f"Invalid prefix: {ve}")
-    result = await api.prefix_summary(request.app.state.database, parameter)
+    result = await report.PrefixReport(request.app.state.database).prefix_summary(parameter)
     return DataClassJSONResponse(result)
 
 
