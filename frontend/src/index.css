@@ -1,7 +1,16 @@
-img.logo {
+.logo {
     max-width: 300px;
 }
 
-img.logo-small {
+.logo-small {
     max-width: 150px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.badge {
+    white-space: normal !important;
+    text-align: left !important;
 }

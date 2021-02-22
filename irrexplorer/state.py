@@ -95,7 +95,9 @@ class PrefixSummary:
 
     def finalise_status(self):
         if not self.messages:
-            self.success('Everything looks good')
+            self.success("Everything looks good")
+        ordered_categories = [m for m in MessageCategory]
+        self.messages.sort(key=lambda m: ordered_categories.index(m.category))
         for category in MessageCategory:
             if [m for m in self.messages if m.category == category]:
                 self.category_overall = category
@@ -128,10 +130,12 @@ class PrefixSummary:
 
     @property
     def irr_expected_rir(self) -> Optional[str]:
-        return RIR_EXPECTED_IRR.get(self.rir)
+        return RIR_EXPECTED_IRR.get(self.rir) if self.rir else None
 
     @property
     def irr_routes_expected_rir(self) -> List[PrefixIRRDetail]:
+        if not self.irr_expected_rir:
+            return []
         try:
             return self.irr_routes[self.irr_expected_rir]
         except KeyError:

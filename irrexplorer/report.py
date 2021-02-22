@@ -14,7 +14,7 @@ from irrexplorer.state import IPNetwork, PrefixIRRDetail, PrefixSummary, RouteIn
 class PrefixReport:
     def __init__(self, database: Database):
         self.database = database
-        self.rirstats = []
+        self.rirstats: List[RouteInfo] = []
 
     async def prefix_summary(self, search_prefix: IPNetwork):
         start = time.perf_counter()
@@ -102,6 +102,11 @@ class PrefixReport:
                 s.warning(
                     f"Expected route object in {s.irr_expected_rir}, but only found in other IRRs"
                 )
+            elif s.irr_origins_not_expected_rir:
+                s.warning(
+                    f"Expected route object in {s.irr_expected_rir}, "
+                    f"but objects also exist in other IRRs"
+                )
 
             if s.bgp_origins - s.irr_origins:
                 s.danger("No route objects match DFZ origin")
@@ -114,11 +119,6 @@ class PrefixReport:
                 s.danger(
                     f"Expected route object in {s.irr_expected_rir} matches BGP origin, "
                     f"but non-matching objects exist in other IRRs"
-                )
-            elif s.irr_origins_not_expected_rir:
-                s.warning(
-                    f"Expected route object in {s.irr_expected_rir} but, "
-                    f"but objects also exist in other IRRs"
                 )
             elif len(s.irr_origins) > 1:
                 s.info("Multiple route objects exist with different origins")
@@ -140,7 +140,7 @@ class PrefixReport:
         gathered by _collect()
         """
         relevant_rirstats = (
-            rirstat for rirstat in self.rirstats if rirstat.prefix.overlaps(prefix)
+            rirstat for rirstat in self.rirstats if rirstat.prefix.overlaps(prefix)  # type: ignore
         )
         rir = next(relevant_rirstats).rir
         return rir
