@@ -1,7 +1,8 @@
 import enum
+from collections import defaultdict
 from dataclasses import dataclass, field
 from ipaddress import IPv4Network, IPv6Network, ip_network
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict, Set
 from dataclasses_json import dataclass_json, LetterCase, config
 from marshmallow import fields
 
@@ -56,10 +57,8 @@ class RouteInfo:
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
-class PrefixSourceDetail:
-    source: DataSource
+class PrefixIRRDetail:
     asn: int
-    irr_source: Optional[str] = None
     rpsl_pk: Optional[str] = None
     rpki_status: Optional[RPKIStatus] = None
 
@@ -68,7 +67,8 @@ class PrefixSourceDetail:
 @dataclass
 class PrefixSummary:
     prefix: IPNetwork = field(metadata=ip_field_metadata)
-    details: List[PrefixSourceDetail]
+    irr_routes: Dict[str, List[PrefixIRRDetail]] = field(default_factory=lambda: defaultdict(list))
+    bgp_origins: Set[int] = field(default_factory=set)
     rir: Optional[RIR] = None
     special_use_type: Optional[str] = None
 
