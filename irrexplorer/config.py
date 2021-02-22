@@ -1,19 +1,39 @@
+from starlette.config import Config
+
 from irrexplorer.state import RIR
 
-BGP_SOURCE = "http://lg01.infra.ring.nlnog.net/table.txt"
-DATABASE_URL = "postgresql://localhost/irrexplorer"
-IRRD_ENDPOINT = "https://irrd.as213279.net/graphql/"
+config = Config(".env")
+
+DEBUG = config("DEBUG", cast=bool, default=False)
+
+BGP_SOURCE = config("BGP_SOURCE", default="http://lg01.infra.ring.nlnog.net/table.txt")
+DATABASE_URL = config("DATABASE_URL")
+IRRD_ENDPOINT = config("IRRD_ENDPOINT", default="https://irrd.as213279.net/graphql/")
 
 RIRSTATS_URL = {
-    RIR.RIPENCC: "https://ftp.ripe.net/ripe/stats/delegated-ripencc-latest",
-    RIR.ARIN: "https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest",
-    RIR.AFRINIC: "https://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest",
-    RIR.LACNIC: "https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-latest",
-    RIR.APNIC: "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
+    RIR.RIPENCC: config(
+        key="RIRSTATS_URL_RIPENCC",
+        default="https://ftp.ripe.net/ripe/stats/delegated-ripencc-latest",
+    ),
+    RIR.ARIN: config(
+        key="RIRSTATS_URL_ARIN",
+        default="https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest",
+    ),
+    RIR.AFRINIC: config(
+        key="RIRSTATS_URL_AFRINIC",
+        default="https://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest",
+    ),
+    RIR.LACNIC: config(
+        key="RIRSTATS_URL_LACNIC",
+        default="https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-latest",
+    ),
+    RIR.APNIC: config(
+        key="RIRSTATS_URL_APNIC", default="https://ftp.apnic.net/stats/apnic/delegated-apnic-latest"
+    ),
 }
 
-BGP_IPV4_LENGTH_CUTOFF = 29
-BGP_IPV6_LENGTH_CUTOFF = 124
+BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
+BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 
 SPECIAL_USE_SPACE = [
     ("RFC1122", "0.0.0.0/8", 4),

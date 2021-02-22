@@ -2,15 +2,13 @@ import ipaddress
 from typing import List
 
 import aggregate6
-import sqlalchemy as sa
-import sqlalchemy.dialects.postgresql as pg
 from asgiref.sync import sync_to_async
 from databases import Database
 
-from backends.utils import retrieve_url_text
+from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
 from irrexplorer.config import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.exceptions import ImporterException
-from irrexplorer.state import RIR, DataSource, IPNetwork, RouteInfo
+from irrexplorer.state import RIR, DataSource
 from irrexplorer.storage.tables import rirstats
 
 ADDRESS_FAMILY_MAPPING = {
@@ -34,7 +32,7 @@ class RIRStatsImporter:
     def _parse_rirstats(self, text: str):
         prefixes4 = []
         prefixes6 = []
-        for ip_version, start_ip, size, status in self._rirstats_lines(text):
+        for ip_version, start_ip, size in self._rirstats_lines(text):
             if ip_version == 4:
                 first_ip = ipaddress.ip_address(start_ip)
                 last = int(first_ip) + int(size) - 1
@@ -70,7 +68,7 @@ class RIRStatsImporter:
             try:
                 ip_version = ADDRESS_FAMILY_MAPPING[af_string]
             except KeyError:
-                raise ImporterException(f"Invalid rirstats line: {line.split('|')}")
+                continue
 
             yield ip_version, start_ip, size
 
@@ -99,30 +97,7 @@ class RIRStatsImporter:
                     )
 
 
-class RIRStatsQuery:
-    async def query_prefix(self, prefix: IPNetwork):
-        print("running rirstats")
-        results = []
-        async with Database(DATABASE_URL) as database:
-            print("connected rirstats")
-            # TODO: extract common SQL
-            prefix_cidr = sa.cast(str(prefix), pg.CIDR)
-            query = rirstats.select(
-                sa.and_(
-                    sa.or_(
-                        rirstats.c.prefix.op("<<=")(prefix_cidr),
-                        rirstats.c.prefix.op(">>")(prefix_cidr),
-                    ),
-                    rirstats.c.ip_version == prefix.version,
-                )
-            )
-            async for row in database.iterate(query=query):
-                results.append(
-                    RouteInfo(
-                        source=DataSource.RIRSTATS,
-                        prefix=row["prefix"],
-                        rir=row["rir"],
-                    )
-                )
-        print("completed rirstats")
-        return results
+class RIRStatsQuery(LocalSQLQueryBase):
+    source = DataSource.RIRSTATS
+    table = rirstats
+    prefix_info_field = "rir"

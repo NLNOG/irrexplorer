@@ -8,12 +8,13 @@ def reformat() -> None:
         ["black", "-l 100", "irrexplorer/"],
     )
     check_call(
-        ["isort", "-l 100", "irrexplorer/"],
+        ["isort", "-l 100", "-m", "VERTICAL_HANGING_INDENT", "--tc", "irrexplorer/"],
     )
 
 
 def lint() -> None:
     check_call(["flake8", "irrexplorer/"])
+    check_call(["mypy", "irrexplorer/"])
 
 
 def build() -> None:

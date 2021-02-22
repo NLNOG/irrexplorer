@@ -35,14 +35,9 @@ jobs:
           key: v2-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}
 
       - run:
-          name: run flake8
+          name: run linter
           command: |
-            poetry run flake8 irrexplorer
-
-      - run:
-          name: run mypy
-          command: |
-            poetry run mypy irrexplorer
+            poetry run lint
 
       # TODO: enable once we have actual tests
 #      - run:

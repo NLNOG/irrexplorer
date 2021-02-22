@@ -2,48 +2,59 @@ import asyncio
 import time
 from collections import defaultdict
 
+from databases import Database
+
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.state import DataSource, IPNetwork, PrefixIRRDetail, PrefixSummary
+from irrexplorer.state import IPNetwork, PrefixIRRDetail, PrefixSummary
 
 
-async def prefix(search_prefix: IPNetwork):
-    irrd_query = IRRDQuery()
-    print("running!")
+async def prefix_summary(database: Database, search_prefix: IPNetwork):
     start = time.perf_counter()
-    results_nested = await asyncio.gather(
-        RIRStatsQuery().query_prefix(search_prefix),
-        irrd_query.query_routes(search_prefix),
-        BGPQuery().query_prefix(search_prefix),
-    )
-    rirstats, others = results_nested[0], results_nested[1:]
-    results = [item for sublist in others for item in sublist]
-    gathered = defaultdict(list)
-    for result in results:
-        gathered[result.prefix].append(result)
 
-    summaries = []
-    for found_prefix, entries in gathered.items():
+    routes_irrd, rirstats, routes_bgp = await asyncio.gather(
+        IRRDQuery().query_prefix_any(search_prefix),
+        RIRStatsQuery(database).query_prefix_any(search_prefix),
+        BGPQuery(database).query_prefix_any(search_prefix),
+    )
+
+    irrd_per_prefix = defaultdict(list)
+    for result in routes_irrd:
+        irrd_per_prefix[result.prefix].append(result)
+
+    bgp_per_prefix = defaultdict(list)
+    for result in routes_bgp:
+        bgp_per_prefix[result.prefix].append(result)
+
+    all_prefixes = set(irrd_per_prefix.keys()).union(set(bgp_per_prefix.keys()))
+    summaries_per_prefix = []
+    for prefix in all_prefixes:
         relevant_rirstats = (
             rirstat for rirstat in rirstats if rirstat.prefix.overlaps(search_prefix)
         )
         rir = next(relevant_rirstats).rir
-        bgp_origins = {e.asn for e in entries if e.source == DataSource.BGP}
-        summary = PrefixSummary(prefix=found_prefix, rir=rir, bgp_origins=bgp_origins)
-        irr_entries = [e for e in entries if e.source == DataSource.IRR]
-        irr_entries.sort(key=lambda e: e.irr_source)
-        irr_entries.sort(key=lambda e: e.irr_source != "RPKI")
-        for entry in irr_entries:
-            summary.irr_routes[entry.irr_source].append(
-                PrefixIRRDetail(
-                    asn=entry.asn,
-                    rpsl_pk=entry.rpsl_pk,
-                    rpki_status=entry.rpki_status,
+
+        bgp_origins = {r.asn for r in bgp_per_prefix.get(prefix, []) if r.asn}
+        summary = PrefixSummary(prefix=prefix, rir=rir, bgp_origins=bgp_origins)
+
+        if prefix in irrd_per_prefix:
+            irr_entries = irrd_per_prefix[prefix]
+            # Sort IRR alphabetically, but always with RPKI first
+            irr_entries.sort(key=lambda e: e.irr_source if e.irr_source else '')
+            irr_entries.sort(key=lambda e: e.irr_source != "RPKI")
+            for entry in irr_entries:
+                assert entry.asn is not None, entry
+                assert entry.irr_source, entry
+                summary.irr_routes[entry.irr_source].append(
+                    PrefixIRRDetail(
+                        asn=entry.asn,
+                        rpsl_pk=entry.rpsl_pk,
+                        rpki_status=entry.rpki_status,
+                    )
                 )
-            )
-        summaries.append(summary)
+        summaries_per_prefix.append(summary)
 
     print(f"complete in {time.perf_counter()-start}")
-    print(summaries)
-    return summaries
+    print(summaries_per_prefix)
+    return summaries_per_prefix
