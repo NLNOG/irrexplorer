@@ -14,3 +14,8 @@
     text-align: left !important;
     white-space: normal !important;
 }
+
+.spinner-border {
+    /* Hack to render spinner properly within .table, which manipulates the border otherwise */
+    border-bottom-width: 0.25em !important;
+}

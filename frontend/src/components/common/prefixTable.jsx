@@ -41,7 +41,12 @@ class PrefixTable extends Component {
 
     renderTableContent() {
         const {hasLoaded, irrSourceColumns, prefixesData} = this.state;
-        if (!hasLoaded) return;
+        if (!hasLoaded)
+            return (
+                <tbody>
+                <td colSpan="5" className="text-center"><Spinner/></td>
+                </tbody>
+            );
         if (!prefixesData.length)
             return (
                 <tbody>
@@ -52,13 +57,11 @@ class PrefixTable extends Component {
             irrSourceColumns={irrSourceColumns}
             prefixesData={prefixesData}
         />
-
     }
 
     render() {
         return (
             <>
-                {!this.state.hasLoaded && <Spinner/>}
                 <table className="table  table-sm">
                     <thead>
                     <tr>
