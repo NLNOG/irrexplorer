@@ -11,6 +11,6 @@
 }
 
 .badge {
-    white-space: normal !important;
     text-align: left !important;
+    white-space: normal !important;
 }

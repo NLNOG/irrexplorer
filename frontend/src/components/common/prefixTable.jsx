@@ -5,27 +5,27 @@ import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faSort, faSortDown} from '@fortawesome/free-solid-svg-icons'
 
-import Spinner from "./common/spinner";
-import api from "../services/api";
+import Spinner from "./spinner";
+import api from "../../services/api";
 import PrefixTableBody from "./prefixTableBody";
 
 class PrefixTable extends Component {
-    state = {prefixesData: [], irrSourceColumns: []}
+    state = {prefixesData: [], irrSourceColumns: [], hasLoaded: false}
 
     async componentDidMount() {
-        await this.loadprefixesData();
+        await this.loadPrefixesData();
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.searchPrefix !== this.props.searchPrefix) {
+        if (prevProps.queryPrefix !== this.props.queryPrefix) {
             this.setState({prefixesData: []});
-            await this.loadprefixesData();
+            await this.loadPrefixesData();
         }
     }
 
-    async loadprefixesData() {
-        const prefixesData = await api.getPrefixesData(this.props.searchPrefix);
-        this.setState({prefixesData});
+    async loadPrefixesData() {
+        const prefixesData = await api.getPrefixesData(this.props.queryPrefix);
+        this.setState({prefixesData, hasLoaded: true});
         this.updateIrrSourceColumns();
     }
 
@@ -39,10 +39,26 @@ class PrefixTable extends Component {
         this.setState({irrSourceColumns});
     }
 
+    renderTableContent() {
+        const {hasLoaded, irrSourceColumns, prefixesData} = this.state;
+        if (!hasLoaded) return;
+        if (!prefixesData.length)
+            return (
+                <tbody>
+                <td colSpan="5">No prefixes were found.</td>
+                </tbody>
+            )
+        return <PrefixTableBody
+            irrSourceColumns={irrSourceColumns}
+            prefixesData={prefixesData}
+        />
+
+    }
+
     render() {
         return (
             <>
-                {!this.state.prefixesData.length && <Spinner/>}
+                {!this.state.hasLoaded && <Spinner/>}
                 <table className="table  table-sm">
                     <thead>
                     <tr>
@@ -56,10 +72,7 @@ class PrefixTable extends Component {
                         <th scope="col" className="messages">Advice</th>
                     </tr>
                     </thead>
-                    <PrefixTableBody
-                        irrSourceColumns={this.state.irrSourceColumns}
-                        prefixesData={this.state.prefixesData}
-                    />
+                    {this.renderTableContent()}
                 </table>
             </>
         );
@@ -67,7 +80,7 @@ class PrefixTable extends Component {
 }
 
 PrefixTable.propTypes = {
-    searchPrefix: PropTypes.string.isRequired,
+    queryPrefix: PropTypes.string.isRequired,
 };
 
 

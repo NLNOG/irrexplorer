@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Redirect, Router} from "@reach/router";
 import Home from "./components/home";
-import Search from "./components/search";
+import Query from "./components/query";
 
 class App extends Component {
     render() {
@@ -10,8 +10,8 @@ class App extends Component {
                 <Router>
                     <Home path="/"/>
                     {/* Reach does not have native support for a slash in the url */}
-                    <Search path="/search/:search"/>
-                    <Search path="/search/:search1/:search2"/>
+                    <Query path="/:category/:query"/>
+                    <Query path="/:category/:query1/:query2"/>
                     <Redirect default from="/" to="/" noThrow/>
                 </Router>
             </main>

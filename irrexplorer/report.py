@@ -1,14 +1,14 @@
 import asyncio
 import time
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from databases import Database
 
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.state import IPNetwork, PrefixIRRDetail, PrefixSummary, RouteInfo, RPKIStatus
+from irrexplorer.state import IPNetwork, PrefixIRRDetail, PrefixSummary, RouteInfo, RPKIStatus, RIR
 
 
 class PrefixReport:
@@ -102,7 +102,7 @@ class PrefixReport:
                 s.warning(
                     f"Expected route object in {s.irr_expected_rir}, but only found in other IRRs"
                 )
-            elif s.irr_origins_not_expected_rir:
+            elif s.irr_expected_rir and s.irr_origins_not_expected_rir:
                 s.warning(
                     f"Expected route object in {s.irr_expected_rir}, "
                     f"but objects also exist in other IRRs"
@@ -134,7 +134,7 @@ class PrefixReport:
 
             s.finalise_status()
 
-    def _rir_for_prefix(self, prefix: IPNetwork):
+    def _rir_for_prefix(self, prefix: IPNetwork) -> Optional[RIR]:
         """
         Find the responsible RIR for a prefix, from self.rirstats previously
         gathered by _collect()
@@ -142,5 +142,7 @@ class PrefixReport:
         relevant_rirstats = (
             rirstat for rirstat in self.rirstats if rirstat.prefix.overlaps(prefix)  # type: ignore
         )
-        rir = next(relevant_rirstats).rir
-        return rir
+        try:
+            return next(relevant_rirstats).rir
+        except StopIteration:
+            return

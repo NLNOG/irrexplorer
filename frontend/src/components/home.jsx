@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from "../logo.png";
-import SearchForm from "./common/searchForm";
+import QueryForm from "./common/queryForm";
 
 function Home() {
     return (
@@ -18,7 +18,7 @@ function Home() {
                         <p>
                             Enter a prefix, IP address, AS number or AS set name.
                         </p>
-                        <SearchForm/>
+                        <QueryForm/>
                     </div>
                 </div>
             </div>

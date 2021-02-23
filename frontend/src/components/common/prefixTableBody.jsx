@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import RPKIStatusIcon from "./common/rpkiStatusIcon";
-import MessageBadge from "./common/messageBadge";
+import RPKIStatusIcon from "./rpkiStatusIcon";
+import MessageBadge from "./messageBadge";
 
 
 class PrefixTableBody extends Component {
