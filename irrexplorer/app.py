@@ -24,7 +24,11 @@ routes = [
     Mount("/", StaticFiles(directory="frontend/build", html=True)),
 ]
 
-middleware = [Middleware(CORSMiddleware, allow_origins=["*"], allow_headers=['Cache-Control', 'Pragma', 'Expires'])]
+middleware = [
+    Middleware(
+        CORSMiddleware, allow_origins=["*"], allow_headers=["Cache-Control", "Pragma", "Expires"]
+    )
+]
 
 app = Starlette(
     debug=DEBUG,

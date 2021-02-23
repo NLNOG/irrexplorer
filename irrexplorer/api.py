@@ -3,9 +3,9 @@ import re
 from dataclasses import dataclass
 from ipaddress import ip_network
 
-from dataclasses_json import dataclass_json, LetterCase
-from starlette.responses import PlainTextResponse, Response, JSONResponse
 import IPy
+from dataclasses_json import LetterCase, dataclass_json
+from starlette.responses import PlainTextResponse, Response
 
 from irrexplorer import report
 
@@ -35,8 +35,8 @@ class Query:
             pass
 
         try:
-            trimmed = raw_query[2:] if raw_query.startswith('AS') else raw_query
-            self.cleaned_value = 'AS' + str(int(trimmed))
+            trimmed = raw_query[2:] if raw_query.startswith("AS") else raw_query
+            self.cleaned_value = "AS" + str(int(trimmed))
             self.category = QueryCategory.ASN
             return
         except ValueError:
@@ -47,12 +47,12 @@ class Query:
             self.category = QueryCategory.ASSET
             return
 
-        raise ValueError('Query is not a valid prefix, IP, ASN or AS-set')
+        raise ValueError("Query is not a valid prefix, IP, ASN or AS-set")
 
 
 async def clean_query(request):
     try:
-        return DataClassJSONResponse(Query(request.path_params['query']))
+        return DataClassJSONResponse(Query(request.path_params["query"]))
     except ValueError as ve:
         return PlainTextResponse(status_code=400, content=str(ve))
 
@@ -72,8 +72,8 @@ class DataClassJSONResponse(Response):
     def render(self, content) -> bytes:
         if isinstance(content, list):
             if not content:
-                return b'[]'
+                return b"[]"
             return content[0].schema().dumps(content, many=True).encode("utf-8")
         if not content:
-            return b'null'
+            return b"null"
         return content.schema().dumps(content).encode("utf-8")

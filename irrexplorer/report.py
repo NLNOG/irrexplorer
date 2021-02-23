@@ -1,14 +1,14 @@
 import asyncio
 import time
 from collections import defaultdict
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
 from databases import Database
 
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.state import IPNetwork, PrefixIRRDetail, PrefixSummary, RouteInfo, RPKIStatus, RIR
+from irrexplorer.state import RIR, IPNetwork, PrefixIRRDetail, PrefixSummary, RouteInfo, RPKIStatus
 
 
 class PrefixReport:
@@ -145,4 +145,4 @@ class PrefixReport:
         try:
             return next(relevant_rirstats).rir
         except StopIteration:
-            return
+            return None
