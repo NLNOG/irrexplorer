@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faSort, faSortDown} from '@fortawesome/free-solid-svg-icons'
-
 import Spinner from "./spinner";
 import PrefixTableBody from "./prefixTableBody";
-import PrefixDataSource from "../../services/prefixDataSource";
+import {PrefixDataSource, sortPrefixesDataBy} from "../../services/prefixDataSource";
+import PrefixTableHeader from "./prefixTableHeader";
+
 
 class PrefixTable extends Component {
     state = {prefixesData: [], irrSourceColumns: [], hasLoaded: false}
@@ -25,6 +24,11 @@ class PrefixTable extends Component {
         const prefixDataSource = new PrefixDataSource(this.props.queryPrefix, this.props.onLeastSpecificFound);
         this.setState({...prefixDataSource.reset()});
         this.setState({...await prefixDataSource.load()});
+    }
+
+    handleSort = ({key, order}) => {
+        const prefixesData = sortPrefixesDataBy(this.state.prefixesData, key, order);
+        this.setState({prefixesData});
     }
 
     renderTableContent() {
@@ -53,18 +57,10 @@ class PrefixTable extends Component {
         return (
             <>
                 <table className="table table-sm mb-5">
-                    <thead>
-                    <tr>
-                        <th scope="col">Prefix <FontAwesomeIcon icon={faSortDown}/></th>
-                        <th scope="col">RIR <FontAwesomeIcon icon={faSort}/></th>
-                        <th scope="col">BGP <FontAwesomeIcon icon={faSort}/></th>
-                        <th scope="col">RPKI <FontAwesomeIcon icon={faSort}/></th>
-                        {this.state.irrSourceColumns.map(sourceName =>
-                            <th scope="col" key={sourceName}>{sourceName} <FontAwesomeIcon icon={faSort}/></th>
-                        )}
-                        <th scope="col" className="messages">Advice</th>
-                    </tr>
-                    </thead>
+                    <PrefixTableHeader
+                        irrSourceColumns={this.state.irrSourceColumns}
+                        onSort={this.handleSort}
+                    />
                     {this.renderTableContent()}
                 </table>
             </>

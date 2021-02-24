@@ -86,20 +86,24 @@ class PrefixSummary:
     prefix: IPNetwork = field(metadata=ip_field_metadata)
     messages: List[ReportMessage] = field(default_factory=list)
     category_overall: Optional[MessageCategory] = None
+    goodness_overall: Optional[int] = 0
     # Key for irr_routes is the IRR source (not including RPKI)
     irr_routes: Dict[str, List[PrefixIRRDetail]] = field(default_factory=lambda: defaultdict(list))
     rpki_routes: List[PrefixIRRDetail] = field(default_factory=list)
     bgp_origins: Set[int] = field(default_factory=set)
     rir: Optional[RIR] = None
     special_use_type: Optional[str] = None
+    prefix_exploded: Optional[str] = None
 
     def finalise_status(self):
+        self.prefix_exploded = self.prefix.exploded
         if not self.messages:
             self.success("Everything looks good")
         ordered_categories = [m for m in MessageCategory]
         self.messages.sort(key=lambda m: ordered_categories.index(m.category))
-        for category in MessageCategory:
+        for idx, category in enumerate(MessageCategory):
             if [m for m in self.messages if m.category == category]:
+                self.goodness_overall = idx
                 self.category_overall = category
                 return
 

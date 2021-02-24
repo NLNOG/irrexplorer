@@ -26,6 +26,7 @@ function QueryForm() {
     let inputClasses = "form-control form-control-lg ";
     if (!isValid)
         inputClasses += "is-invalid";
+
     return (
         <form className="row" onSubmit={handleSearchSubmit}>
             <div className="col-sm-10">

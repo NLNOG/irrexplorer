@@ -74,6 +74,7 @@ class PrefixReport:
 
             if prefix in irrd_per_prefix:
                 irr_entries = irrd_per_prefix[prefix]
+                irr_entries.sort(key=lambda r: r.asn if r.asn else 0)
                 for entry in irr_entries:
                     assert entry.asn is not None, entry
                     assert entry.irr_source, entry

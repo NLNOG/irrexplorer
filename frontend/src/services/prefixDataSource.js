@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import api from "./api";
 
-class PrefixDataSource {
+export class PrefixDataSource {
     constructor(queryPrefix, onLeastSpecificFound) {
         this.queryPrefix = queryPrefix;
         this.onLeastSpecificFound = onLeastSpecificFound;
@@ -20,7 +20,8 @@ class PrefixDataSource {
         const prefixesData = await api.getPrefixesData(this.queryPrefix);
         const irrSourceColumns = this.gatherIrrSourceColumns(prefixesData);
         this.notifyLeastSpecificFound(prefixesData);
-        return {prefixesData, irrSourceColumns, hasLoaded: true};
+        const sortedPrefixesData = sortPrefixesDataBy(prefixesData,'prefix');
+        return {prefixesData: sortedPrefixesData, irrSourceColumns, hasLoaded: true};
     }
 
     gatherIrrSourceColumns(prefixesData) {
@@ -53,6 +54,14 @@ class PrefixDataSource {
         if (!queryPrefixLength || leastSpecific.len < queryPrefixLength)
             this.onLeastSpecificFound(allPrefixes[0].ip + '/' + allPrefixes[0].len);
     }
+
 }
 
-export default PrefixDataSource;
+export function sortPrefixesDataBy(prefixesData, key, order='asc') {
+    if (key === 'prefix') key = 'prefixExploded';
+    if (key === 'bgpOrigins') key = 'bgpOrigins.0';
+    if (key === 'rpkiRoutes') key = 'rpkiRoutes.0.asn';
+    if (key.startsWith('irrRoutes')) key += '.0.asn';
+    if (key === 'messages') key = 'goodnessOverall';
+    return _.orderBy(prefixesData, [key], [order]);
+}
