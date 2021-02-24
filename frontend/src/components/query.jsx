@@ -12,7 +12,8 @@ class Query extends Component {
     state = {cleanQuery: ''}
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps !== this.props) await this.cleanQuery();
+        if (prevProps === this.props) return;
+        await this.cleanQuery();
     }
 
     async componentDidMount() {
@@ -28,6 +29,7 @@ class Query extends Component {
             await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
         } else {
             this.setState({cleanQuery: cleanResult.cleanedValue})
+            document.title = 'IRR explorer: ' + this.state.cleanQuery;
         }
     }
 

@@ -1,19 +1,36 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-
-import QueryForm from "./common/queryForm";
 import PrefixTable from "./common/prefixTable";
 
-import logo from "../logo.png";
-import {Link, navigate} from "@reach/router";
-import api from "../services/api";
-
 class PrefixQuery extends Component {
+    state = {leastSpecificPrefix: null};
+
+    handleLeastSpecificFound = (prefix) => {
+        this.setState({leastSpecificPrefix: prefix});
+    }
+
     render() {
         return (
             <>
-                <h1>Prefix: {this.props.queryPrefix}</h1>
-                <PrefixTable queryPrefix={this.props.queryPrefix}/>
+                <h1 className="mb-5">Report for prefix {this.props.queryPrefix}</h1>
+                <h2 className="h3">
+                    Directly overlapping prefixes of {this.props.queryPrefix}
+                </h2>
+                <hr/>
+                <PrefixTable
+                    queryPrefix={this.props.queryPrefix}
+                    onLeastSpecificFound={this.handleLeastSpecificFound}
+                />
+
+                {this.state.leastSpecificPrefix && <>
+                    <h2 className="h3">
+                        All overlaps of least specific match {this.state.leastSpecificPrefix}
+                    </h2>
+                    <hr/>
+                    <PrefixTable
+                        queryPrefix={this.state.leastSpecificPrefix}
+                    />
+                </>}
             </>
         );
     }

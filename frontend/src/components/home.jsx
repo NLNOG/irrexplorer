@@ -1,8 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import logo from "../logo.png";
 import QueryForm from "./common/queryForm";
 
 function Home() {
+    useEffect(() => {
+        document.title = 'IRR explorer';
+    }, []);
+
     return (
         <div className="container-fluid d-flex justify-content-center">
             <div className="align-self-center">
