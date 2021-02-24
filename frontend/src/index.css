@@ -19,3 +19,10 @@
     /* Hack to render spinner properly within .table, which manipulates the border otherwise */
     border-bottom-width: 0.25em !important;
 }
+
+
+.table-fixed th {
+    background: white !important;
+    position: sticky;
+    top: 0;
+}

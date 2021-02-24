@@ -97,6 +97,8 @@ class PrefixReport:
             # Detect superfluous route objects
             if not s.bgp_origins and s.irr_origins:
                 s.info("Route objects exist, but prefix not seen in DFZ")
+            if not s.bgp_origins and s.rpki_origins:
+                s.info("RPKI ROA exists, but prefix not seen in DFZ")
 
             # Detect route objects in unexpected IRR and check origin
             if s.irr_expected_rir and s.irr_routes and not s.irr_routes_expected_rir:
@@ -104,7 +106,7 @@ class PrefixReport:
                     f"Expected route object in {s.irr_expected_rir}, but only found in other IRRs"
                 )
             elif s.irr_expected_rir and s.irr_origins_not_expected_rir:
-                s.warning(
+                s.info(
                     f"Expected route object in {s.irr_expected_rir}, "
                     f"but objects also exist in other IRRs"
                 )
@@ -122,7 +124,7 @@ class PrefixReport:
                     f"but non-matching objects exist in other IRRs"
                 )
             elif len(s.irr_origins) > 1:
-                s.info("Multiple route objects exist with different origins")
+                s.warning("Multiple route objects exist with different origins")
 
             # Detect RPKI situation
             if not s.rpki_origins:

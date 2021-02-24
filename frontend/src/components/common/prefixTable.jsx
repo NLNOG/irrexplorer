@@ -56,7 +56,7 @@ class PrefixTable extends Component {
     render() {
         return (
             <>
-                <table className="table table-sm mb-5">
+                <table className="table table-sm mb-5 table-fixed">
                     <PrefixTableHeader
                         irrSourceColumns={this.state.irrSourceColumns}
                         onSort={this.handleSort}

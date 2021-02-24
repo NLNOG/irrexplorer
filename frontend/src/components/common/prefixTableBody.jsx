@@ -34,7 +34,7 @@ class PrefixTableBody extends Component {
                     {irrSourceColumns.map(
                         sourceName => this.renderSourceCell(irrRoutes, sourceName)
                     )}
-                    <td key="messages" className="messages">
+                    <td key="messages">
                         {messages.map(({category, text}) =>
                             <MessageBadge key={text} category={category} text={text}/>
                         )}

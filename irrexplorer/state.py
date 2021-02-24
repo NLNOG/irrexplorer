@@ -117,7 +117,7 @@ class PrefixSummary:
 
     @property
     def rpki_origins(self) -> Set[int]:
-        return {rpki.asn for rpki in self.rpki_routes if rpki.asn != 0}
+        return {rpki.asn for rpki in self.rpki_routes}
 
     @property
     def irr_origins_not_expected_rir(self) -> Set[int]:
