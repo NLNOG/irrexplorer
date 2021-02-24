@@ -15,7 +15,7 @@ function QueryForm() {
         if (!cleanResult) {
             setIsValid(false);
         } else {
-            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
+            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});
         }
     }
 

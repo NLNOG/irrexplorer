@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer className="footer mt-auto py-3 bg-light text-end">
+        <>
             <div className="container">
                 IRR explorer v2 · Developed by <a href="https://www.dashcare.nl/">
                 DashCare BV
@@ -13,7 +13,7 @@ function Footer() {
             </a>
 
             </div>
-        </footer>
+        </>
     );
 }
 

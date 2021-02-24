@@ -25,7 +25,6 @@ class Query extends Component {
         if (!cleanResult) {
             await navigate('/');
         } else if (cleanResult.category !== this.props.category) {
-            console.log('nav cq ', `/${cleanResult.category}/${cleanResult.cleanedValue}`);
             await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
         } else {
             this.setState({cleanQuery: cleanResult.cleanedValue})

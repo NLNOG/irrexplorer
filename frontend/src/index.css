@@ -11,18 +11,18 @@
 }
 
 .badge {
-    text-align: left !important;
-    white-space: normal !important;
+    text-align: left;
+    white-space: normal;
 }
 
 .spinner-border {
     /* Hack to render spinner properly within .table, which manipulates the border otherwise */
-    border-bottom-width: 0.25em !important;
+    border-bottom-width: 0.25em;
 }
 
-
 .table-fixed th {
-    background: white !important;
+    background: white;
+    -webkit-position: sticky;
     position: sticky;
     top: 0;
 }

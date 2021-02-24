@@ -34,6 +34,7 @@ class Query:
         except ValueError:
             pass
 
+        raw_query = raw_query.upper()
         try:
             trimmed = raw_query[2:] if raw_query.startswith("AS") else raw_query
             self.cleaned_value = "AS" + str(int(trimmed))
@@ -43,7 +44,7 @@ class Query:
             pass
 
         if re_rpsl_name.match(raw_query):
-            self.cleaned_value = raw_query.upper()
+            self.cleaned_value = raw_query
             self.category = QueryCategory.ASSET
             return
 
