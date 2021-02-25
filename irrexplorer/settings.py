@@ -1,3 +1,4 @@
+import databases
 from starlette.config import Config
 
 from irrexplorer.state import RIR
@@ -5,10 +6,17 @@ from irrexplorer.state import RIR
 config = Config(".env")
 
 DEBUG = config("DEBUG", cast=bool, default=False)
+TESTING = config("TESTING", cast=bool, default=False)
 
 BGP_SOURCE = config("BGP_SOURCE", default="http://lg01.infra.ring.nlnog.net/table.txt")
-DATABASE_URL = config("DATABASE_URL")
-IRRD_ENDPOINT = config("IRRD_ENDPOINT", default="https://irrd.as213279.net/graphql/")
+DATABASE_URL = config("DATABASE_URL", cast=databases.DatabaseURL)
+
+if TESTING:
+    DATABASE_URL = DATABASE_URL.replace(database="test_" + DATABASE_URL.database)
+else:  # pragma: no cover
+    # IRRD_ENDPOINT is read at connection time to allow tests to change it,
+    # load it here if not testing to trigger an error earlier if it's missing.
+    config("IRRD_ENDPOINT")
 
 RIRSTATS_URL = {
     RIR.RIPENCC: config(

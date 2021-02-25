@@ -29,7 +29,7 @@ def upgrade():
         "bgp",
         [sa.text("prefix inet_ops")],
         unique=False,
-        postgresql_using="spgist",
+        postgresql_using="gist",
     )
 
     op.create_table(
@@ -47,7 +47,7 @@ def upgrade():
         "rirstats",
         [sa.text("prefix inet_ops")],
         unique=False,
-        postgresql_using="spgist",
+        postgresql_using="gist",
     )
 
 

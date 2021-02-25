@@ -5,12 +5,12 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from irrexplorer import api
-from irrexplorer.config import DATABASE_URL, DEBUG
+from irrexplorer.api import queries
+from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 
 async def startup():
-    app.state.database = databases.Database(DATABASE_URL)
+    app.state.database = databases.Database(DATABASE_URL, force_rollback=TESTING)
     await app.state.database.connect()
 
 
@@ -19,8 +19,8 @@ async def shutdown():
 
 
 routes = [
-    Route("/api/clean_query/{query:path}", api.clean_query),
-    Route("/api/prefix/{prefix:path}", api.prefix),
+    Route("/api/clean_query/{query:path}", queries.clean_query),
+    Route("/api/prefix/{prefix:path}", queries.prefix),
     Mount("/", StaticFiles(directory="frontend/build", html=True)),
 ]
 

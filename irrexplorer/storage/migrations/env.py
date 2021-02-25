@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from irrexplorer.config import DATABASE_URL
+from irrexplorer.settings import DATABASE_URL
 from irrexplorer.storage.tables import metadata
 
 # this is the Alembic Config object, which provides

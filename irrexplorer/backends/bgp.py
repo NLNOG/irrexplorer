@@ -4,13 +4,13 @@ from asgiref.sync import sync_to_async
 from databases import Database
 
 from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
-from irrexplorer.config import (
+from irrexplorer.exceptions import ImporterException
+from irrexplorer.settings import (
     BGP_IPV4_LENGTH_CUTOFF,
     BGP_IPV6_LENGTH_CUTOFF,
     BGP_SOURCE,
     DATABASE_URL,
 )
-from irrexplorer.exceptions import ImporterException
 from irrexplorer.state import DataSource
 from irrexplorer.storage.tables import bgp
 

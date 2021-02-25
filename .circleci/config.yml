@@ -11,7 +11,15 @@ workflows:
 jobs:
   cpython-3.7: &test-template
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.7-node
+        environment:
+          DATABASE_URL: 'postgresql://test@localhost/test'
+
+      - image: circleci/postgres:9.6-ram
+        environment:
+          POSTGRES_USER: test
+          POSTGRES_DB: test
+          POSTGRES_HOST_AUTH_METHOD: trust
 
     working_directory: /mnt/ramdisk
 
@@ -20,30 +28,36 @@ jobs:
 
       - restore_cache:
           keys:
-          - v2-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}
+          - v3-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-{{ .Environment.CIRCLE_JOB }}
+          - v3-dependencies-{{ .Environment.CIRCLE_JOB }}
 
       - run:
-          name: install dependencies
-          command: |
-            poetry install
+          name: install python dependencies
+          command: poetry install
+
+      - run:
+          name: install frontend dependencies
+          command: poetry run frontend-install
 
       - save_cache:
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
-          key: v2-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}
+            - /mnt/ramdisk/frontend/node_modules
+          key: v3-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
 
       - run:
           name: run linter
-          command: |
-            poetry run lint
+          command: poetry run lint
 
-      # TODO: enable once we have actual tests
-#      - run:
-#          name: run regular tests
-#          command: |
-#            . venv/bin/activate
+      - run:
+          name: build frontend
+          command: poetry run build
+
+      # TODO: enable cov check once we have actual tests
+      - run:
+          name: run regular tests
+          command: poetry run py.test -s -vvvv --cov=irrexplorer irrexplorer --junitxml=test-reports/junit.xml --cov-report term-missing:skip-covered
 #            py.test -s -vvvv --cov=irrexplorer irrexplorer --junitxml=test-reports/junit.xml --cov-fail-under=100 --cov-report term-missing:skip-covered
 
       - store_test_results:
@@ -55,4 +69,12 @@ jobs:
   cpython-3.9:
     <<: *test-template
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.9-node
+        environment:
+          DATABASE_URL: 'postgresql://test@localhost/test'
+
+      - image: circleci/postgres:9.6-ram
+        environment:
+          POSTGRES_USER: test
+          POSTGRES_DB: test
+          POSTGRES_HOST_AUTH_METHOD: trust

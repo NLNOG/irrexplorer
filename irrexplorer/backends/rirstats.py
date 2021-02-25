@@ -6,8 +6,8 @@ from asgiref.sync import sync_to_async
 from databases import Database
 
 from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
-from irrexplorer.config import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.exceptions import ImporterException
+from irrexplorer.settings import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.state import RIR, DataSource
 from irrexplorer.storage.tables import rirstats
 

@@ -4,7 +4,7 @@ from typing import List
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
-from irrexplorer.config import IRRD_ENDPOINT
+from irrexplorer.settings import config
 from irrexplorer.state import DataSource, IPNetwork, RouteInfo, RPKIStatus
 
 IRRD_TIMEOUT = 600
@@ -58,11 +58,12 @@ GQL_QUERY_PREFIX = gql(
 
 class IRRDQuery:
     def __init__(self):
+        # Read at this point to allow tests to change the endpoint
+        endpoint = config("IRRD_ENDPOINT")
         # TODO: Common client?
-        self.transport = AIOHTTPTransport(url=IRRD_ENDPOINT, timeout=IRRD_TIMEOUT)
+        self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
         self.client = Client(
             transport=self.transport,
-            fetch_schema_from_transport=True,
             execute_timeout=IRRD_TIMEOUT,
         )
 
