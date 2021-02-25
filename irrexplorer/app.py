@@ -3,9 +3,9 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
 
 from irrexplorer.api import queries
+from irrexplorer.api.utils import DefaultIndexStaticFiles
 from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 
@@ -21,7 +21,14 @@ async def shutdown():
 routes = [
     Route("/api/clean_query/{query:path}", queries.clean_query),
     Route("/api/prefix/{prefix:path}", queries.prefix),
-    Mount("/", StaticFiles(directory="frontend/build", html=True)),
+    Mount(
+        "/",
+        DefaultIndexStaticFiles(
+            directory="frontend/build",
+            html=True,
+            defaulted_paths=["prefix/", "asn/", "as-set/"],
+        ),
+    ),
 ]
 
 middleware = [

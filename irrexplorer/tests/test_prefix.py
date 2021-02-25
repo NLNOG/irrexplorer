@@ -35,7 +35,7 @@ IRRD_PREFIX_VALID_RESPONSE = {
 }
 
 
-async def test_prefix_invalid(client, httpserver):
+async def test_prefix_invalid(client):
     response = await client.get("/api/prefix/invalid")
     assert response.status_code == 400
     assert "does not appear to be an" in response.text
