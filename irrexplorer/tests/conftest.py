@@ -1,7 +1,8 @@
 import pytest
+from alembic.command import upgrade as alembic_upgrade
+from alembic.config import Config as AlembicConfig
 from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
-from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 from starlette.config import environ
 
@@ -10,17 +11,20 @@ environ["TESTING"] = "TRUE"
 
 from irrexplorer import settings
 from irrexplorer.app import app
-from irrexplorer.storage.tables import metadata
 
 
 @pytest.fixture(autouse=True, scope="session")
 def setup_test_database():
     url = str(settings.DATABASE_URL)
-    engine = create_engine(url)
+
     assert not database_exists(url), "Test database already exists. Aborting tests."
     create_database(url)
-    metadata.create_all(engine)  # TODO: run migrations
+
+    alembic_cfg = AlembicConfig("alembic.ini")
+    alembic_upgrade(alembic_cfg, "head")
+
     yield
+
     drop_database(url)
 
 
