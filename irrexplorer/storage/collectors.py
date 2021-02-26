@@ -92,6 +92,7 @@ class PrefixCollector:
                             asn=entry.asn,
                             rpsl_pk=entry.rpsl_pk,
                             rpki_status=entry.rpki_status,
+                            rpki_max_length=entry.rpki_max_length,
                         )
                     )
             summaries_per_prefix.append(summary)

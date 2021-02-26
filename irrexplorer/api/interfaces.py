@@ -45,6 +45,7 @@ class PrefixIRRDetail:
     asn: int
     rpsl_pk: Optional[str] = None
     rpki_status: Optional[RPKIStatus] = None
+    rpki_max_length: Optional[int] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)

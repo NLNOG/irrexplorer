@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+
 import AsnWithRPKIStatus from "./asnWithRPKIStatus";
 import MessageBadge from "./messageBadge";
+import {faCaretRight} from "@fortawesome/free-solid-svg-icons";
 
 
 class PrefixTableBody extends Component {
@@ -15,7 +18,19 @@ class PrefixTableBody extends Component {
         return <td key={sourceName}>{routesForSource.map(
             ({asn, rpkiStatus}, idx) => [
                 idx > 0 && ", ",
-                <AsnWithRPKIStatus key={asn} asn={asn} rpkiStatus={rpkiStatus} />
+                <AsnWithRPKIStatus key={asn} asn={asn} rpkiStatus={rpkiStatus}/>
+            ]
+        )}</td>;
+    }
+
+    renderRpkiCells(rpkiRoutes) {
+        return <td key="rpkiRoutes" className="mono">{rpkiRoutes.map(
+            ({asn, rpkiMaxLength}, idx) => [
+                idx > 0 && ", ",
+                asn, " ",
+                <span className="small">
+                    <FontAwesomeIcon aria-label="max length" icon={faCaretRight}/>/{rpkiMaxLength}
+                </span>
             ]
         )}</td>;
     }
@@ -30,7 +45,7 @@ class PrefixTableBody extends Component {
                     <td key="prefix">{prefix}</td>
                     <td key="rir" className="nowrap">{rir}</td>
                     <td key="bgpOrigins">{bgpOrigins.join()}</td>
-                    <td key="rpkiRoutes">{rpkiRoutes.map(rpkiRoute => rpkiRoute.asn).join(', ')}</td>
+                    {this.renderRpkiCells(rpkiRoutes)}
                     {irrSourceColumns.map(
                         sourceName => this.renderSourceCell(irrRoutes, sourceName)
                     )}
