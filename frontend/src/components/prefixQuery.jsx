@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import PrefixTable from "./common/prefixTable";
+import PrefixTableExplanation from "./common/prefixTableExplanation";
 
 class PrefixQuery extends Component {
     state = {leastSpecificPrefix: null};
@@ -12,8 +13,9 @@ class PrefixQuery extends Component {
     render() {
         return (
             <>
-                <h1 className="mb-5">Report for prefix {this.props.queryPrefix}</h1>
-                <h2 className="h3">
+                <h1>Report for prefix {this.props.queryPrefix}</h1>
+                <PrefixTableExplanation />
+                <h2 className="h3 mt-4">
                     Directly overlapping prefixes of {this.props.queryPrefix}
                 </h2>
                 <hr/>

@@ -23,7 +23,7 @@ function AsnWithRPKIStatus({rpkiStatus, asn}) {
                 {rpkiIcon && <>
                     {' '}
                     <span className="d-inline-block" data-bs-toggle="tooltip" title={text}>
-                    <FontAwesomeIcon icon={rpkiIcon}/>
+                    <FontAwesomeIcon icon={rpkiIcon} title={text}/>
                 </span>
                 </>}
             </span>
