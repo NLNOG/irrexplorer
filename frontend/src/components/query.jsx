@@ -25,7 +25,7 @@ class Query extends Component {
         if (!cleanResult) {
             await navigate('/');
         } else if (cleanResult.category !== this.props.category) {
-            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
+            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});
         } else {
             this.setState({cleanQuery: cleanResult.cleanedValue})
             document.title = 'IRR explorer: ' + this.state.cleanQuery;
