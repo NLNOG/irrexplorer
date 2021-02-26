@@ -76,6 +76,7 @@ async def test_prefix_valid(client, httpserver):
             "messages": [
                 {"category": "danger", "text": "No route objects match DFZ origin"},
                 {"category": "danger", "text": "RPKI origin does not match BGP origin"},
+                {"category": "danger", "text": "RPKI invalid route objects found"},
                 {
                     "category": "warning",
                     "text": "Expected route object in RIPE, but only found in other IRRs",
@@ -111,7 +112,7 @@ async def test_prefix_no_data(client, httpserver):
             "irrRoutes": {},
             "messages": [
                 {"category": "danger", "text": "No route objects match DFZ origin"},
-                {"category": "info", "text": "No RPKI ROA found for prefix"},
+                {"category": "info", "text": "No (covering) RPKI ROA found for route objects"},
             ],
         }
     ]

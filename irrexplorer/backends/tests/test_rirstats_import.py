@@ -8,6 +8,7 @@ from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.state import RIR
 from irrexplorer.storage import tables
+
 from ..rirstats import RIRStatsImporter
 
 pytestmark = pytest.mark.asyncio

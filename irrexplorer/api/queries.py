@@ -7,8 +7,8 @@ import IPy
 from dataclasses_json import LetterCase, dataclass_json
 from starlette.responses import PlainTextResponse
 
+from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
-from irrexplorer.report import enrich_prefix_summaries_with_report
 from irrexplorer.storage.collectors import PrefixCollector
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)

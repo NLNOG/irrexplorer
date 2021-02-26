@@ -40,7 +40,7 @@ class PrefixCollector:
     async def _collect(self, search_prefix: IPNetwork) -> None:
         """
         Collect all relevant data for `search_prefix` from remote systems,
-        and do preliminary restructuring. Sets self.irrd_per_prefix,
+        and set the results into self.irrd_per_prefix,
         self.bgp_per_prefix and self.rirstats.
         """
         tasks = [
