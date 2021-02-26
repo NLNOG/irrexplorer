@@ -5,7 +5,7 @@ import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 from databases import Database
 
-from irrexplorer.exceptions import ImporterException
+from irrexplorer.exceptions import ImporterError
 from irrexplorer.state import DataSource, IPNetwork, RouteInfo
 
 
@@ -56,5 +56,5 @@ async def retrieve_url_text(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status != 200:
-                raise ImporterException(f"Failed import from {url}: status {response.status}")
+                raise ImporterError(f"Failed import from {url}: status {response.status}")
             return await response.text()

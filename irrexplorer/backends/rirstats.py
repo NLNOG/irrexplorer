@@ -6,10 +6,10 @@ from asgiref.sync import sync_to_async
 from databases import Database
 
 from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
-from irrexplorer.exceptions import ImporterException
+from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import DATABASE_URL, RIRSTATS_URL
 from irrexplorer.state import RIR, DataSource
-from irrexplorer.storage.tables import rirstats
+from irrexplorer.storage import tables
 
 ADDRESS_FAMILY_MAPPING = {
     "ipv4": 4,
@@ -51,7 +51,7 @@ class RIRStatsImporter:
         Returns a generator producing tuples with ip_version, start ip and size.
         """
         for line in text.splitlines():
-            if line.startswith("#") or line.startswith("2|"):
+            if not line or line.startswith("#") or line.startswith("2|"):
                 continue  # Comments or header
 
             try:
@@ -60,7 +60,7 @@ class RIRStatsImporter:
             except ValueError:
                 if line.split("|")[-1] == "summary":
                     continue  # The summary line has a different length and can be ignored
-                raise ImporterException(f"Invalid rirstats line: {line.split('|')}")
+                raise ImporterError(f"Invalid rirstats line: {line.split('|')}")
 
             if status not in RELEVANT_STATUSES:
                 continue
@@ -85,19 +85,19 @@ class RIRStatsImporter:
 
         async with Database(DATABASE_URL) as database:
             async with database.transaction():
-                query = rirstats.delete(rirstats.c.rir == self.rir)
+                query = tables.rirstats.delete(tables.rirstats.c.rir == self.rir)
                 await database.execute(query)
                 if prefixes4:
                     await database.execute_many(
-                        query=rirstats.insert(), values=prefixes_to_sql_values(4, prefixes4)
+                        query=tables.rirstats.insert(), values=prefixes_to_sql_values(4, prefixes4)
                     )
                 if prefixes6:
                     await database.execute_many(
-                        query=rirstats.insert(), values=prefixes_to_sql_values(6, prefixes6)
+                        query=tables.rirstats.insert(), values=prefixes_to_sql_values(6, prefixes6)
                     )
 
 
 class RIRStatsQuery(LocalSQLQueryBase):
     source = DataSource.RIRSTATS
-    table = rirstats
+    table = tables.rirstats
     prefix_info_field = "rir"

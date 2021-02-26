@@ -51,7 +51,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade():  # pragma: no cover
     op.drop_index(op.f("ix_rirstats_prefix"), table_name="rirstats")
     op.drop_table("rirstats")
     op.drop_index(op.f("ix_bgp_asn"), table_name="bgp")

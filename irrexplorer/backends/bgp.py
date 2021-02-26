@@ -1,10 +1,11 @@
 from typing import List, Tuple
 
 from asgiref.sync import sync_to_async
+from asyncpg import DataError
 from databases import Database
 
 from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
-from irrexplorer.exceptions import ImporterException
+from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import (
     BGP_IPV4_LENGTH_CUTOFF,
     BGP_IPV6_LENGTH_CUTOFF,
@@ -12,7 +13,7 @@ from irrexplorer.settings import (
     DATABASE_URL,
 )
 from irrexplorer.state import DataSource
-from irrexplorer.storage.tables import bgp
+from irrexplorer.storage import tables
 
 
 class BGPImporter:
@@ -31,11 +32,13 @@ class BGPImporter:
     def _parse_table(self, text: str):
         prefixes = []
         for line in text.splitlines():
+            if not line:
+                continue
             try:
                 prefix, origin_str = line.split(" ")
                 origin = int(origin_str)
-            except ValueError:
-                raise ImporterException(f"Invalid BGP line: {line.split('|')}")
+            except ValueError as ve:
+                raise ImporterError(f"Invalid BGP line: {line.split('|')}: {ve}")
 
             ip_version = 6 if ":" in prefix else 4
             if self._include_route(ip_version, prefix):
@@ -45,7 +48,10 @@ class BGPImporter:
     def _include_route(self, ip_version: int, prefix: str) -> bool:
         # Filter out router to router links and other tiny blocks
         # Uses text parsing for performance
-        length = int(prefix.split("/")[1])
+        try:
+            length = int(prefix.split("/")[1])
+        except IndexError as ve:
+            raise ImporterError(f"Invalid BGP prefix: {prefix}: {ve}")
         return length < BGP_IPV4_LENGTH_CUTOFF or (
             ip_version == 6 and length < BGP_IPV6_LENGTH_CUTOFF
         )
@@ -53,7 +59,7 @@ class BGPImporter:
     async def _load_prefixes(self, prefixes: List[Tuple[int, str, int]]):
         async with Database(DATABASE_URL) as database:
             async with database.transaction():
-                await database.execute(bgp.delete())
+                await database.execute(tables.bgp.delete())
                 if prefixes:
                     values = [
                         {
@@ -63,15 +69,18 @@ class BGPImporter:
                         }
                         for ip_version, prefix, asn in prefixes
                     ]
-                    await database.execute_many(query=bgp.insert(), values=values)
+                    try:
+                        await database.execute_many(query=tables.bgp.insert(), values=values)
+                    except DataError as de:
+                        raise ImporterError(f"Failed to insert BGP data: {de}")
 
 
 class BGPQuery(LocalSQLQueryBase):
     source = DataSource.BGP
-    table = bgp
+    table = tables.bgp
     prefix_info_field = "asn"
 
     async def query_asn(self, asn: int):
-        query = bgp.select(bgp.c.asn == asn)
+        query = self.table.select(self.table.c.asn == asn)
         result = await self.database.fetch_all(query=query)
         print(result[0]["prefix"])
