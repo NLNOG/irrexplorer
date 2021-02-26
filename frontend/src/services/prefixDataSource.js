@@ -44,10 +44,10 @@ export class PrefixDataSource {
         // calls a callback.
         if (!prefixesData.length || !this.onLeastSpecificFound)
             return
-        const queryPrefixLength = this.queryPrefix.split('/')[1];
+        const queryPrefixLength = this.queryPrefix.split('/')[1].toInteger();
         const allPrefixes = prefixesData.map(({prefix}) => {
             const [ip, len] = prefix.split('/')
-            return {ip, len};
+            return {ip, len: len.toInteger()};
         });
         allPrefixes.sort((a, b) => a.len > b.len);
         const leastSpecific = allPrefixes[0];

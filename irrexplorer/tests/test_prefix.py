@@ -66,11 +66,21 @@ async def test_prefix_valid(client, httpserver):
             "rir": "RIPE NCC",
             "specialUseType": None,
             "rpkiRoutes": [
-                {"rpkiStatus": "VALID", "asn": 64502, "rpslPk": "192.0.2.0/24AS64502ML24"}
+                {
+                    "rpkiStatus": "VALID",
+                    "asn": 64502,
+                    "rpslPk": "192.0.2.0/24AS64502ML24",
+                    "rpkiMaxLength": 24,
+                }
             ],
             "irrRoutes": {
                 "TESTDB": [
-                    {"rpkiStatus": "INVALID", "asn": 64501, "rpslPk": "192.0.2.0/24AS64501"}
+                    {
+                        "rpkiStatus": "INVALID",
+                        "asn": 64501,
+                        "rpslPk": "192.0.2.0/24AS64501",
+                        "rpkiMaxLength": None,
+                    }
                 ],
             },
             "messages": [
