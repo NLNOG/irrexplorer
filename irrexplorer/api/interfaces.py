@@ -77,17 +77,15 @@ class PrefixSummary:
     category_overall: Optional[MessageCategory] = None
     # category_overall converted into a number for sorting
     goodness_overall: Optional[int] = 0
-    # Exploded version of the prefix, used as sort key in the frontend
-    # when sorting IPv6 prefixes.
-    prefix_exploded: Optional[str] = None
+    # Numerical IP plus prefix length. Used as sorting key in the frontend.
+    prefix_sort_key: Optional[str] = None
 
     def finalise_status(self):
         """
         Set a few properties that depend on others.
         Should be called before returning to the user.
         """
-        # TODO: explode for v4
-        self.prefix_exploded = self.prefix.exploded
+        self.prefix_sort_key = f'{self.prefix.network_address._ip}/{self.prefix.prefixlen}'
         if not self.messages:
             self.success("Everything looks good")
 
