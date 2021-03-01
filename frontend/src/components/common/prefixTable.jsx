@@ -3,45 +3,43 @@ import PropTypes from 'prop-types';
 
 import Spinner from "./spinner";
 import PrefixTableBody from "./prefixTableBody";
-import {PrefixDataSource, sortPrefixesDataBy} from "../../services/prefixDataSource";
+import {findIrrSourceColumns, sortPrefixesDataBy} from "../../utils/prefixData";
 import PrefixTableHeader from "./prefixTableHeader";
 
 
 class PrefixTable extends Component {
-    state = {prefixesData: [], irrSourceColumns: [], hasLoaded: false}
+    state = {sortedPrefixesData: [], irrSourceColumns: []}
 
-    async componentDidMount() {
-        await this.loadPrefixesData();
+    componentDidMount() {
+        this.updateStateForPrefixes();
     }
 
-    async componentDidUpdate(prevProps) {
-        const {query, queryType} = this.props;
-        if (prevProps.query !== query || prevProps.queryType !== queryType) {
-            await this.loadPrefixesData();
-        }
+    componentDidUpdate(prevProps) {
+        if (prevProps.prefixesData !== this.props.prefixesData)
+            this.updateStateForPrefixes();
     }
 
-    async loadPrefixesData() {
-        const {query, queryType, onLeastSpecificFound} = this.props;
-        const prefixDataSource = new PrefixDataSource(queryType, query, onLeastSpecificFound);
-        this.setState({...prefixDataSource.reset()});
-        this.setState({...await prefixDataSource.load()});
+    updateStateForPrefixes() {
+        this.setState({
+            sortedPrefixesData: sortPrefixesDataBy(this.props.prefixesData, 'prefix'),
+            irrSourceColumns: findIrrSourceColumns(this.props.prefixesData),
+        });
+
     }
 
     handleSort = ({key, order}) => {
-        const prefixesData = sortPrefixesDataBy(this.state.prefixesData, key, order);
-        this.setState({prefixesData});
+        const sortedPrefixesData = sortPrefixesDataBy(this.props.prefixesData, key, order);
+        this.setState({sortedPrefixesData});
     }
 
     renderTableContent() {
-        const {hasLoaded, irrSourceColumns, prefixesData} = this.state;
-        if (!hasLoaded)
+        if (!this.props.hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
-        if (!prefixesData.length)
+        if (!this.props.prefixesData.length)
             return this.renderTablePlaceholder("No prefixes were found.")
         return <PrefixTableBody
-            irrSourceColumns={irrSourceColumns}
-            prefixesData={prefixesData}
+            irrSourceColumns={this.state.irrSourceColumns}
+            prefixesData={this.state.sortedPrefixesData}
         />
     }
 
@@ -71,9 +69,8 @@ class PrefixTable extends Component {
 }
 
 PrefixTable.propTypes = {
-    query: PropTypes.any,
-    queryType: PropTypes.string,
-    onLeastSpecificFound: PropTypes.func,
+    prefixesData: PropTypes.arrayOf(PropTypes.object).isRequired,
+    hasLoaded: PropTypes.bool,
 };
 
 

@@ -30,12 +30,12 @@ export async function cleanQuery(query) {
 }
 
 export async function getPrefixesForPrefix(prefix) {
-    const response = await axios.get(`${config.apiUrl}/prefix/${prefix}`);
+    const response = await axios.get(`${config.apiUrl}/prefixes/prefix/${prefix}`);
     return response.data;
 }
 
 export async function getPrefixesForASN(asn) {
-    const response = await axios.get(`${config.apiUrl}/asn/${asn}`);
+    const response = await axios.get(`${config.apiUrl}/prefixes/asn/${asn}`);
     return response.data;
 }
 

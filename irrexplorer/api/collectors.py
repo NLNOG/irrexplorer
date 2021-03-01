@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Coroutine
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import PrefixIRRDetail, PrefixSummary
+from irrexplorer.api.interfaces import PrefixIRRDetail, PrefixSummary, ASNPrefixes
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
@@ -38,14 +38,20 @@ class PrefixCollector:
         print(f"complete in {time.perf_counter()-start}")
         return prefix_summaries
 
-    async def asn_summary(self, asn: int) -> List[PrefixSummary]:
+    async def asn_summary(self, asn: int) -> ASNPrefixes:
         start = time.perf_counter()
 
         aggregates = await self._collect_aggregate_prefixes_for_asn(asn)
         await self._collect_for_prefixes(aggregates)
         prefix_summaries = self._collate_per_prefix()
+        response = ASNPrefixes()
+        for p in prefix_summaries:
+            if asn in p.bgp_origins or asn in p.rpki_origins or asn in p.irr_origins:
+                response.directOrigin.append(p)
+            else:
+                response.overlaps.append(p)
         print(f"complete in {time.perf_counter()-start}")
-        return prefix_summaries
+        return response
 
     async def _collect_for_prefixes(self, search_prefixes: List[IPNetwork]) -> None:
         """

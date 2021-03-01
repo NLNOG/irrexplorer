@@ -149,3 +149,10 @@ class PrefixSummary:
 
     def danger(self, text: str):
         self.add_message(MessageCategory.DANGER, text)
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass
+class ASNPrefixes:
+    directOrigin: List[PrefixSummary] = field(default_factory=list)
+    overlaps: List[PrefixSummary] = field(default_factory=list)

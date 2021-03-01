@@ -70,6 +70,7 @@ async def prefix(request):
 
 
 async def asn(request):
-    summaries = await PrefixCollector(request.app.state.database).asn_summary(request.path_params["asn"])
-    enrich_prefix_summaries_with_report(summaries)
-    return DataClassJSONResponse(summaries)
+    asn_prefixes = await PrefixCollector(request.app.state.database).asn_summary(request.path_params["asn"])
+    enrich_prefix_summaries_with_report(asn_prefixes.directOrigin)
+    enrich_prefix_summaries_with_report(asn_prefixes.overlaps)
+    return DataClassJSONResponse(asn_prefixes)

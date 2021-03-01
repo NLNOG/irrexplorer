@@ -9,7 +9,7 @@ import PrefixQuery from "./prefixQuery";
 import ASNQuery from "./asnQuery";
 
 class Query extends Component {
-    state = {cleanQuery: ''}
+    state = {cleanQuery: '', queryCategory: ''}
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps === this.props) return;
@@ -27,7 +27,7 @@ class Query extends Component {
         } else if (cleanResult.category !== this.props.category) {
             await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});
         } else {
-            this.setState({cleanQuery: cleanResult.cleanedValue})
+            this.setState({cleanQuery: cleanResult.cleanedValue, queryCategory: cleanResult.category})
             document.title = 'IRR explorer: ' + this.state.cleanQuery;
         }
     }
@@ -53,12 +53,12 @@ class Query extends Component {
                 </div>
                 {
                     this.state.cleanQuery
-                    && this.props.category === 'prefix'
+                    && this.state.queryCategory === 'prefix'
                     && <PrefixQuery queryPrefix={this.state.cleanQuery}/>
                 }
                 {
                     this.state.cleanQuery
-                    && this.props.category === 'asn'
+                    && this.state.queryCategory === 'asn'
                     && <ASNQuery queryASN={this.state.cleanQuery}/>
                 }
             </div>
