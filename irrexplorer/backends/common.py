@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from typing import List
 
 import aiohttp
 import sqlalchemy as sa
@@ -23,19 +24,13 @@ class LocalSQLQueryBase(metaclass=ABCMeta):
     def __init__(self, database: Database):
         self.database = database
 
-    async def query_prefix_any(self, prefix: IPNetwork):
+    async def query_prefixes_any(self, prefixes: List[IPNetwork]):
         results = []
-        prefix_cidr = sa.cast(str(prefix), pg.CIDR)
+        prefixes_cidr = [sa.cast(str(prefix), pg.CIDR) for prefix in prefixes]
+        prefix_selectors = [self.table.c.prefix.op("<<=")(p) for p in prefixes_cidr]
+        prefix_selectors += [self.table.c.prefix.op(">>")(p) for p in prefixes_cidr]
         # noinspection PyPropertyAccess
-        query = self.table.select(
-            sa.and_(
-                sa.or_(
-                    self.table.c.prefix.op("<<=")(prefix_cidr),
-                    self.table.c.prefix.op(">>")(prefix_cidr),
-                ),
-                self.table.c.ip_version == prefix.version,
-            )
-        )
+        query = self.table.select(sa.or_(*prefix_selectors))
         async for row in self.database.iterate(query=query):
             results.append(
                 RouteInfo(

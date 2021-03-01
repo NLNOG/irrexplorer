@@ -1,8 +1,10 @@
 import asyncio
 import time
 from collections import defaultdict
-from typing import Dict, List, Optional
+from ipaddress import ip_network
+from typing import Dict, List, Optional, Coroutine
 
+from aggregate6 import aggregate
 from databases import Database
 
 from irrexplorer.api.interfaces import PrefixIRRDetail, PrefixSummary
@@ -31,29 +33,32 @@ class PrefixCollector:
     async def prefix_summary(self, search_prefix: IPNetwork) -> List[PrefixSummary]:
         start = time.perf_counter()
 
-        await self._collect(search_prefix)
+        await self._collect_for_prefixes([search_prefix])
         prefix_summaries = self._collate_per_prefix()
         print(f"complete in {time.perf_counter()-start}")
-        print(prefix_summaries)
         return prefix_summaries
 
-    async def _collect(self, search_prefix: IPNetwork) -> None:
+    async def asn_summary(self, asn: int) -> List[PrefixSummary]:
+        start = time.perf_counter()
+
+        aggregates = await self._collect_aggregate_prefixes_for_asn(asn)
+        await self._collect_for_prefixes(aggregates)
+        prefix_summaries = self._collate_per_prefix()
+        print(f"complete in {time.perf_counter()-start}")
+        return prefix_summaries
+
+    async def _collect_for_prefixes(self, search_prefixes: List[IPNetwork]) -> None:
         """
         Collect all relevant data for `search_prefix` from remote systems,
         and set the results into self.irrd_per_prefix,
-        self.bgp_per_prefix and self.rirstats.
+        self.bgp_per_prefix, self.aggregates and self.rirstats.
         """
         tasks = [
-            IRRDQuery().query_prefix_any(search_prefix),
-            BGPQuery(self.database).query_prefix_any(search_prefix),
-            RIRStatsQuery(self.database).query_prefix_any(search_prefix),
+            IRRDQuery().query_prefixes_any(search_prefixes),
+            BGPQuery(self.database).query_prefixes_any(search_prefixes),
+            RIRStatsQuery(self.database).query_prefixes_any(search_prefixes),
         ]
-        # force_rollback, used in tests, has issues with executing the tasks
-        # concurrently - therefore, in testing, they're executed sequentially
-        if TESTING:
-            routes_irrd, routes_bgp, self.rirstats = [await t for t in tasks]
-        else:  # pragma: no cover
-            routes_irrd, routes_bgp, self.rirstats = await asyncio.gather(*tasks)
+        routes_irrd, routes_bgp, self.rirstats = await _execute_tasks(tasks)
 
         self.irrd_per_prefix = defaultdict(list)
         for result in routes_irrd:
@@ -62,6 +67,23 @@ class PrefixCollector:
         self.bgp_per_prefix = defaultdict(list)
         for result in routes_bgp:
             self.bgp_per_prefix[result.prefix].append(result)
+
+        self.aggregates = ip_networks_aggregates(
+            list(self.irrd_per_prefix.keys()) + list(self.bgp_per_prefix.keys())
+        )
+
+    async def _collect_aggregate_prefixes_for_asn(self, asn: int) -> List[IPNetwork]:
+        """
+        """
+        tasks = [
+            IRRDQuery().query_asn(asn),
+            BGPQuery(self.database).query_asn(asn),
+        ]
+        routes_irrd, routes_bgp = await _execute_tasks(tasks)
+        return ip_networks_aggregates([
+            route.prefix
+            for route in routes_irrd + routes_bgp
+        ])
 
     def _collate_per_prefix(self) -> List[PrefixSummary]:
         """
@@ -110,3 +132,17 @@ class PrefixCollector:
             return next(relevant_rirstats).rir
         except StopIteration:
             return None
+
+
+async def _execute_tasks(tasks: List[Coroutine]):
+    # force_rollback, used in tests, has issues with executing the tasks
+    # concurrently - therefore, in testing, they're executed sequentially
+    if TESTING:
+        return [await t for t in tasks]
+    else:  # pragma: no cover
+        return await asyncio.gather(*tasks)
+
+
+def ip_networks_aggregates(prefixes: List[IPNetwork]):
+    inputs = [str(prefix) for prefix in prefixes]
+    return [ip_network(prefix) for prefix in aggregate(inputs)]

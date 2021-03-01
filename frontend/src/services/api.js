@@ -29,13 +29,19 @@ export async function cleanQuery(query) {
     }
 }
 
-export async function getPrefixesData(prefix) {
+export async function getPrefixesForPrefix(prefix) {
     const response = await axios.get(`${config.apiUrl}/prefix/${prefix}`);
     return response.data;
 }
 
+export async function getPrefixesForASN(asn) {
+    const response = await axios.get(`${config.apiUrl}/asn/${asn}`);
+    return response.data;
+}
+
 const api = {
-    getPrefixesData,
+    getPrefixesForPrefix,
+    getPrefixesForASN,
     cleanQuery,
 }
 export default api;

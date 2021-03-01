@@ -28,7 +28,7 @@ class PrefixTableBody extends Component {
             ({asn, rpkiMaxLength}, idx) => [
                 idx > 0 && ", ",
                 asn, " ",
-                <span className="small">
+                <span key={asn} className="small">
                     <FontAwesomeIcon aria-label="max length" icon={faCaretRight}/>/{rpkiMaxLength}
                 </span>
             ]

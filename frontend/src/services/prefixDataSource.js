@@ -3,8 +3,9 @@ import _ from 'lodash';
 import api from "./api";
 
 export class PrefixDataSource {
-    constructor(queryPrefix, onLeastSpecificFound) {
-        this.queryPrefix = queryPrefix;
+    constructor(queryType, query, onLeastSpecificFound) {
+        this.queryType = queryType;
+        this.query = query;
         this.onLeastSpecificFound = onLeastSpecificFound;
     }
 
@@ -17,7 +18,11 @@ export class PrefixDataSource {
     async load() {
         this.reset();
 
-        const prefixesData = await api.getPrefixesData(this.queryPrefix);
+        let prefixesData = undefined;
+        if(this.queryType === 'prefix')
+            prefixesData = await api.getPrefixesForPrefix(this.query);
+        if(this.queryType === 'asn')
+            prefixesData = await api.getPrefixesForASN(this.query);
         const irrSourceColumns = this.gatherIrrSourceColumns(prefixesData);
         this.notifyLeastSpecificFound(prefixesData);
         const sortedPrefixesData = sortPrefixesDataBy(prefixesData,'prefix');
@@ -42,9 +47,9 @@ export class PrefixDataSource {
         // overlapping prefix found. This method detects finds the least specific
         // prefix from the API results, and if it is shorter than the query,
         // calls a callback.
-        if (!prefixesData.length || !this.onLeastSpecificFound)
+        if (!prefixesData.length || this.queryType !== 'prefix' || !this.onLeastSpecificFound)
             return
-        const queryPrefixLength = parseInt(this.queryPrefix.split('/')[1], 10);
+        const queryPrefixLength = parseInt(this.query.split('/')[1], 10);
         const allPrefixes = prefixesData.map(({prefix}) => {
             const [ip, len] = prefix.split('/')
             return {ip, len: parseInt(len, 10)};
@@ -57,7 +62,7 @@ export class PrefixDataSource {
 
 }
 
-export function sortPrefixesDataBy(prefixesData, key, order='asc') {
+export function sortPrefixesDataBy(prefixesData, key, order = 'asc') {
     if (key === 'prefix') key = 'prefixExploded';
     if (key === 'bgpOrigins') key = 'bgpOrigins.0';
     if (key === 'rpkiRoutes') key = 'rpkiRoutes.0.asn';

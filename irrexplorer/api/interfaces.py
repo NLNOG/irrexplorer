@@ -86,6 +86,7 @@ class PrefixSummary:
         Set a few properties that depend on others.
         Should be called before returning to the user.
         """
+        # TODO: explode for v4
         self.prefix_exploded = self.prefix.exploded
         if not self.messages:
             self.success("Everything looks good")

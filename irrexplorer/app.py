@@ -20,6 +20,8 @@ async def shutdown():
 
 routes = [
     Route("/api/clean_query/{query:path}", queries.clean_query),
+    Route("/api/asn/AS{asn:int}", queries.asn),
+    Route("/api/asn/{asn:int}", queries.asn),
     Route("/api/prefix/{prefix:path}", queries.prefix),
     Mount(
         "/",

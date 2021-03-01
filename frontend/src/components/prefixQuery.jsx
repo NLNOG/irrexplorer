@@ -11,26 +11,30 @@ class PrefixQuery extends Component {
     }
 
     render() {
+        const {queryPrefix} = this.props;
+        const {leastSpecificPrefix} = this.state;
         return (
             <>
-                <h1>Report for prefix {this.props.queryPrefix}</h1>
+                <h1>Report for prefix {queryPrefix}</h1>
                 <PrefixTableExplanation />
                 <h2 className="h3 mt-4">
-                    Directly overlapping prefixes of {this.props.queryPrefix}
+                    Directly overlapping prefixes of {queryPrefix}
                 </h2>
                 <hr/>
                 <PrefixTable
-                    queryPrefix={this.props.queryPrefix}
+                    queryType="prefix"
+                    query={queryPrefix}
                     onLeastSpecificFound={this.handleLeastSpecificFound}
                 />
 
-                {this.state.leastSpecificPrefix && <>
+                {leastSpecificPrefix && <>
                     <h2 className="h3">
-                        All overlaps of least specific match {this.state.leastSpecificPrefix}
+                        All overlaps of least specific match {leastSpecificPrefix}
                     </h2>
                     <hr/>
                     <PrefixTable
-                        queryPrefix={this.state.leastSpecificPrefix}
+                        queryType="prefix"
+                        query={leastSpecificPrefix}
                     />
                 </>}
             </>

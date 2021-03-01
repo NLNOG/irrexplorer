@@ -12,7 +12,7 @@ from irrexplorer.settings import (
     BGP_SOURCE,
     DATABASE_URL,
 )
-from irrexplorer.state import DataSource
+from irrexplorer.state import DataSource, RouteInfo
 from irrexplorer.storage import tables
 
 
@@ -57,6 +57,7 @@ class BGPImporter:
         )
 
     async def _load_prefixes(self, prefixes: List[Tuple[int, str, int]]):
+        # TODO: we don't need ip version
         async with Database(DATABASE_URL) as database:
             async with database.transaction():
                 await database.execute(tables.bgp.delete())
@@ -81,6 +82,14 @@ class BGPQuery(LocalSQLQueryBase):
     prefix_info_field = "asn"
 
     async def query_asn(self, asn: int):
+        results = []
         query = self.table.select(self.table.c.asn == asn)
-        result = await self.database.fetch_all(query=query)
-        print(result[0]["prefix"])
+        async for row in self.database.iterate(query=query):
+            results.append(
+                RouteInfo(
+                    source=self.source,
+                    prefix=row["prefix"],
+                    asn=row["asn"],
+                )
+            )
+        return results

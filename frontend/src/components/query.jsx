@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 
 import QueryForm from "./common/queryForm";
-import PrefixTable from "./common/prefixTable";
 
 import logo from "../logo.png";
 import {Link, navigate} from "@reach/router";
 import api from "../services/api";
 import PrefixQuery from "./prefixQuery";
+import ASNQuery from "./asnQuery";
 
 class Query extends Component {
     state = {cleanQuery: ''}
@@ -55,6 +55,11 @@ class Query extends Component {
                     this.state.cleanQuery
                     && this.props.category === 'prefix'
                     && <PrefixQuery queryPrefix={this.state.cleanQuery}/>
+                }
+                {
+                    this.state.cleanQuery
+                    && this.props.category === 'asn'
+                    && <ASNQuery queryASN={this.state.cleanQuery}/>
                 }
             </div>
         );

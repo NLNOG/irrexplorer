@@ -9,7 +9,7 @@ from starlette.responses import PlainTextResponse
 
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
-from irrexplorer.storage.collectors import PrefixCollector
+from irrexplorer.api.collectors import PrefixCollector
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)
 
@@ -64,6 +64,12 @@ async def prefix(request):
         parameter = ip_network(request.path_params["prefix"])
     except ValueError as ve:
         return PlainTextResponse(status_code=400, content=f"Invalid prefix: {ve}")
-    prefix_summaries = await PrefixCollector(request.app.state.database).prefix_summary(parameter)
-    enrich_prefix_summaries_with_report(prefix_summaries)
-    return DataClassJSONResponse(prefix_summaries)
+    summaries = await PrefixCollector(request.app.state.database).prefix_summary(parameter)
+    enrich_prefix_summaries_with_report(summaries)
+    return DataClassJSONResponse(summaries)
+
+
+async def asn(request):
+    summaries = await PrefixCollector(request.app.state.database).asn_summary(request.path_params["asn"])
+    enrich_prefix_summaries_with_report(summaries)
+    return DataClassJSONResponse(summaries)

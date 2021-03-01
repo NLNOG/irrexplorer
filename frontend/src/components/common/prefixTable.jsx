@@ -15,13 +15,15 @@ class PrefixTable extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.queryPrefix !== this.props.queryPrefix) {
+        const {query, queryType} = this.props;
+        if (prevProps.query !== query || prevProps.queryType !== queryType) {
             await this.loadPrefixesData();
         }
     }
 
     async loadPrefixesData() {
-        const prefixDataSource = new PrefixDataSource(this.props.queryPrefix, this.props.onLeastSpecificFound);
+        const {query, queryType, onLeastSpecificFound} = this.props;
+        const prefixDataSource = new PrefixDataSource(queryType, query, onLeastSpecificFound);
         this.setState({...prefixDataSource.reset()});
         this.setState({...await prefixDataSource.load()});
     }
@@ -69,7 +71,8 @@ class PrefixTable extends Component {
 }
 
 PrefixTable.propTypes = {
-    queryPrefix: PropTypes.string.isRequired,
+    query: PropTypes.any,
+    queryType: PropTypes.string,
     onLeastSpecificFound: PropTypes.func,
 };
 

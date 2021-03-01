@@ -1,3 +1,4 @@
+import asyncio
 from ipaddress import ip_network
 from typing import List
 
@@ -60,27 +61,29 @@ class IRRDQuery:
     def __init__(self):
         # Read at this point to allow tests to change the endpoint
         endpoint = config("IRRD_ENDPOINT")
-        # TODO: Common client?
         self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
-        self.client = Client(
-            transport=self.transport,
-            execute_timeout=IRRD_TIMEOUT,
-        )
 
     async def query_asn(self, asn: int):
-        result = await self.client.execute_async(GQL_QUERY_ASN, {"asn": asn})
-        return self._graphql_to_route_info(result)
+        async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
+            result = await session.execute(GQL_QUERY_ASN, {"asn": asn})
+            return self._graphql_to_route_info(result)
 
-    async def query_prefix_any(self, prefix: IPNetwork) -> List[RouteInfo]:
-        object_class = ["route"] if prefix.version == 4 else ["route6"]
-        result = await self.client.execute_async(
-            GQL_QUERY_PREFIX,
-            {
-                "prefix": str(prefix),
-                "object_class": object_class,
-            },
-        )
-        return self._graphql_to_route_info(result)
+    async def query_prefixes_any(self, prefixes: List[IPNetwork]) -> List[RouteInfo]:
+        tasks = []
+        async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
+            for prefix in prefixes:
+                object_class = ["route"] if prefix.version == 4 else ["route6"]
+                task = session.execute(
+                    GQL_QUERY_PREFIX,
+                    {
+                        "prefix": str(prefix),
+                        "object_class": object_class,
+                    },
+                )
+                tasks.append(task)
+            results_lists = await asyncio.gather(*tasks)
+            objects_lists = [self._graphql_to_route_info(results_list) for results_list in results_lists]
+        return [obj for objects_list in objects_lists for obj in objects_list]
 
     def _graphql_to_route_info(self, graphql_result) -> List[RouteInfo]:
         """
