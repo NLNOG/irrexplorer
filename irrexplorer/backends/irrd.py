@@ -82,7 +82,9 @@ class IRRDQuery:
                 )
                 tasks.append(task)
             results_lists = await asyncio.gather(*tasks)
-            objects_lists = [self._graphql_to_route_info(results_list) for results_list in results_lists]
+            objects_lists = [
+                self._graphql_to_route_info(results_list) for results_list in results_lists
+            ]
         return [obj for objects_list in objects_lists for obj in objects_list]
 
     def _graphql_to_route_info(self, graphql_result) -> List[RouteInfo]:

@@ -36,7 +36,7 @@ IRRD_PREFIX_VALID_RESPONSE = {
 
 
 async def test_prefix_invalid(client):
-    response = await client.get("/api/prefix/invalid")
+    response = await client.get("/api/prefixes/prefix/invalid")
     assert response.status_code == 400
     assert "does not appear to be an" in response.text
 
@@ -54,12 +54,12 @@ async def test_prefix_valid(client, httpserver):
         values={"ip_version": 4, "prefix": "192.0.2.0/24", "asn": 64500},
     )
 
-    response = await client.get("/api/prefix/192.0.2.0/24")
+    response = await client.get("/api/prefixes/prefix/192.0.2.0/24")
     assert response.status_code == 200
     expected = [
         {
             "prefix": "192.0.2.0/24",
-            "prefixExploded": "192.0.2.0/24",
+            "prefixSortKey": "3221225984/24",
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [64500],
@@ -107,12 +107,12 @@ async def test_prefix_no_data(client, httpserver):
         values={"ip_version": 4, "prefix": "192.0.2.0/24", "asn": 64500},
     )
 
-    response = await client.get("/api/prefix/192.0.2.0/24")
+    response = await client.get("/api/prefixes/prefix/192.0.2.0/24")
     assert response.status_code == 200
     expected = [
         {
-            "prefixExploded": "192.0.2.0/24",
             "prefix": "192.0.2.0/24",
+            "prefixSortKey": "3221225984/24",
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [64500],

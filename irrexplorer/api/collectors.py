@@ -2,12 +2,12 @@ import asyncio
 import time
 from collections import defaultdict
 from ipaddress import ip_network
-from typing import Dict, List, Optional, Coroutine
+from typing import Coroutine, Dict, List, Optional
 
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import PrefixIRRDetail, PrefixSummary, ASNPrefixes
+from irrexplorer.api.interfaces import ASNPrefixes, PrefixIRRDetail, PrefixSummary
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
@@ -47,7 +47,7 @@ class PrefixCollector:
         response = ASNPrefixes()
         for p in prefix_summaries:
             if asn in p.bgp_origins or asn in p.rpki_origins or asn in p.irr_origins:
-                response.directOrigin.append(p)
+                response.direct_origin.append(p)
             else:
                 response.overlaps.append(p)
         print(f"complete in {time.perf_counter()-start}")
@@ -79,17 +79,13 @@ class PrefixCollector:
         )
 
     async def _collect_aggregate_prefixes_for_asn(self, asn: int) -> List[IPNetwork]:
-        """
-        """
+        """"""
         tasks = [
             IRRDQuery().query_asn(asn),
             BGPQuery(self.database).query_asn(asn),
         ]
         routes_irrd, routes_bgp = await _execute_tasks(tasks)
-        return ip_networks_aggregates([
-            route.prefix
-            for route in routes_irrd + routes_bgp
-        ])
+        return ip_networks_aggregates([route.prefix for route in routes_irrd + routes_bgp])
 
     def _collate_per_prefix(self) -> List[PrefixSummary]:
         """

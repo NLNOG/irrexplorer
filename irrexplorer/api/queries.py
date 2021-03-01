@@ -7,9 +7,9 @@ import IPy
 from dataclasses_json import LetterCase, dataclass_json
 from starlette.responses import PlainTextResponse
 
+from irrexplorer.api.collectors import PrefixCollector
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
-from irrexplorer.api.collectors import PrefixCollector
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)
 
@@ -70,7 +70,9 @@ async def prefix(request):
 
 
 async def asn(request):
-    asn_prefixes = await PrefixCollector(request.app.state.database).asn_summary(request.path_params["asn"])
-    enrich_prefix_summaries_with_report(asn_prefixes.directOrigin)
+    asn_prefixes = await PrefixCollector(request.app.state.database).asn_summary(
+        request.path_params["asn"]
+    )
+    enrich_prefix_summaries_with_report(asn_prefixes.direct_origin)
     enrich_prefix_summaries_with_report(asn_prefixes.overlaps)
     return DataClassJSONResponse(asn_prefixes)

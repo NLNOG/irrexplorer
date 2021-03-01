@@ -85,7 +85,7 @@ class PrefixSummary:
         Set a few properties that depend on others.
         Should be called before returning to the user.
         """
-        self.prefix_sort_key = f'{self.prefix.network_address._ip}/{self.prefix.prefixlen}'
+        self.prefix_sort_key = f"{self.prefix.network_address._ip}/{self.prefix.prefixlen}"
         if not self.messages:
             self.success("Everything looks good")
 
@@ -152,5 +152,5 @@ class PrefixSummary:
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class ASNPrefixes:
-    directOrigin: List[PrefixSummary] = field(default_factory=list)
+    direct_origin: List[PrefixSummary] = field(default_factory=list)
     overlaps: List[PrefixSummary] = field(default_factory=list)
