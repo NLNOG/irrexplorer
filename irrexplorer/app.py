@@ -20,9 +20,11 @@ async def shutdown():
 
 routes = [
     Route("/api/clean_query/{query:path}", queries.clean_query),
-    Route("/api/prefixes/asn/AS{asn:int}", queries.asn),
-    Route("/api/prefixes/asn/{asn:int}", queries.asn),
-    Route("/api/prefixes/prefix/{prefix:path}", queries.prefix),
+    Route("/api/prefixes/asn/AS{asn:int}", queries.prefixes_asn),
+    Route("/api/prefixes/asn/{asn:int}", queries.prefixes_asn),
+    Route("/api/prefixes/prefix/{prefix:path}", queries.prefixes_prefix),
+    Route("/api/sets/asn/AS{asn:int}", queries.sets_for_asn),
+    Route("/api/sets/asn/{asn:int}", queries.sets_for_asn),
     Mount(
         "/",
         DefaultIndexStaticFiles(

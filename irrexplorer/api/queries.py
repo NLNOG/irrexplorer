@@ -7,7 +7,7 @@ import IPy
 from dataclasses_json import LetterCase, dataclass_json
 from starlette.responses import PlainTextResponse
 
-from irrexplorer.api.collectors import PrefixCollector
+from irrexplorer.api.collectors import PrefixCollector, collect_sets_for_asn
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
 
@@ -59,7 +59,7 @@ async def clean_query(request):
         return PlainTextResponse(status_code=400, content=str(ve))
 
 
-async def prefix(request):
+async def prefixes_prefix(request):
     try:
         parameter = ip_network(request.path_params["prefix"])
     except ValueError as ve:
@@ -69,10 +69,15 @@ async def prefix(request):
     return DataClassJSONResponse(summaries)
 
 
-async def asn(request):
+async def prefixes_asn(request):
     asn_prefixes = await PrefixCollector(request.app.state.database).asn_summary(
         request.path_params["asn"]
     )
     enrich_prefix_summaries_with_report(asn_prefixes.direct_origin)
     enrich_prefix_summaries_with_report(asn_prefixes.overlaps)
     return DataClassJSONResponse(asn_prefixes)
+
+
+async def sets_for_asn(request):
+    sets = await collect_sets_for_asn(request.path_params["asn"])
+    return DataClassJSONResponse(sets)

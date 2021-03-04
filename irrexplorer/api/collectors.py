@@ -7,7 +7,7 @@ from typing import Coroutine, Dict, List, Optional
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import ASNPrefixes, PrefixIRRDetail, PrefixSummary
+from irrexplorer.api.interfaces import ASNPrefixes, PrefixIRRDetail, PrefixSummary, SetsForASN
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
@@ -134,6 +134,29 @@ class PrefixCollector:
             return next(relevant_rirstats).rir
         except StopIteration:
             return None
+
+
+async def collect_sets_for_asn(asn: int) -> SetsForASN:
+    start = time.perf_counter()
+    result = SetsForASN()
+    data = await IRRDQuery().query_member_of(asn)
+    irrs_seen = set()
+
+    for found_set in data["asSet"]:
+        irrs_seen.add(found_set["source"])
+        result.sets_per_irr[found_set["source"]].add(found_set["rpslPk"])
+
+    for autnum in data["autNum"]:
+        autnum_mntners = set(autnum["mntBy"])
+        for member_of in autnum["memberOfObjs"]:
+            expected_mntners = set(member_of["mbrsByRef"])
+            if "ANY" in expected_mntners or autnum_mntners.intersection(expected_mntners):
+                irrs_seen.add(member_of["source"])
+                result.sets_per_irr[member_of["source"]].add(member_of["rpslPk"])
+
+    result.irrs_seen = sorted(irrs_seen)
+    print(f"complete in {time.perf_counter()-start}")
+    return result
 
 
 async def _execute_tasks(tasks: List[Coroutine]):

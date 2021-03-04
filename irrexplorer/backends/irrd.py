@@ -56,12 +56,47 @@ GQL_QUERY_PREFIX = gql(
 """
 )
 
+GQL_QUERY_AS_MEMBER_OF = gql(
+    """
+    query getMemberOf($asn: String!) {
+        asSet: rpslObjects(
+            members: [$asn]
+            objectClass: ["as-set"]
+            rpkiStatus: [valid, invalid, not_found]
+        ) {
+            rpslPk
+            source
+        }
+        autNum: rpslObjects(
+            rpslPk: [$asn]
+            objectClass: ["aut-num"]
+            rpkiStatus: [valid, invalid, not_found]
+        ) {
+            rpslPk
+            source
+            mntBy
+            ... on RPSLAutNum {
+                memberOfObjs {
+                    rpslPk
+                    source
+                    mbrsByRef
+                }
+            }
+        }
+    }
+"""
+)
+
 
 class IRRDQuery:
     def __init__(self):
         # Read at this point to allow tests to change the endpoint
         endpoint = config("IRRD_ENDPOINT")
         self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
+
+    async def query_member_of(self, asn: int):
+        async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
+            return await session.execute(GQL_QUERY_AS_MEMBER_OF, {"asn": f"AS{asn}"})
 
     async def query_asn(self, asn: int):
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:

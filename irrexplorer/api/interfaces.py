@@ -154,3 +154,10 @@ class PrefixSummary:
 class ASNPrefixes:
     direct_origin: List[PrefixSummary] = field(default_factory=list)
     overlaps: List[PrefixSummary] = field(default_factory=list)
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass
+class SetsForASN:
+    irrs_seen: List[str] = field(default_factory=list)
+    sets_per_irr: Dict[str, Set[str]] = field(default_factory=lambda: defaultdict(set))

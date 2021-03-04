@@ -11,15 +11,15 @@ class PrefixTable extends Component {
     state = {sortedPrefixesData: [], irrSourceColumns: []}
 
     componentDidMount() {
-        this.updateStateForPrefixes();
+        this.updateState();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.prefixesData !== this.props.prefixesData)
-            this.updateStateForPrefixes();
+            this.updateState();
     }
 
-    updateStateForPrefixes() {
+    updateState() {
         this.setState({
             sortedPrefixesData: sortPrefixesDataBy(this.props.prefixesData, 'prefix'),
             irrSourceColumns: findIrrSourceColumns(this.props.prefixesData),
@@ -55,15 +55,13 @@ class PrefixTable extends Component {
 
     render() {
         return (
-            <>
-                <table className="table table-sm mb-5 table-fixed">
-                    <PrefixTableHeader
-                        irrSourceColumns={this.state.irrSourceColumns}
-                        onSort={this.handleSort}
-                    />
-                    {this.renderTableContent()}
-                </table>
-            </>
+            <table className="table table-sm mb-5 table-fixed">
+                <PrefixTableHeader
+                    irrSourceColumns={this.state.irrSourceColumns}
+                    onSort={this.handleSort}
+                />
+                {this.renderTableContent()}
+            </table>
         );
     }
 }

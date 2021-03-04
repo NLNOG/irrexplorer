@@ -58,6 +58,7 @@ async def test_asn_valid(client, httpserver):
 
     response = await client.get("/api/prefixes/asn/64500")
     assert response.status_code == 200
+
     expected = {
         "directOrigin": [
             {
@@ -116,7 +117,6 @@ async def test_asn_valid(client, httpserver):
         ],
     }
 
-    print(response.json())
     assert response.json() == expected
 
 

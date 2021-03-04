@@ -39,9 +39,15 @@ export async function getPrefixesForASN(asn) {
     return response.data;
 }
 
+export async function getSetsForASN(asn) {
+    const response = await axios.get(`${config.apiUrl}/sets/asn/${asn}`);
+    return response.data;
+}
+
 const api = {
     getPrefixesForPrefix,
     getPrefixesForASN,
     cleanQuery,
+    getSetsForASN,
 }
 export default api;
