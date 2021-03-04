@@ -6,58 +6,80 @@ import {faCheckCircle} from "@fortawesome/free-regular-svg-icons";
 import _ from 'lodash';
 
 import Spinner from "./spinner";
+import api from "../../services/api";
 
 
 class AsSetTable extends Component {
-    state = {rows: []}
-
-    componentDidMount() {
-        this.updateState();
+    state = {
+        hasLoadedSets: false,
+        irrsSeen: [],
+        rows: [],
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.setsPerIrr !== this.props.setsPerIrr)
-            this.updateState();
+    async componentDidMount() {
+        await this.loadSetData();
     }
 
-    updateState() {
-        const setsPerIrr = {};
-        if (!this.props.setsPerIrr) return;
-        for (const [irrName, setNames] of Object.entries(this.props.setsPerIrr)) {
+    async componentDidUpdate(prevProps) {
+        if (prevProps.queryASN !== this.props.queryASN) {
+            await this.loadSetData();
+        }
+    }
+
+    async loadSetData() {
+        this.setState({
+            hasLoadedSets: false,
+            irrsSeen: [],
+            rows: [],
+        });
+        const response = await api.getSetMemberOf(this.props.queryASN);
+        this.processResponse(response);
+    }
+
+    processResponse(response) {
+        const irrsPerSet = {};
+        if (!response.setsPerIrr) return;
+        for (const [irrName, setNames] of Object.entries(response.setsPerIrr)) {
             for (const setName of setNames) {
-                setsPerIrr[setName] = [...setsPerIrr[setName] ? setsPerIrr[setName] : [], irrName];
+                const existing_entries = irrsPerSet[setName] ? irrsPerSet[setName] : [];
+                irrsPerSet[setName] = [...existing_entries, irrName];
             }
         }
         const rows = []
-        for(const [setName, irrNames] of Object.entries(setsPerIrr)) {
+        for (const [setName, irrNames] of Object.entries(irrsPerSet)) {
             rows.push({setName, irrNames});
         }
-        this.setState({rows: _.orderBy(rows, ['setName'])})
+        this.setState({
+            rows: _.orderBy(rows, ['setName']),
+            irrsSeen: response.irrsSeen,
+            hasLoadedSets: true,
+        })
     }
 
     renderTableContent() {
-        if (!this.props.hasLoaded)
+        const {hasLoadedSets, irrsSeen, rows} = this.state;
+        if (!hasLoadedSets)
             return this.renderTablePlaceholder(<Spinner/>);
-        if (!this.state.rows.length)
+        if (!rows.length)
             return this.renderTablePlaceholder("No sets were found.");
         return (
             <>
                 <thead>
                 <tr>
                     <th key="name" scope="col">Name</th>
-                    {this.props.irrsSeen.map(irrName =>
+                    {irrsSeen.map(irrName =>
                         <th key={irrName} scope="col">{irrName}</th>
                     )}
                 </tr>
                 </thead>
                 <tbody>
-                {this.state.rows.map(({setName, irrNames}) =>
+                {rows.map(({setName, irrNames: irrNamesForRow}) =>
                     <tr key={setName}>
                         <td key={setName}>{setName}</td>
-                        {this.props.irrsSeen.map(irrName =>
-                            <td key={irrName} className="text-center">{
-                                irrNames.includes(irrName)
-                                    ? <FontAwesomeIcon icon={faCheckCircle} title={`Present in ${irrName}`} />
+                        {irrsSeen.map(seenIrr =>
+                            <td key={seenIrr} className="text-center">{
+                                irrNamesForRow.includes(seenIrr)
+                                    ? <FontAwesomeIcon icon={faCheckCircle} title={`Present in ${seenIrr}`}/>
                                     : ''
                             }</td>
                         )}
@@ -88,9 +110,7 @@ class AsSetTable extends Component {
 }
 
 AsSetTable.propTypes = {
-    setsPerIrr: PropTypes.object,
-    irrsSeen: PropTypes.arrayOf(PropTypes.string),
-    hasLoaded: PropTypes.bool,
+    queryASN: PropTypes.string.isRequired,
 };
 
 

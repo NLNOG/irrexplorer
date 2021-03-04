@@ -11,19 +11,15 @@ class ASNQuery extends Component {
         hasLoadedPrefixes: false,
         directOriginPrefixes: [],
         overlapPrefixes: [],
-        hasLoadedSets: false,
-        setData: {irrsSeen: [], setsPerIrr: []},
     };
 
     async componentDidMount() {
         await this.loadPrefixesData();
-        await this.loadSetData();
     }
 
     async componentDidUpdate(prevProps) {
         if (prevProps.queryASN !== this.props.queryASN) {
             await this.loadPrefixesData();
-            await this.loadSetData();
         }
     }
 
@@ -41,21 +37,9 @@ class ASNQuery extends Component {
         });
     }
 
-    async loadSetData() {
-        this.setState({
-            hasLoadedSets: false,
-            setData: {irrsSeen: [], setsPerIrr: []},
-        });
-        const response = await api.getSetMemberOf(this.props.queryASN);
-        console.log(response);
-        this.setState({
-            hasLoadedSets: true,
-            setData: response,
-        });
-    }
-
     render() {
         const {queryASN} = this.props;
+        const {overlapPrefixes, hasLoadedPrefixes, directOriginPrefixes} = this.state;
         return (
             <>
                 <h1>Report for ASN {queryASN}</h1>
@@ -65,27 +49,22 @@ class ASNQuery extends Component {
                 </h2>
                 <hr/>
                 <PrefixTable
-                    prefixesData={this.state.directOriginPrefixes}
-                    hasLoaded={this.state.hasLoadedPrefixes}
+                    prefixesData={directOriginPrefixes}
+                    hasLoaded={hasLoadedPrefixes}
                 />
                 <h2 className="h3 mt-4">
                     Other prefixes overlapping with prefixes originated by {queryASN}
                 </h2>
                 <hr/>
                 <PrefixTable
-                    prefixesData={this.state.overlapPrefixes}
-                    hasLoaded={this.state.hasLoadedPrefixes}
+                    prefixesData={overlapPrefixes}
+                    hasLoaded={hasLoadedPrefixes}
                 />
                 <h2 className="h3 mt-4">
                     Included in the following sets:
                 </h2>
                 <hr/>
-                <AsSetTable
-                    irrsSeen={this.state.setData.irrsSeen}
-                    setsPerIrr={this.state.setData.setsPerIrr}
-                    hasLoaded={this.state.hasLoadedPrefixes}
-                />
-
+                <AsSetTable queryASN={this.props.queryASN}/>
             </>
         );
     }
