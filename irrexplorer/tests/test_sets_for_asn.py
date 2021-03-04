@@ -38,16 +38,11 @@ IRRD_MEMBEROF_VALID_RESPONSE = {
 }
 
 
-async def test_asn_invalid(client):
-    response = await client.get("/api/sets/asn/invalid")
-    assert response.status_code == 404
-
-
 async def test_asn_valid(client, httpserver):
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
     httpserver.expect_request("/graphql").respond_with_json(IRRD_MEMBEROF_VALID_RESPONSE)
 
-    response = await client.get("/api/sets/asn/64500")
+    response = await client.get("/api/sets/member-of/64500")
     assert response.status_code == 200
     json = response.json()
     assert json["irrsSeen"] == ["TEST"]
@@ -58,7 +53,7 @@ async def test_asn_no_data(client, httpserver):
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
     httpserver.expect_request("/graphql").respond_with_json(IRRD_MEMBEROF_EMPTY_RESPONSE)
 
-    response = await client.get("/api/sets/asn/64500")
+    response = await client.get("/api/sets/member-of/64500")
     assert response.status_code == 200
 
     expected = {"irrsSeen": [], "setsPerIrr": {}}

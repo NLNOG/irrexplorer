@@ -7,7 +7,7 @@ from typing import Coroutine, Dict, List, Optional
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import ASNPrefixes, PrefixIRRDetail, PrefixSummary, SetsForASN
+from irrexplorer.api.interfaces import ASNPrefixes, MemberOf, PrefixIRRDetail, PrefixSummary
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
@@ -136,10 +136,10 @@ class PrefixCollector:
             return None
 
 
-async def collect_sets_for_asn(asn: int) -> SetsForASN:
+async def collect_member_of(target: str) -> MemberOf:
     start = time.perf_counter()
-    result = SetsForASN()
-    data = await IRRDQuery().query_member_of(asn)
+    result = MemberOf()
+    data = await IRRDQuery().query_member_of(target)
     irrs_seen = set()
 
     for found_set in data["asSet"]:

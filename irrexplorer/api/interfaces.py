@@ -158,6 +158,6 @@ class ASNPrefixes:
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
-class SetsForASN:
+class MemberOf:
     irrs_seen: List[str] = field(default_factory=list)
     sets_per_irr: Dict[str, Set[str]] = field(default_factory=lambda: defaultdict(set))

@@ -23,8 +23,7 @@ routes = [
     Route("/api/prefixes/asn/AS{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/asn/{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/prefix/{prefix:path}", queries.prefixes_prefix),
-    Route("/api/sets/asn/AS{asn:int}", queries.sets_for_asn),
-    Route("/api/sets/asn/{asn:int}", queries.sets_for_asn),
+    Route("/api/sets/member-of/{target}", queries.member_of),
     Mount(
         "/",
         DefaultIndexStaticFiles(

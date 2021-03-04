@@ -46,7 +46,7 @@ class ASNQuery extends Component {
             hasLoadedSets: false,
             setData: {irrsSeen: [], setsPerIrr: []},
         });
-        const response = await api.getSetsForASN(this.props.queryASN);
+        const response = await api.getSetMemberOf(this.props.queryASN);
         console.log(response);
         this.setState({
             hasLoadedSets: true,

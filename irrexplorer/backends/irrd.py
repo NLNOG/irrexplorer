@@ -30,7 +30,7 @@ COMMON_GRAPHQL_FIELDS = """
 
 GQL_QUERY_ASN = gql(
     f"""
-    query getRoutes ($asn: [ASN!]) {{
+    query getRoutes ($asn: [ASN!]!) {{
         rpslObjects(
             asn: $asn
             objectClass: ["route", "route6"],
@@ -58,9 +58,9 @@ GQL_QUERY_PREFIX = gql(
 
 GQL_QUERY_AS_MEMBER_OF = gql(
     """
-    query getMemberOf($asn: String!) {
+    query getMemberOf($target: String!) {
         asSet: rpslObjects(
-            members: [$asn]
+            members: [$target]
             objectClass: ["as-set"]
             rpkiStatus: [valid, invalid, not_found]
         ) {
@@ -68,7 +68,7 @@ GQL_QUERY_AS_MEMBER_OF = gql(
             source
         }
         autNum: rpslObjects(
-            rpslPk: [$asn]
+            rpslPk: [$target]
             objectClass: ["aut-num"]
             rpkiStatus: [valid, invalid, not_found]
         ) {
@@ -94,9 +94,11 @@ class IRRDQuery:
         endpoint = config("IRRD_ENDPOINT")
         self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
 
-    async def query_member_of(self, asn: int):
+    async def query_member_of(self, target: str):
+        if target.isnumeric():
+            target = "AS" + target
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            return await session.execute(GQL_QUERY_AS_MEMBER_OF, {"asn": f"AS{asn}"})
+            return await session.execute(GQL_QUERY_AS_MEMBER_OF, {"target": target})
 
     async def query_asn(self, asn: int):
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
