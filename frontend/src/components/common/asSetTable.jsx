@@ -21,7 +21,7 @@ class AsSetTable extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.queryASN !== this.props.queryASN) {
+        if (prevProps.query !== this.props.query) {
             await this.loadSetData();
         }
     }
@@ -32,7 +32,7 @@ class AsSetTable extends Component {
             irrsSeen: [],
             rows: [],
         });
-        const response = await api.getSetMemberOf(this.props.queryASN);
+        const response = await api.getSetMemberOf(this.props.query);
         this.processResponse(response);
     }
 
@@ -110,7 +110,7 @@ class AsSetTable extends Component {
 }
 
 AsSetTable.propTypes = {
-    queryASN: PropTypes.string.isRequired,
+    query: PropTypes.string.isRequired,
 };
 
 

@@ -64,7 +64,7 @@ class ASNQuery extends Component {
                     Included in the following sets:
                 </h2>
                 <hr/>
-                <AsSetTable queryASN={this.props.queryASN}/>
+                <AsSetTable query={this.props.queryASN}/>
             </>
         );
     }

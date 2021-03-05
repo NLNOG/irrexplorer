@@ -7,6 +7,7 @@ import {Link, navigate} from "@reach/router";
 import api from "../services/api";
 import PrefixQuery from "./prefixQuery";
 import ASNQuery from "./asnQuery";
+import AsSetQuery from "./asSetQuery";
 
 class Query extends Component {
     state = {cleanQuery: '', queryCategory: ''}
@@ -60,6 +61,11 @@ class Query extends Component {
                     this.state.cleanQuery
                     && this.state.queryCategory === 'asn'
                     && <ASNQuery queryASN={this.state.cleanQuery}/>
+                }
+                {
+                    this.state.cleanQuery
+                    && this.state.queryCategory === 'as-set'
+                    && <AsSetQuery query={this.state.cleanQuery}/>
                 }
             </div>
         );
