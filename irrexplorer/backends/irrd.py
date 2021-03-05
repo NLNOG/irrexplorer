@@ -87,12 +87,27 @@ GQL_QUERY_AS_MEMBER_OF = gql(
 """
 )
 
+GQL_QUERY_AS_SET_MEMBERS = gql("""
+    query setMembers($names: [String!]!) {
+        recursiveSetMembers(setNames:$names, depth:1) {
+            rpslPk
+            members
+        }
+    }
+""")
+
 
 class IRRDQuery:
     def __init__(self):
         # Read at this point to allow tests to change the endpoint
         endpoint = config("IRRD_ENDPOINT")
         self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
+
+    async def query_set_members(self, names: List[str]):
+        async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
+            response = await session.execute(GQL_QUERY_AS_SET_MEMBERS, {"names": names})
+            members_per_set = {i['rpslPk']: i['members'] for i in response['recursiveSetMembers']}
+            return members_per_set
 
     async def query_member_of(self, target: str):
         if target.isnumeric():

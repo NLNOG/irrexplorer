@@ -5,9 +5,9 @@ from ipaddress import ip_network
 
 import IPy
 from dataclasses_json import LetterCase, dataclass_json
-from starlette.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse, JSONResponse
 
-from irrexplorer.api.collectors import PrefixCollector, collect_member_of
+from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
 
@@ -81,3 +81,9 @@ async def prefixes_asn(request):
 async def member_of(request):
     sets = await collect_member_of(request.path_params["target"])
     return DataClassJSONResponse(sets)
+
+
+async def set_expansion(request):
+    result = await collect_set_expansion(request.path_params["target"])
+    return JSONResponse(result)
+

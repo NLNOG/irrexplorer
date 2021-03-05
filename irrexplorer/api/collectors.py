@@ -159,6 +159,54 @@ async def collect_member_of(target: str) -> MemberOf:
     return result
 
 
+async def collect_set_expansion(name: str):
+    def is_set(name: str) -> bool:
+        return name[:2] != 'AS' or not name[2:].isnumeric()
+
+    start = time.perf_counter()
+    irrd = IRRDQuery()
+
+    resolved = {}
+    to_resolve = [name]
+    tree_depth = 0
+
+    while to_resolve:
+        tree_depth += 1
+        print(f'starting step {tree_depth} with {len(to_resolve)} items to resolve, {len(resolved)} already done')
+        if len(to_resolve) > 1000 or len(resolved) > 1000:
+            print('breaking')
+            break
+        step_result = await irrd.query_set_members(list(to_resolve))
+        resolved.update(step_result)
+        to_resolve = {member for members in step_result.values() for member in members if is_set(member)}
+        to_resolve = to_resolve - set(resolved.keys())
+
+    # mapping = {}
+    # for name, entries in resolved.items():
+    #     resolved_entries = [resolved.get(member, member) for member in entries]
+    #     mapping[name] = resolved_entries
+
+    def build_tree(stub_name, depth=0, path=None):
+        if path is None:
+            path = []
+        path = path + [stub_name]
+        depth += 1
+        print(f'tree resolving {stub_name} depth {depth} path {path}')
+        if depth > tree_depth:
+            return stub_name
+        if depth < 2 and stub_name not in resolved:
+            return stub_name
+        return {
+            sub_member: build_tree(sub_member, depth, path) if sub_member in resolved else stub_name
+            for sub_member in resolved[stub_name]
+        }
+
+    result = build_tree(name)
+
+    print(f"set expansion complete in {time.perf_counter() - start}")
+    return result
+
+
 async def _execute_tasks(tasks: List[Coroutine]):
     # force_rollback, used in tests, has issues with executing the tasks
     # concurrently - therefore, in testing, they're executed sequentially
