@@ -9,9 +9,9 @@ import Spinner from "./spinner";
 import api from "../../services/api";
 
 
-class AsSetTable extends Component {
+class AsSetIncludedTable extends Component {
     state = {
-        hasLoadedSets: false,
+        hasLoaded: false,
         irrsSeen: [],
         rows: [],
     }
@@ -28,7 +28,7 @@ class AsSetTable extends Component {
 
     async loadSetData() {
         this.setState({
-            hasLoadedSets: false,
+            hasLoaded: false,
             irrsSeen: [],
             rows: [],
         });
@@ -52,13 +52,13 @@ class AsSetTable extends Component {
         this.setState({
             rows: _.orderBy(rows, ['setName']),
             irrsSeen: response.irrsSeen,
-            hasLoadedSets: true,
+            hasLoaded: true,
         })
     }
 
     renderTableContent() {
-        const {hasLoadedSets, irrsSeen, rows} = this.state;
-        if (!hasLoadedSets)
+        const {hasLoaded, irrsSeen, rows} = this.state;
+        if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!rows.length)
             return this.renderTablePlaceholder("No sets were found.");
@@ -75,7 +75,7 @@ class AsSetTable extends Component {
                 <tbody>
                 {rows.map(({setName, irrNames: irrNamesForRow}) =>
                     <tr key={setName}>
-                        <td key={setName}>{setName}</td>
+                        <td key="name">{setName}</td>
                         {irrsSeen.map(seenIrr =>
                             <td key={seenIrr} className="text-center">{
                                 irrNamesForRow.includes(seenIrr)
@@ -109,9 +109,9 @@ class AsSetTable extends Component {
     }
 }
 
-AsSetTable.propTypes = {
+AsSetIncludedTable.propTypes = {
     query: PropTypes.string.isRequired,
 };
 
 
-export default AsSetTable;
+export default AsSetIncludedTable;

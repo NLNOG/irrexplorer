@@ -161,3 +161,12 @@ class ASNPrefixes:
 class MemberOf:
     irrs_seen: List[str] = field(default_factory=list)
     sets_per_irr: Dict[str, Set[str]] = field(default_factory=lambda: defaultdict(set))
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass
+class SetExpansion:
+    name: str
+    depth: int
+    path: List[str]
+    members: List[str]

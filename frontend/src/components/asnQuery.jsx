@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import PrefixTableExplanation from "./common/prefixTableExplanation";
 import PrefixTable from "./common/prefixTable";
 import api from "../services/api";
-import AsSetTable from "./common/asSetTable";
+import AsSetIncludedTable from "./common/asSetIncludedTable";
 
 class ASNQuery extends Component {
     state = {
@@ -64,7 +64,7 @@ class ASNQuery extends Component {
                     Included in the following sets:
                 </h2>
                 <hr/>
-                <AsSetTable query={this.props.queryASN}/>
+                <AsSetIncludedTable query={this.props.queryASN}/>
             </>
         );
     }

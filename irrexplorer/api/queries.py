@@ -85,5 +85,5 @@ async def member_of(request):
 
 async def set_expansion(request):
     result = await collect_set_expansion(request.path_params["target"])
-    return JSONResponse(result)
+    return DataClassJSONResponse(result)
 

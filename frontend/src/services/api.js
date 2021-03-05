@@ -44,10 +44,16 @@ export async function getSetMemberOf(target) {
     return response.data;
 }
 
+export async function getSetExpansion(target) {
+    const response = await axios.get(`${config.apiUrl}/sets/expand/${target}`);
+    return response.data;
+}
+
 const api = {
     getPrefixesForPrefix,
     getPrefixesForASN,
     cleanQuery,
     getSetMemberOf,
+    getSetExpansion,
 }
 export default api;

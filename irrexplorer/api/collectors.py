@@ -7,12 +7,15 @@ from typing import Coroutine, Dict, List, Optional
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import ASNPrefixes, MemberOf, PrefixIRRDetail, PrefixSummary
+from irrexplorer.api.interfaces import ASNPrefixes, MemberOf, PrefixIRRDetail, PrefixSummary, \
+    SetExpansion
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
 from irrexplorer.settings import TESTING
 from irrexplorer.state import RIR, IPNetwork, RouteInfo
+
+SET_SIZE_LIMIT = 1000
 
 
 class PrefixCollector:
@@ -173,7 +176,7 @@ async def collect_set_expansion(name: str):
     while to_resolve:
         tree_depth += 1
         print(f'starting step {tree_depth} with {len(to_resolve)} items to resolve, {len(resolved)} already done')
-        if len(to_resolve) > 1000 or len(resolved) > 1000:
+        if len(to_resolve) > SET_SIZE_LIMIT or len(resolved) > SET_SIZE_LIMIT:
             print('breaking')
             break
         step_result = await irrd.query_set_members(list(to_resolve))
@@ -181,30 +184,29 @@ async def collect_set_expansion(name: str):
         to_resolve = {member for members in step_result.values() for member in members if is_set(member)}
         to_resolve = to_resolve - set(resolved.keys())
 
-    # mapping = {}
-    # for name, entries in resolved.items():
-    #     resolved_entries = [resolved.get(member, member) for member in entries]
-    #     mapping[name] = resolved_entries
+    results = []
 
-    def build_tree(stub_name, depth=0, path=None):
+    def build_tree(stub_name: str, depth:int=0, path:List[str]=None) -> None:
         if path is None:
             path = []
+        if depth > tree_depth:
+            return
+        if stub_name not in resolved:
+            return  # unresolvable or not an AS-set name
+        if stub_name in path:
+            return  # circular reference
         path = path + [stub_name]
         depth += 1
-        print(f'tree resolving {stub_name} depth {depth} path {path}')
-        if depth > tree_depth:
-            return stub_name
-        if depth < 2 and stub_name not in resolved:
-            return stub_name
-        return {
-            sub_member: build_tree(sub_member, depth, path) if sub_member in resolved else stub_name
-            for sub_member in resolved[stub_name]
-        }
+        # print(f'tree resolving {stub_name} depth {depth} path {path}')
+        results.append(SetExpansion(name=stub_name, depth=depth, path=path, members=sorted(resolved[stub_name])))
+        for sub_member in resolved[stub_name]:
+            build_tree(sub_member, depth, path)
 
-    result = build_tree(name)
+    build_tree(name)
+    results.sort(key=lambda item: (item.depth, item.name))
 
     print(f"set expansion complete in {time.perf_counter() - start}")
-    return result
+    return results
 
 
 async def _execute_tasks(tasks: List[Coroutine]):
