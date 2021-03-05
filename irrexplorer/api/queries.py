@@ -5,7 +5,7 @@ from ipaddress import ip_network
 
 import IPy
 from dataclasses_json import LetterCase, dataclass_json
-from starlette.responses import PlainTextResponse, JSONResponse
+from starlette.responses import PlainTextResponse
 
 from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
@@ -86,4 +86,3 @@ async def member_of(request):
 async def set_expansion(request):
     result = await collect_set_expansion(request.path_params["target"])
     return DataClassJSONResponse(result)
-

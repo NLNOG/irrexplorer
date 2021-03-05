@@ -87,14 +87,16 @@ GQL_QUERY_AS_MEMBER_OF = gql(
 """
 )
 
-GQL_QUERY_AS_SET_MEMBERS = gql("""
+GQL_QUERY_AS_SET_MEMBERS = gql(
+    """
     query setMembers($names: [String!]!) {
         recursiveSetMembers(setNames:$names, depth:1) {
             rpslPk
             members
         }
     }
-""")
+"""
+)
 
 
 class IRRDQuery:
@@ -106,7 +108,7 @@ class IRRDQuery:
     async def query_set_members(self, names: List[str]):
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
             response = await session.execute(GQL_QUERY_AS_SET_MEMBERS, {"names": names})
-            members_per_set = {i['rpslPk']: i['members'] for i in response['recursiveSetMembers']}
+            members_per_set = {i["rpslPk"]: i["members"] for i in response["recursiveSetMembers"]}
             return members_per_set
 
     async def query_member_of(self, target: str):

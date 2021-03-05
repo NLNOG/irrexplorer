@@ -7,8 +7,13 @@ from typing import Coroutine, Dict, List, Optional
 from aggregate6 import aggregate
 from databases import Database
 
-from irrexplorer.api.interfaces import ASNPrefixes, MemberOf, PrefixIRRDetail, PrefixSummary, \
-    SetExpansion
+from irrexplorer.api.interfaces import (
+    ASNPrefixes,
+    MemberOf,
+    PrefixIRRDetail,
+    PrefixSummary,
+    SetExpansion,
+)
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
@@ -163,46 +168,55 @@ async def collect_member_of(target: str) -> MemberOf:
 
 
 async def collect_set_expansion(name: str):
-    def is_set(name: str) -> bool:
-        return name[:2] != 'AS' or not name[2:].isnumeric()
+    def is_set(set_name: str) -> bool:
+        return set_name[:2] != "AS" or not set_name[2:].isnumeric()
 
     start = time.perf_counter()
     irrd = IRRDQuery()
 
-    resolved = {}
-    to_resolve = [name]
+    resolved: Dict[str, List[str]] = {}
+    to_resolve = {name}
     tree_depth = 0
 
     while to_resolve:
         tree_depth += 1
-        print(f'starting step {tree_depth} with {len(to_resolve)} items to resolve, {len(resolved)} already done')
+        print(
+            f"starting step {tree_depth} with {len(to_resolve)} items to resolve, {len(resolved)} already done"
+        )
         if len(to_resolve) > SET_SIZE_LIMIT or len(resolved) > SET_SIZE_LIMIT:
-            print('breaking')
+            print("breaking")
             break
         step_result = await irrd.query_set_members(list(to_resolve))
         resolved.update(step_result)
-        to_resolve = {member for members in step_result.values() for member in members if is_set(member)}
+        to_resolve = {
+            member
+            for members in step_result.values()
+            for member in members
+            if is_set(member) and member not in to_resolve
+        }
         to_resolve = to_resolve - set(resolved.keys())
 
     results = []
 
-    def build_tree(stub_name: str, depth:int=0, path:List[str]=None) -> None:
+    def traverse_tree(stub_name: str, depth: int = 0, path: List[str] = None) -> None:
+        print(f"tree resolving {stub_name} depth {depth} path {path}")
         if path is None:
             path = []
-        if depth > tree_depth:
-            return
         if stub_name not in resolved:
             return  # unresolvable or not an AS-set name
         if stub_name in path:
             return  # circular reference
         path = path + [stub_name]
         depth += 1
-        # print(f'tree resolving {stub_name} depth {depth} path {path}')
-        results.append(SetExpansion(name=stub_name, depth=depth, path=path, members=sorted(resolved[stub_name])))
+        results.append(
+            SetExpansion(
+                name=stub_name, depth=depth, path=path, members=sorted(resolved[stub_name])
+            )
+        )
         for sub_member in resolved[stub_name]:
-            build_tree(sub_member, depth, path)
+            traverse_tree(sub_member, depth, path)
 
-    build_tree(name)
+    traverse_tree(name)
     results.sort(key=lambda item: (item.depth, item.name))
 
     print(f"set expansion complete in {time.perf_counter() - start}")

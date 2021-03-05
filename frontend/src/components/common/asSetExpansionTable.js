@@ -76,7 +76,7 @@ class AsSetExpansionTable extends Component {
     render() {
         return (
             <table className="table mb-5 table-fixed table-striped">
-                <caption>Expansion depth is limited to 1000 total as-sets.</caption>
+                <caption>Expansion depth is limited beyond 1000 total as-sets.</caption>
                 {this.renderTableContent()}
             </table>
         );
