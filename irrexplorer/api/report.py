@@ -51,7 +51,9 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
             s.danger("RPKI origin does not match BGP origin")
         if any([r.rpki_status == RPKIStatus.invalid for r in s.irr_routes_all]):
             s.danger("RPKI invalid route objects found")
-        elif all([r.rpki_status == RPKIStatus.not_found for r in s.irr_routes_all]):
+        elif s.irr_routes and all(
+            [r.rpki_status == RPKIStatus.not_found for r in s.irr_routes_all]
+        ):
             s.info("No (covering) RPKI ROA found for route objects")
 
         s.finalise_status()

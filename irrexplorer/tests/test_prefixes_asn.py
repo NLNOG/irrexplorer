@@ -111,7 +111,6 @@ async def test_asn_valid(client, httpserver):
                 "irrRoutes": {},
                 "messages": [
                     {"category": "danger", "text": "No route objects match DFZ origin"},
-                    {"category": "info", "text": "No (covering) RPKI ROA found for route objects"},
                 ],
             }
         ],
@@ -145,7 +144,6 @@ async def test_asn_no_data(client, httpserver):
                 "irrRoutes": {},
                 "messages": [
                     {"category": "danger", "text": "No route objects match DFZ origin"},
-                    {"category": "info", "text": "No (covering) RPKI ROA found for route objects"},
                 ],
             }
         ],
