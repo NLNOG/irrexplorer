@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import PrefixTableExplanation from "./common/prefixTableExplanation";
 import PrefixTable from "./common/prefixTable";
-import {findLeastSpecific, sortPrefixesDataBy} from "../utils/prefixData";
+import {findLeastSpecific} from "../utils/prefixData";
 import api from "../services/api";
 
 class PrefixQuery extends Component {
@@ -52,7 +52,7 @@ class PrefixQuery extends Component {
         return (
             <>
                 <h1>Report for prefix {queryPrefix}</h1>
-                <PrefixTableExplanation />
+                <PrefixTableExplanation/>
                 <h2 className="h3 mt-4">
                     Directly overlapping prefixes of {queryPrefix}
                 </h2>
