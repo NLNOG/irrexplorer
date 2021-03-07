@@ -48,18 +48,13 @@ class ASNQuery extends Component {
                     Prefixes originated by {query}
                 </h2>
                 <hr/>
-                <PrefixTable
-                    prefixesData={directOriginPrefixes}
-                    hasLoaded={hasLoadedPrefixes}
+                <PrefixTable prefixesData={directOriginPrefixes} hasLoaded={hasLoadedPrefixes}
                 />
                 <h2 className="h3 mt-4">
                     Other prefixes overlapping with prefixes originated by {query}
                 </h2>
                 <hr/>
-                <PrefixTable
-                    prefixesData={overlapPrefixes}
-                    hasLoaded={hasLoadedPrefixes}
-                />
+                <PrefixTable prefixesData={overlapPrefixes} hasLoaded={hasLoadedPrefixes}/>
                 <h2 className="h3 mt-4">
                     Included in the following sets:
                 </h2>
