@@ -17,7 +17,7 @@ class PrefixQuery extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.queryPrefix !== this.props.queryPrefix) {
+        if (prevProps.query !== this.props.query) {
             await this.loadPrefixesData();
         }
     }
@@ -28,8 +28,8 @@ class PrefixQuery extends Component {
             directOverlapPrefixes: {hasLoaded: false, data: []},
             leastSpecificOverlapPrefixes: {hasLoaded: false, data: []},
         });
-        await this.loadPrefixData(this.props.queryPrefix, 'directOverlapPrefixes');
-        const leastSpecificPrefix = findLeastSpecific(this.props.queryPrefix, this.state.directOverlapPrefixes.data);
+        await this.loadPrefixData(this.props.query, 'directOverlapPrefixes');
+        const leastSpecificPrefix = findLeastSpecific(this.props.query, this.state.directOverlapPrefixes.data);
         this.setState({
             leastSpecificPrefix: leastSpecificPrefix,
         })
@@ -47,14 +47,14 @@ class PrefixQuery extends Component {
     }
 
     render() {
-        const {queryPrefix} = this.props;
+        const {query} = this.props;
         const {leastSpecificOverlapPrefixes, directOverlapPrefixes, leastSpecificPrefix} = this.state;
         return (
             <>
-                <h1>Report for prefix {queryPrefix}</h1>
+                <h1>Report for prefix {query}</h1>
                 <PrefixTableExplanation/>
                 <h2 className="h3 mt-4">
-                    Directly overlapping prefixes of {queryPrefix}
+                    Directly overlapping prefixes of {query}
                 </h2>
                 <hr/>
                 <PrefixTable
@@ -78,7 +78,7 @@ class PrefixQuery extends Component {
 }
 
 PrefixQuery.propTypes = {
-    queryPrefix: PropTypes.string.isRequired,
+    query: PropTypes.string.isRequired,
 };
 
 export default PrefixQuery;

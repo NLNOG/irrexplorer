@@ -39,7 +39,21 @@ class Query extends Component {
             : this.props.query1 + '/' + this.props.query2;
     }
 
+    contentClass() {
+        switch(this.state.queryCategory) {
+            case 'prefix':
+                return PrefixQuery;
+            case 'asn':
+                return ASNQuery;
+            case 'as-set':
+                return AsSetQuery;
+            default:
+                return undefined;
+        }
+    }
+
     render() {
+        const ContentClass = this.contentClass();
         return (
             <div className="container">
                 <div className="row d-flex align-items-center mb-5">
@@ -54,18 +68,7 @@ class Query extends Component {
                 </div>
                 {
                     this.state.cleanQuery
-                    && this.state.queryCategory === 'prefix'
-                    && <PrefixQuery queryPrefix={this.state.cleanQuery}/>
-                }
-                {
-                    this.state.cleanQuery
-                    && this.state.queryCategory === 'asn'
-                    && <ASNQuery queryASN={this.state.cleanQuery}/>
-                }
-                {
-                    this.state.cleanQuery
-                    && this.state.queryCategory === 'as-set'
-                    && <AsSetQuery query={this.state.cleanQuery}/>
+                    && <ContentClass query={this.state.cleanQuery}/>
                 }
             </div>
         );

@@ -18,7 +18,7 @@ class ASNQuery extends Component {
     }
 
     async componentDidUpdate(prevProps) {
-        if (prevProps.queryASN !== this.props.queryASN) {
+        if (prevProps.query !== this.props.query) {
             await this.loadPrefixesData();
         }
     }
@@ -29,7 +29,7 @@ class ASNQuery extends Component {
             directOriginPrefixes: [],
             overlapPrefixes: [],
         });
-        const response = await api.getPrefixesForASN(this.props.queryASN);
+        const response = await api.getPrefixesForASN(this.props.query);
         this.setState({
             hasLoadedPrefixes: true,
             directOriginPrefixes: response.directOrigin,
@@ -38,14 +38,14 @@ class ASNQuery extends Component {
     }
 
     render() {
-        const {queryASN} = this.props;
+        const {query} = this.props;
         const {overlapPrefixes, hasLoadedPrefixes, directOriginPrefixes} = this.state;
         return (
             <>
-                <h1>Report for ASN {queryASN}</h1>
+                <h1>Report for ASN {query}</h1>
                 <PrefixTableExplanation/>
                 <h2 className="h3 mt-4">
-                    Prefixes originated by {queryASN}
+                    Prefixes originated by {query}
                 </h2>
                 <hr/>
                 <PrefixTable
@@ -53,7 +53,7 @@ class ASNQuery extends Component {
                     hasLoaded={hasLoadedPrefixes}
                 />
                 <h2 className="h3 mt-4">
-                    Other prefixes overlapping with prefixes originated by {queryASN}
+                    Other prefixes overlapping with prefixes originated by {query}
                 </h2>
                 <hr/>
                 <PrefixTable
@@ -64,14 +64,14 @@ class ASNQuery extends Component {
                     Included in the following sets:
                 </h2>
                 <hr/>
-                <AsSetIncludedTable query={this.props.queryASN}/>
+                <AsSetIncludedTable query={this.props.query}/>
             </>
         );
     }
 }
 
 ASNQuery.propTypes = {
-    queryASN: PropTypes.string.isRequired,
+    query: PropTypes.string.isRequired,
 };
 
 export default ASNQuery;
