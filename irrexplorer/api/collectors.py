@@ -201,8 +201,6 @@ async def collect_set_expansion(name: str):
     def traverse_tree(stub_name: str, depth: int = 0, path: List[str] = None) -> None:
         if path is None:
             path = []
-        if depth and stub_name not in resolved:
-            return  # unresolvable or not an AS-set name
         if stub_name in path:
             return  # circular reference
         path = path + [stub_name]
