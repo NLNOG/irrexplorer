@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 import Spinner from "./spinner";
 import api from "../../services/api";
+import {Link} from "@reach/router";
 
 
 class AsSetIncludedTable extends Component {
@@ -75,7 +76,7 @@ class AsSetIncludedTable extends Component {
                 <tbody>
                 {rows.map(({setName, irrNames: irrNamesForRow}) =>
                     <tr key={setName}>
-                        <td key="name">{setName}</td>
+                        <td key="name"><Link to={`/as-set/${setName}`}>{setName}</Link></td>
                         {irrsSeen.map(seenIrr =>
                             <td key={seenIrr} className="text-center">{
                                 irrNamesForRow.includes(seenIrr)

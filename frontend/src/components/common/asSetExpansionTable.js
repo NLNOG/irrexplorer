@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import api from "../../services/api";
 import Spinner from "./spinner";
+import {Link} from "@reach/router";
 
 
 class AsSetExpansionTable extends Component {
@@ -52,7 +53,7 @@ class AsSetExpansionTable extends Component {
                 <tbody>
                 {subSets.map(({name, depth, path, members}) =>
                     <tr key={name + path.join()}>
-                        <td key="name">{name}</td>
+                        <td key="name"><Link to={`/as-set/${name}`}>{name}</Link></td>
                         <td key="depth">{depth}</td>
                         <td key="path">{path.join(' ➜ ')}</td>
                         <td key="members">{members.join(' ')}</td>

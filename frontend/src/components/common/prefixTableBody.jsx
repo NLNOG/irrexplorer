@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import AsnWithRPKIStatus from "./asnWithRPKIStatus";
 import MessageBadge from "./messageBadge";
 import {faCaretRight} from "@fortawesome/free-solid-svg-icons";
+import {Link} from "@reach/router";
 
 
 class PrefixTableBody extends Component {
@@ -42,9 +43,9 @@ class PrefixTableBody extends Component {
             {prefixesData.map((
                 {prefix, categoryOverall, rir, bgpOrigins, rpkiRoutes, irrRoutes, messages}) =>
                 <tr key={prefix} className={`table-${categoryOverall}`}>
-                    <td key="prefix">{prefix}</td>
+                    <td key="prefix"><Link to={`/prefix/${prefix}`}>{prefix}</Link></td>
                     <td key="rir" className="nowrap">{rir}</td>
-                    <td key="bgpOrigins">{bgpOrigins.join()}</td>
+                    <td key="bgpOrigins"><a href={`http://lg.ring.nlnog.net/query/${prefix}`}>{bgpOrigins.join()}</a></td>
                     {this.renderRpkiCells(rpkiRoutes)}
                     {irrSourceColumns.map(
                         sourceName => this.renderSourceCell(irrRoutes, sourceName)
