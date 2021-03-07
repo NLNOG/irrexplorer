@@ -51,7 +51,7 @@ class AsSetExpansionTable extends Component {
                 </thead>
                 <tbody>
                 {subSets.map(({name, depth, path, members}) =>
-                    <tr key={name}>
+                    <tr key={name + path.join()}>
                         <td key="name">{name}</td>
                         <td key="depth">{depth}</td>
                         <td key="path">{path.join(' ➜ ')}</td>

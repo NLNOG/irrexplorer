@@ -8,6 +8,7 @@ function QueryForm() {
     const [isValid, setIsValid] = useState(true);
 
     const handleSearchSubmit = async (event) => {
+        await api.cancelAllRequests();
         event.preventDefault();
         if (!search) return;
 

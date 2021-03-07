@@ -199,10 +199,9 @@ async def collect_set_expansion(name: str):
     results = []
 
     def traverse_tree(stub_name: str, depth: int = 0, path: List[str] = None) -> None:
-        print(f"tree resolving {stub_name} depth {depth} path {path}")
         if path is None:
             path = []
-        if stub_name not in resolved:
+        if depth and stub_name not in resolved:
             return  # unresolvable or not an AS-set name
         if stub_name in path:
             return  # circular reference
@@ -214,7 +213,8 @@ async def collect_set_expansion(name: str):
             )
         )
         for sub_member in resolved[stub_name]:
-            traverse_tree(sub_member, depth, path)
+            if sub_member in resolved:
+                traverse_tree(sub_member, depth, path)
 
     traverse_tree(name)
     results.sort(key=lambda item: (item.depth, item.name))

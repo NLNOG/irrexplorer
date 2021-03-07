@@ -1,19 +1,21 @@
 import axios from "axios";
 import config from "../config.json";
 
+let source = axios.CancelToken.source();
 
 axios.defaults.headers = {
-  'Cache-Control': 'no-cache',
-  'Pragma': 'no-cache',
-  'Expires': '0',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Expires': '0',
 };
 
 axios.interceptors.response.use(null, error => {
     const expectedError =
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status < 500;
-    if(!expectedError) {
+        error.message === 'cancel' ||
+        (error.response &&
+            error.response.status >= 400 &&
+            error.response.status < 500);
+    if (!expectedError) {
         console.log('Unexpected HTTP error', error);
     }
     return Promise.reject(error);
@@ -24,29 +26,40 @@ export async function cleanQuery(query) {
     try {
         const response = await axios.get(`${config.apiUrl}/clean_query/${query}`);
         return response.data;
-    } catch(exc) {
+    } catch (exc) {
         return null;
     }
 }
 
+async function performRequest(url) {
+    try {
+        const response = await axios.get(url, {cancelToken: source.token});
+        return response.data;
+    } catch (exc) {
+        return [];
+    }
+
+}
+
 export async function getPrefixesForPrefix(prefix) {
-    const response = await axios.get(`${config.apiUrl}/prefixes/prefix/${prefix}`);
-    return response.data;
+    return await performRequest(`${config.apiUrl}/prefixes/prefix/${prefix}`);
 }
 
 export async function getPrefixesForASN(asn) {
-    const response = await axios.get(`${config.apiUrl}/prefixes/asn/${asn}`);
-    return response.data;
+    return await performRequest(`${config.apiUrl}/prefixes/asn/${asn}`);
 }
 
 export async function getSetMemberOf(target) {
-    const response = await axios.get(`${config.apiUrl}/sets/member-of/${target}`);
-    return response.data;
+    return await performRequest(`${config.apiUrl}/sets/member-of/${target}`);
 }
 
 export async function getSetExpansion(target) {
-    const response = await axios.get(`${config.apiUrl}/sets/expand/${target}`);
-    return response.data;
+    return await performRequest(`${config.apiUrl}/sets/expand/${target}`);
+}
+
+export async function cancelAllRequests() {
+    await source.cancel('cancel');
+    source = axios.CancelToken.source();
 }
 
 const api = {
@@ -55,5 +68,6 @@ const api = {
     cleanQuery,
     getSetMemberOf,
     getSetExpansion,
+    cancelAllRequests,
 }
 export default api;
