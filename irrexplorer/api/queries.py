@@ -30,7 +30,8 @@ class Query:
         raw_query = raw_query.strip()
 
         try:
-            trimmed = raw_query[2:] if raw_query.upper().startswith("AS") else raw_query
+            is_asn = raw_query.upper().startswith("AS") and not raw_query.upper().startswith("AS-")
+            trimmed = raw_query[2:] if is_asn else raw_query
             self.cleaned_value = "AS" + str(int(trimmed))
             self.category = QueryCategory.ASN
             return
