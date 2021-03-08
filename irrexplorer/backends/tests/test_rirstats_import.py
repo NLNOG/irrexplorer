@@ -37,8 +37,8 @@ async def test_importer_valid():
         rows = await database.fetch_all(query=tables.rirstats.select())
         results = [dict(r) for r in rows]
         assert results == [
-            {"ip_version": 4, "rir": RIR.RIPENCC, "prefix": IPv4Network("192.0.2.0/24")},
-            {"ip_version": 6, "rir": RIR.RIPENCC, "prefix": IPv6Network("2001:610:2b::/63")},
+            {"rir": RIR.RIPENCC, "prefix": IPv4Network("192.0.2.0/24")},
+            {"rir": RIR.RIPENCC, "prefix": IPv6Network("2001:610:2b::/63")},
         ]
         await database.execute(query=tables.rirstats.delete())
 

@@ -29,8 +29,8 @@ async def test_importer_valid():
         rows = await database.fetch_all(query=tables.bgp.select())
         results = [dict(r) for r in rows]
         assert results == [
-            {"ip_version": 4, "asn": 64500, "prefix": IPv4Network("192.0.2.0/24")},
-            {"ip_version": 6, "asn": 4200000000, "prefix": IPv6Network("2001:db8::/32")},
+            {"asn": 64500, "prefix": IPv4Network("192.0.2.0/24")},
+            {"asn": 4200000000, "prefix": IPv6Network("2001:db8::/32")},
         ]
         await database.execute(query=tables.bgp.delete())
 

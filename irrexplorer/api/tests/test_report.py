@@ -144,10 +144,6 @@ def test_report_rpki_invalid():
             category=MessageCategory.DANGER, text="RPKI origin does not match BGP origin"
         ),
         ReportMessage(category=MessageCategory.DANGER, text="RPKI invalid route objects found"),
-        ReportMessage(
-            category=MessageCategory.INFO,
-            text="Expected route object in RIPE, but objects also exist in other IRRs",
-        ),
     ]
 
 
@@ -181,10 +177,6 @@ def test_report_invalid_origin_expected_irr():
             category=MessageCategory.DANGER,
             text="Expected route object in RIPE, but BGP origin does not match. Objects from other IRRs do match BGP origin",
         ),
-        ReportMessage(
-            category=MessageCategory.INFO,
-            text="Expected route object in RIPE, but objects also exist in other IRRs",
-        ),
     ]
 
 
@@ -217,10 +209,6 @@ def test_report_invalid_origin_other_irr():
         ReportMessage(
             category=MessageCategory.WARNING,
             text="Expected route object in RIPE matches BGP origin, but non-matching objects exist in other IRRs",
-        ),
-        ReportMessage(
-            category=MessageCategory.INFO,
-            text="Expected route object in RIPE, but objects also exist in other IRRs",
         ),
     ]
 
@@ -259,9 +247,5 @@ def test_report_multiple_irr_origins():
         ReportMessage(
             category=MessageCategory.WARNING,
             text="Multiple route objects exist with different origins",
-        ),
-        ReportMessage(
-            category=MessageCategory.INFO,
-            text="Expected route object in RIPE, but objects also exist in other IRRs",
         ),
     ]

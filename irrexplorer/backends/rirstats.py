@@ -25,13 +25,12 @@ class RIRStatsImporter:
     async def run_import(self):
         url = RIRSTATS_URL[self.rir]
         text = await retrieve_url_text(url)
-        prefixes4, prefixes6 = await self._parse_rirstats(text)
-        await self._load_prefixes(prefixes4, prefixes6)
+        prefixes = await self._parse_rirstats(text)
+        await self._load_prefixes(prefixes)
 
     @sync_to_async
     def _parse_rirstats(self, text: str):
-        prefixes4 = []
-        prefixes6 = []
+        prefixes = []
         for ip_version, start_ip, size in self._rirstats_lines(text):
             if ip_version == 4:
                 first_ip = ipaddress.ip_address(start_ip)
@@ -39,11 +38,11 @@ class RIRStatsImporter:
                 last_ip = ipaddress.ip_address(last)
                 cidrs = ipaddress.summarize_address_range(first_ip, last_ip)
                 for prefix in cidrs:
-                    prefixes4.append(str(prefix))
+                    prefixes.append(str(prefix))
             else:
-                prefixes6.append(f"{start_ip}/{size}")
+                prefixes.append(f"{start_ip}/{size}")
 
-        return aggregate6.aggregate(prefixes4), aggregate6.aggregate(prefixes6)
+        return aggregate6.aggregate(prefixes)
 
     def _rirstats_lines(self, text: str):
         """
@@ -72,29 +71,20 @@ class RIRStatsImporter:
 
             yield ip_version, start_ip, size
 
-    async def _load_prefixes(self, prefixes4: List[str], prefixes6: List[str]):
-        def prefixes_to_sql_values(ip_version, prefixes):
-            return [
-                {
-                    "ip_version": ip_version,
-                    "rir": self.rir,
-                    "prefix": prefix,
-                }
-                for prefix in prefixes
-            ]
-
+    async def _load_prefixes(self, prefixes: List[str]):
         async with Database(DATABASE_URL) as database:
             async with database.transaction():
                 query = tables.rirstats.delete(tables.rirstats.c.rir == self.rir)
                 await database.execute(query)
-                if prefixes4:
-                    await database.execute_many(
-                        query=tables.rirstats.insert(), values=prefixes_to_sql_values(4, prefixes4)
-                    )
-                if prefixes6:
-                    await database.execute_many(
-                        query=tables.rirstats.insert(), values=prefixes_to_sql_values(6, prefixes6)
-                    )
+                if prefixes:
+                    values = [
+                        {
+                            "rir": self.rir,
+                            "prefix": prefix,
+                        }
+                        for prefix in prefixes
+                    ]
+                    await database.execute_many(query=tables.rirstats.insert(), values=values)
 
 
 class RIRStatsQuery(LocalSQLQueryBase):

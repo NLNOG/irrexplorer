@@ -47,11 +47,11 @@ async def test_prefix_valid(client, httpserver):
 
     await client.app.state.database.execute(
         query=tables.rirstats.insert(),
-        values={"ip_version": 4, "prefix": "192.0.0.0/8", "rir": RIR.RIPENCC},
+        values={"prefix": "192.0.0.0/8", "rir": RIR.RIPENCC},
     )
     await client.app.state.database.execute(
         query=tables.bgp.insert(),
-        values={"ip_version": 4, "prefix": "192.0.2.0/24", "asn": 64500},
+        values={"prefix": "192.0.2.0/24", "asn": 64500},
     )
 
     response = await client.get("/api/prefixes/prefix/192.0.2.0/24")
@@ -104,7 +104,7 @@ async def test_prefix_no_data(client, httpserver):
 
     await client.app.state.database.execute(
         query=tables.bgp.insert(),
-        values={"ip_version": 4, "prefix": "192.0.2.0/24", "asn": 64500},
+        values={"prefix": "192.0.2.0/24", "asn": 64500},
     )
 
     response = await client.get("/api/prefixes/prefix/192.0.2.0/24")

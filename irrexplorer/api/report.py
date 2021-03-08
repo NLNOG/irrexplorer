@@ -24,11 +24,6 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
             s.warning(
                 f"Expected route object in {s.irr_expected_rir}, but only found in other IRRs"
             )
-        elif s.irr_expected_rir and s.irr_origins_not_expected_rir:
-            s.info(
-                f"Expected route object in {s.irr_expected_rir}, "
-                f"but objects also exist in other IRRs"
-            )
 
         # Check route objects against origins
         if s.bgp_origins - s.irr_origins:

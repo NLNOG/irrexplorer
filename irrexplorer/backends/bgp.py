@@ -42,7 +42,7 @@ class BGPImporter:
 
             ip_version = 6 if ":" in prefix else 4
             if self._include_route(ip_version, prefix):
-                prefixes.append((ip_version, prefix, origin))
+                prefixes.append((prefix, origin))
         return prefixes
 
     def _include_route(self, ip_version: int, prefix: str) -> bool:
@@ -56,19 +56,17 @@ class BGPImporter:
             ip_version == 6 and length < BGP_IPV6_LENGTH_CUTOFF
         )
 
-    async def _load_prefixes(self, prefixes: List[Tuple[int, str, int]]):
-        # TODO: we don't need ip version
+    async def _load_prefixes(self, prefixes: List[Tuple[str, int]]):
         async with Database(DATABASE_URL) as database:
             async with database.transaction():
                 await database.execute(tables.bgp.delete())
                 if prefixes:
                     values = [
                         {
-                            "ip_version": ip_version,
                             "asn": asn,
                             "prefix": prefix,
                         }
-                        for ip_version, prefix, asn in prefixes
+                        for prefix, asn in prefixes
                     ]
                     try:
                         await database.execute_many(query=tables.bgp.insert(), values=values)
