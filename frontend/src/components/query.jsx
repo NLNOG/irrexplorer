@@ -23,7 +23,7 @@ class Query extends Component {
 
     async cleanQuery() {
         const cleanResult = await api.cleanQuery(this.queryInput());
-        if (!cleanResult) {
+        if (cleanResult.error) {
             await navigate('/');
         } else if (cleanResult.category !== this.props.category) {
             await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});

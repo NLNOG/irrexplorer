@@ -36,7 +36,7 @@ class PrefixTable extends Component {
         if (!this.props.hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!this.props.prefixesData.length)
-            return this.renderTablePlaceholder("No prefixes were found.")
+            return this.renderTablePlaceholder("No prefixes were found or query was too large to execute.");
         return <PrefixTableBody
             irrSourceColumns={this.state.irrSourceColumns}
             prefixesData={this.state.sortedPrefixesData}

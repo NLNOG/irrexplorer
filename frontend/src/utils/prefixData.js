@@ -28,7 +28,7 @@ export function findLeastSpecific(queryPrefix, prefixesData) {
     allPrefixes.sort((a, b) => a.len > b.len);
     const leastSpecific = allPrefixes[0];
     if (!queryPrefixLength || leastSpecific.len < queryPrefixLength)
-        return allPrefixes[0].ip + '/' + allPrefixes[0].len;
+        return leastSpecific.ip + '/' + leastSpecific.len;
     return null;
 }
 

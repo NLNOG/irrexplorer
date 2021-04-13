@@ -27,7 +27,7 @@ export async function cleanQuery(query) {
         const response = await axios.get(`${config.apiUrl}/clean_query/${query}`);
         return response.data;
     } catch (exc) {
-        return null;
+        return {error: exc.response.data};
     }
 }
 
@@ -36,7 +36,7 @@ async function performRequest(url) {
         const response = await axios.get(url, {cancelToken: source.token});
         return response.data;
     } catch (exc) {
-        return [];
+        return null;
     }
 
 }

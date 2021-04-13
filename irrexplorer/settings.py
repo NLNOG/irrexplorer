@@ -43,6 +43,11 @@ RIRSTATS_URL = {
 BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
 BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 
+MINIMUM_PREFIX_SIZE = {
+    4: config("MINIMUM_PREFIX_SIZE_IPV4", cast=int, default=9),
+    6: config("MINIMUM_PREFIX_SIZE_IPV4", cast=int, default=29),
+}
+
 SPECIAL_USE_SPACE = [
     ("RFC1122", "0.0.0.0/8", 4),
     ("RFC1918", "10.0.0.0/8", 4),

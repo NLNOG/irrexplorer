@@ -36,3 +36,14 @@ async def test_clean_query_as_set(client):
 async def test_clean_query_invalid(client):
     response = await client.get("/api/clean_query/--invalid-💩")
     assert response.status_code == 400
+    assert "valid prefix" in response.text
+
+
+async def test_clean_query_prefix_too_large(client):
+    response = await client.get("/api/clean_query/192.0.0.0/8")
+    assert response.status_code == 400
+    assert "the minimum prefix length" in response.text
+
+    response = await client.get("/api/clean_query/2001::/16")
+    assert response.status_code == 400
+    assert "the minimum prefix length" in response.text

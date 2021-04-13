@@ -5,7 +5,7 @@ import api from "../../services/api";
 
 function QueryForm() {
     const [search, setSearch] = useState('');
-    const [isValid, setIsValid] = useState(true);
+    const [validationError, setValidationError] = useState('');
 
     const handleSearchSubmit = async (event) => {
         await api.cancelAllRequests();
@@ -13,19 +13,19 @@ function QueryForm() {
         if (!search) return;
 
         const cleanResult = await api.cleanQuery(search);
-        if (!cleanResult) {
-            setIsValid(false);
+        if (cleanResult.error) {
+            setValidationError(cleanResult.error);
         } else {
             await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
         }
     }
 
     const handleSearchChange = ({currentTarget: input}) => {
-        setIsValid(true);
+        setValidationError('');
         setSearch(input.value);
     }
     let inputClasses = "form-control form-control-lg ";
-    if (!isValid)
+    if (validationError)
         inputClasses += "is-invalid";
 
     return (
@@ -41,7 +41,7 @@ function QueryForm() {
                         className={inputClasses}
                     />
                     <div className="invalid-feedback">
-                        This is not a valid prefix, IP, ASN or AS-set.
+                        {validationError}
                     </div>
                 </div>
             </div>

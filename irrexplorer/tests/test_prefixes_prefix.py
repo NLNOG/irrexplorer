@@ -41,6 +41,12 @@ async def test_prefix_invalid(client):
     assert "does not appear to be an" in response.text
 
 
+async def test_prefix_too_large(client):
+    response = await client.get("/api/prefixes/prefix/192.0.0.0/8")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 async def test_prefix_valid(client, httpserver):
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
     httpserver.expect_oneshot_request("/graphql").respond_with_json(IRRD_PREFIX_VALID_RESPONSE)

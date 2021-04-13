@@ -17,7 +17,7 @@ from irrexplorer.api.interfaces import (
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.settings import TESTING
+from irrexplorer.settings import MINIMUM_PREFIX_SIZE, TESTING
 from irrexplorer.state import RIR, IPNetwork, RouteInfo
 
 SET_SIZE_LIMIT = 1000
@@ -39,6 +39,11 @@ class PrefixCollector:
         self.routes_bgp: Dict[IPNetwork, List[RouteInfo]] = {}
 
     async def prefix_summary(self, search_prefix: IPNetwork) -> List[PrefixSummary]:
+        # This check should be caught by clean_query in normal use, this is
+        # merely an additional safety.
+        if MINIMUM_PREFIX_SIZE[search_prefix.version] > search_prefix.prefixlen:
+            return []
+
         start = time.perf_counter()
 
         await self._collect_for_prefixes([search_prefix])
@@ -93,7 +98,13 @@ class PrefixCollector:
             BGPQuery(self.database).query_asn(asn),
         ]
         routes_irrd, routes_bgp = await _execute_tasks(tasks)
-        return ip_networks_aggregates([route.prefix for route in routes_irrd + routes_bgp])
+        return ip_networks_aggregates(
+            [
+                route.prefix
+                for route in routes_irrd + routes_bgp
+                if MINIMUM_PREFIX_SIZE[route.prefix.version] <= route.prefix.prefixlen
+            ]
+        )
 
     def _collate_per_prefix(self) -> List[PrefixSummary]:
         """

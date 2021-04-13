@@ -10,8 +10,13 @@ from starlette.responses import PlainTextResponse
 from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
+from irrexplorer.settings import MINIMUM_PREFIX_SIZE
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)
+
+
+class InvalidQueryError(Exception):
+    pass
 
 
 class QueryCategory(enum.Enum):
@@ -39,8 +44,14 @@ class Query:
             pass
 
         try:
-            self.cleaned_value = str(IPy.IP(raw_query, make_net=True))
+            prefix = IPy.IP(raw_query, make_net=True)
+            self.cleaned_value = str(prefix)
             self.category = QueryCategory.PREFIX
+            minimum_length = MINIMUM_PREFIX_SIZE[prefix.version()]
+            if minimum_length > prefix.prefixlen():
+                raise InvalidQueryError(
+                    f"Query too large: the minimum prefix length is " f"{minimum_length}."
+                )
             return
         except ValueError:
             pass
@@ -50,14 +61,14 @@ class Query:
             self.category = QueryCategory.ASSET
             return
 
-        raise ValueError("Query is not a valid prefix, IP, ASN or AS-set")
+        raise InvalidQueryError("Not a valid prefix, IP, ASN or AS-set.")
 
 
 async def clean_query(request):
     try:
         return DataClassJSONResponse(Query(request.path_params["query"]))
-    except ValueError as ve:
-        return PlainTextResponse(status_code=400, content=str(ve))
+    except InvalidQueryError as iqe:
+        return PlainTextResponse(status_code=400, content=str(iqe))
 
 
 async def prefixes_prefix(request):
