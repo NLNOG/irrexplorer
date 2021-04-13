@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import Spinner from "./spinner";
+import Spinner from "../common/spinner";
 import PrefixTableBody from "./prefixTableBody";
 import {findIrrSourceColumns, sortPrefixesDataBy} from "../../utils/prefixData";
 import PrefixTableHeader from "./prefixTableHeader";

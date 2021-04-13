@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import PrefixTableExplanation from "./common/prefixTableExplanation";
-import PrefixTable from "./common/prefixTable";
+import PrefixTableExplanation from "./prefixTable/prefixTableExplanation";
+import PrefixTable from "./prefixTable/prefixTable";
 import api from "../services/api";
 import AsSetIncludedTable from "./common/asSetIncludedTable";
 
