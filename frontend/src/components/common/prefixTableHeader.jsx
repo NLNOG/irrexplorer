@@ -27,7 +27,7 @@ class PrefixTableHeader extends Component {
         if (cellSortKey === currentKey && order === 'asc') sortIcon = faSortDown;
         if (cellSortKey === currentKey && order === 'desc') sortIcon = faSortUp;
         return (
-            <th key={cellSortKey} scope="col" className="clickable" onClick={() => this.handleSort(cellSortKey)}>
+            <th key={cellSortKey} scope="col" className="clickable nowrap" onClick={() => this.handleSort(cellSortKey)}>
                 {label} <FontAwesomeIcon icon={sortIcon}/>
             </th>
         );
