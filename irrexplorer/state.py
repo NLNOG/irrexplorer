@@ -28,6 +28,10 @@ class RPKIStatus(enum.Enum):
 
 
 RIR_EXPECTED_IRR = {
+    RIR.AFRINIC: "AFRINIC",
+    RIR.APNIC: "APNIC",
+    RIR.ARIN: "ARIN",
+    RIR.LACNIC: "LACNIC",
     RIR.RIPENCC: "RIPE",
 }
 
