@@ -55,7 +55,7 @@ class Query extends Component {
     render() {
         const ContentClass = this.contentClass();
         return (
-            <div className="container">
+            <div className="m-2 m-lg-4">
                 <div className="row d-flex align-items-center mb-5">
                     <div className="col-lg-1">
                         <Link to="/">

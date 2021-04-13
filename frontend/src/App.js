@@ -9,7 +9,7 @@ class App extends Component {
             <main className="flex-shrink-0">
                 <Router>
                     <Home path="/"/>
-                    {/* Reach does not have native support for a slash in the url */}
+                    {/* Reach does not have native support for a slash in the url, hence two Query paths */}
                     <Query path="/:category/:query"/>
                     <Query path="/:category/:query1/:query2"/>
                     <Redirect default from="/" to="/" noThrow/>
