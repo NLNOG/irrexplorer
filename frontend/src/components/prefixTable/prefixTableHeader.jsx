@@ -21,13 +21,23 @@ class PrefixTableHeader extends Component {
     }
 
     renderCell = (label, cellSortKey) => {
+        if (!cellSortKey)
+            return <th key={label} scope="col">{label}</th>;
+
         const {key:currentKey, order} = this.state.sortColumn;
 
         let sortIcon = faSort;
         if (cellSortKey === currentKey && order === 'asc') sortIcon = faSortDown;
         if (cellSortKey === currentKey && order === 'desc') sortIcon = faSortUp;
         return (
-            <th key={cellSortKey} scope="col" className="clickable nowrap" onClick={() => this.handleSort(cellSortKey)}>
+            <th
+                key={cellSortKey}
+                scope="col"
+                className="clickable nowrap"
+                tabIndex="0"
+                onClick={() => this.handleSort(cellSortKey)}
+                onKeyDown={() => this.handleSort(cellSortKey)}
+            >
                 {label} <FontAwesomeIcon icon={sortIcon}/>
             </th>
         );
@@ -43,6 +53,7 @@ class PrefixTableHeader extends Component {
             {this.props.irrSourceColumns.map(sourceName =>
                 this.renderCell(sourceName, `irrRoutes.${sourceName}`)
             )}
+            {this.props.reducedColour && this.renderCell('', null)}
             {this.renderCell('Advice', 'messages')}
         </tr>
         </thead>;
@@ -53,6 +64,7 @@ class PrefixTableHeader extends Component {
 PrefixTableHeader.propTypes = {
     irrSourceColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
     onSort: PropTypes.func.isRequired,
+    reducedColour: PropTypes.bool,
 };
 
 export default PrefixTableHeader;
