@@ -47,7 +47,7 @@ class PrefixQuery extends Component {
     }
 
     render() {
-        const {query} = this.props;
+        const {query, reducedColour} = this.props;
         const {leastSpecificOverlapPrefixes, directOverlapPrefixes, leastSpecificPrefix} = this.state;
         return (
             <>
@@ -60,6 +60,7 @@ class PrefixQuery extends Component {
                 <PrefixTable
                     prefixesData={directOverlapPrefixes.data}
                     hasLoaded={directOverlapPrefixes.hasLoaded}
+                    reducedColour={reducedColour}
                 />
 
                 {leastSpecificPrefix && <>
@@ -70,6 +71,7 @@ class PrefixQuery extends Component {
                     <PrefixTable
                         prefixesData={leastSpecificOverlapPrefixes.data}
                         hasLoaded={leastSpecificOverlapPrefixes.hasLoaded}
+                        reducedColour={reducedColour}
                     />
                 </>}
             </>
@@ -79,6 +81,7 @@ class PrefixQuery extends Component {
 
 PrefixQuery.propTypes = {
     query: PropTypes.string.isRequired,
+    reducedColour: PropTypes.bool,
 };
 
 export default PrefixQuery;

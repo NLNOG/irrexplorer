@@ -10,7 +10,7 @@ import ASNQuery from "./asnQuery";
 import AsSetQuery from "./asSetQuery";
 
 class Query extends Component {
-    state = {cleanQuery: '', queryCategory: ''}
+    state = {cleanQuery: '', queryCategory: '', reducedColour: false};
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps === this.props) return;
@@ -40,7 +40,7 @@ class Query extends Component {
     }
 
     contentClass() {
-        switch(this.state.queryCategory) {
+        switch (this.state.queryCategory) {
             case 'prefix':
                 return PrefixQuery;
             case 'asn':
@@ -50,6 +50,10 @@ class Query extends Component {
             default:
                 return undefined;
         }
+    }
+
+    handleReducedColourChange = ({currentTarget: input}) => {
+        this.setState({reducedColour: input.checked});
     }
 
     render() {
@@ -65,10 +69,20 @@ class Query extends Component {
                     <div className="col-lg-5 offset-lg-1">
                         <QueryForm/>
                     </div>
+                    <form className="text-end">
+                        <input
+                            type="checkbox"
+                            id="reducedColour"
+                            className="me-2"
+                            checked={this.state.reducedColour}
+                            onChange={this.handleReducedColourChange}
+                        />
+                        <label htmlFor="reducedColour">Reduced colour mode</label>
+                    </form>
                 </div>
                 {
                     this.state.cleanQuery
-                    && <ContentClass query={this.state.cleanQuery}/>
+                    && <ContentClass query={this.state.cleanQuery} reducedColour={this.state.reducedColour}/>
                 }
             </div>
         );
