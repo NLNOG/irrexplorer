@@ -6,8 +6,9 @@ import App from './App';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 
-import 'bootstrap/dist/js/bootstrap.min.js';
+import '@popperjs/core/dist/esm/popper'
 import Footer from "./components/footer";
+window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 
 ReactDOM.render(
     <React.StrictMode>
@@ -23,3 +24,8 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById('footer')
 );
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new window.bootstrap.Popover(popoverTriggerEl)
+})
