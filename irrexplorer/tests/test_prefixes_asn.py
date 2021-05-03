@@ -20,6 +20,7 @@ IRRD_PREFIX_VALID_RESPONSE = {
                 "source": "TESTDB",
                 "rpkiStatus": "invalid",
                 "rpkiMaxLength": None,
+                "objectText": "rpsl object text",
             },
             {
                 "rpslPk": "192.0.2.0/24AS64502ML24",
@@ -29,6 +30,7 @@ IRRD_PREFIX_VALID_RESPONSE = {
                 "source": "RPKI",
                 "rpkiStatus": "valid",
                 "rpkiMaxLength": 24,
+                "objectText": "rpsl object text",
             },
         ]
     }
@@ -75,6 +77,7 @@ async def test_asn_valid(client, httpserver):
                         "rpkiStatus": "VALID",
                         "asn": 64502,
                         "rpslPk": "192.0.2.0/24AS64502ML24",
+                        "rpslText": "rpsl object text",
                     }
                 ],
                 "irrRoutes": {
@@ -84,6 +87,7 @@ async def test_asn_valid(client, httpserver):
                             "rpkiStatus": "INVALID",
                             "asn": 64501,
                             "rpslPk": "192.0.2.0/24AS64501",
+                            "rpslText": "rpsl object text",
                         }
                     ]
                 },

@@ -14,6 +14,7 @@ COMMON_GRAPHQL_FIELDS = """
     rpslPk
     objectClass
     source
+    objectText
     ... on RPSLRoute {
       prefix
       asn
@@ -157,6 +158,7 @@ class IRRDQuery:
                     irr_source=rpsl_obj["source"],
                     rpki_status=RPKIStatus[rpsl_obj["rpkiStatus"]],
                     rpki_max_length=rpsl_obj["rpkiMaxLength"],
+                    rpsl_text=rpsl_obj["objectText"],
                 )
             )
 

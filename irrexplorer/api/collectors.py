@@ -92,7 +92,7 @@ class PrefixCollector:
         )
 
     async def _collect_aggregate_prefixes_for_asn(self, asn: int) -> List[IPNetwork]:
-        """"""
+        """ """
         tasks = [
             IRRDQuery().query_asn(asn),
             BGPQuery(self.database).query_asn(asn),
@@ -136,6 +136,7 @@ class PrefixCollector:
                             rpsl_pk=entry.rpsl_pk,
                             rpki_status=entry.rpki_status,
                             rpki_max_length=entry.rpki_max_length,
+                            rpsl_text=entry.rpsl_text,
                         )
                     )
             summaries_per_prefix.append(summary)

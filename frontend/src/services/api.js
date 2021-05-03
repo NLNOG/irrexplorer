@@ -3,6 +3,10 @@ import config from "../config.json";
 
 let source = axios.CancelToken.source();
 
+const apiUrl = config.apiUrl;
+// const apiUrl = window.location.origin + "/api";
+console.log(apiUrl);
+
 axios.defaults.headers = {
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache',
@@ -24,7 +28,7 @@ axios.interceptors.response.use(null, error => {
 
 export async function cleanQuery(query) {
     try {
-        const response = await axios.get(`${config.apiUrl}/clean_query/${query}`);
+        const response = await axios.get(`${apiUrl}/clean_query/${query}`);
         return response.data;
     } catch (exc) {
         return {error: exc.response.data};
@@ -42,19 +46,19 @@ async function performRequest(url) {
 }
 
 export async function getPrefixesForPrefix(prefix) {
-    return await performRequest(`${config.apiUrl}/prefixes/prefix/${prefix}`);
+    return await performRequest(`${apiUrl}/prefixes/prefix/${prefix}`);
 }
 
 export async function getPrefixesForASN(asn) {
-    return await performRequest(`${config.apiUrl}/prefixes/asn/${asn}`);
+    return await performRequest(`${apiUrl}/prefixes/asn/${asn}`);
 }
 
 export async function getSetMemberOf(target) {
-    return await performRequest(`${config.apiUrl}/sets/member-of/${target}`);
+    return await performRequest(`${apiUrl}/sets/member-of/${target}`);
 }
 
 export async function getSetExpansion(target) {
-    return await performRequest(`${config.apiUrl}/sets/expand/${target}`);
+    return await performRequest(`${apiUrl}/sets/expand/${target}`);
 }
 
 export async function cancelAllRequests() {

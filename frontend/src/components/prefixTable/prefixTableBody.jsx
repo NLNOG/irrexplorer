@@ -23,18 +23,26 @@ class PrefixTableBody extends Component {
         success: faCheckCircle,
     };
 
-    renderSourceCell(irrRoutes, sourceName) {
+    renderSourceCell(prefix, irrRoutes, sourceName) {
         // The irrSourceColumns are dynamic per query. Not all prefixes
-        // have data on all sources. This method renders the columns
-        // for this prefix, given the sources.
+        // have data on all sources. This method renders a column
+        // for this prefix, given a source.
         const routesForSource = irrRoutes[sourceName];
         if (!routesForSource) return <td key={sourceName}/>;
-        return <td key={sourceName}>{routesForSource.map(
-            ({asn, rpkiStatus}, idx) => [
-                idx > 0 && ", ",
-                <AsnWithRPKIStatus key={asn} asn={asn} rpkiStatus={rpkiStatus}/>
-            ]
-        )}</td>;
+        return <td key={sourceName}>{
+            routesForSource.map(
+                ({asn, rpkiStatus, rpslText}, idx) => [
+                    idx > 0 && ", ",
+                    <a className="link-dark" key={asn} href="/"
+                       onClick={(e) => {
+                           e.preventDefault();
+                           this.props.handleIrrRouteSelect(prefix, asn, sourceName, rpslText, rpkiStatus);
+                       }}>
+                        <AsnWithRPKIStatus asn={asn} rpkiStatus={rpkiStatus}/>
+                    </a>
+                ]
+            )
+        }</td>;
     }
 
     renderRpkiCells(rpkiRoutes) {
@@ -66,7 +74,7 @@ class PrefixTableBody extends Component {
                                             className="link-dark">{bgpOrigins.join()}</a></td>
                     {this.renderRpkiCells(rpkiRoutes)}
                     {irrSourceColumns.map(
-                        sourceName => this.renderSourceCell(irrRoutes, sourceName)
+                        sourceName => this.renderSourceCell(prefix, irrRoutes, sourceName)
                     )}
                     {reducedColour && <td key="adviceIcon" className="lead">
                         <FontAwesomeIcon icon={this.icons[categoryOverall]} title={`Status: ${categoryOverall}`}/>
@@ -88,6 +96,7 @@ PrefixTableBody.propTypes = {
     irrSourceColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
     prefixesData: PropTypes.arrayOf(PropTypes.object).isRequired,
     reducedColour: PropTypes.bool,
+    handleIrrRouteSelect: PropTypes.func,
 };
 
 

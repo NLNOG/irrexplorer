@@ -20,6 +20,7 @@ def test_report_good():
                 rpsl_pk="2001:db8::/48AS65540ML25",
                 asn=65540,
                 rpki_status=RPKIStatus.valid,
+                rpsl_text="rpsl object text",
             )
         ],
         irr_routes={
@@ -28,6 +29,7 @@ def test_report_good():
                     rpsl_pk="2001:db8::/48AS65540ML25",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -50,6 +52,7 @@ def test_report_no_origin():
                 rpsl_pk="2001:db8::/48AS65540ML25",
                 asn=65540,
                 rpki_status=RPKIStatus.valid,
+                rpsl_text="rpsl object text",
             )
         ],
         irr_routes={
@@ -58,6 +61,7 @@ def test_report_no_origin():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -86,6 +90,7 @@ def test_report_no_origin_no_roa():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.not_found,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -117,6 +122,7 @@ def test_report_rpki_invalid():
                 rpsl_pk="2001:db8::/48AS65541ML25",
                 asn=65541,
                 rpki_status=RPKIStatus.valid,
+                rpsl_text="rpsl object text",
             )
         ],
         irr_routes={
@@ -125,6 +131,7 @@ def test_report_rpki_invalid():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.invalid,
+                    rpsl_text="rpsl object text",
                 )
             ],
             "RADB": [
@@ -132,6 +139,7 @@ def test_report_rpki_invalid():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.invalid,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -158,6 +166,7 @@ def test_report_invalid_origin_expected_irr():
                     rpsl_pk="2001:db8::/48AS65541",
                     asn=65541,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
             "RADB": [
@@ -165,6 +174,7 @@ def test_report_invalid_origin_expected_irr():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -191,6 +201,7 @@ def test_report_invalid_origin_other_irr():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
             "RADB": [
@@ -198,6 +209,7 @@ def test_report_invalid_origin_other_irr():
                     rpsl_pk="2001:db8::/48AS65541",
                     asn=65541,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 )
             ],
         },
@@ -224,6 +236,7 @@ def test_report_multiple_irr_origins():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 ),
             ],
             "RADB": [
@@ -231,11 +244,13 @@ def test_report_multiple_irr_origins():
                     rpsl_pk="2001:db8::/48AS65540",
                     asn=65540,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 ),
                 PrefixIRRDetail(
                     rpsl_pk="2001:db8::/48AS65541",
                     asn=65541,
                     rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
                 ),
             ],
         },

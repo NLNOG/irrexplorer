@@ -43,6 +43,7 @@ ip_field_metadata = config(
 @dataclass
 class PrefixIRRDetail:
     asn: int
+    rpsl_text: str
     rpsl_pk: Optional[str] = None
     rpki_status: Optional[RPKIStatus] = None
     rpki_max_length: Optional[int] = None

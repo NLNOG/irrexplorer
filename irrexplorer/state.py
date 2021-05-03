@@ -45,5 +45,6 @@ class RouteInfo:
     special_use_type: Optional[str] = None
     rpsl_pk: Optional[str] = None
     irr_source: Optional[str] = None
+    rpsl_text: Optional[str] = None
     rpki_status: Optional[RPKIStatus] = None
     rpki_max_length: Optional[int] = None

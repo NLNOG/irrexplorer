@@ -10,9 +10,6 @@ function Home() {
     return (
         <div className="container-fluid d-flex justify-content-center">
             <div className="align-self-center">
-                <span tabIndex="0" className="btn btn-lg btn-danger" role="button" data-bs-toggle="popover"
-                   data-bs-trigger="focus" title="Dismissible popover"
-                   data-bs-content="And here's some amazing content. It's very engaging. Right?">Dismissible popover</span>
                 <div className="row">
                     <div className="col-sm-6 offset-sm-3">
                         <div className="text-center">
