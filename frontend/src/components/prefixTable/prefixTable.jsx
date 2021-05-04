@@ -5,6 +5,7 @@ import Spinner from "../common/spinner";
 import PrefixTableBody from "./prefixTableBody";
 import {findIrrSourceColumns, sortPrefixesDataBy} from "../../utils/prefixData";
 import PrefixTableHeader from "./prefixTableHeader";
+import WhoisModal from "./whoisModal";
 
 
 class PrefixTable extends Component {
@@ -12,23 +13,11 @@ class PrefixTable extends Component {
 
     constructor(props) {
         super(props);
-        this.modal = {
-            bootstrapModal: null,
-            modalRef: React.createRef(),
-            titleRef: React.createRef(),
-            queryRef: React.createRef(),
-            rpslTextRef: React.createRef(),
-            rpkiAlertRef: React.createRef(),
-        };
+        this.whoisModalRef = React.createRef();
     }
 
     componentDidMount() {
         this.updateState();
-        this.modal.bootstrapModal = new window.bootstrap.Modal(this.modal.modalRef.current);
-    }
-
-    componentWillUnmount() {
-        this.modal.bootstrapModal.dispose();
     }
 
     componentDidUpdate(prevProps) {
@@ -50,12 +39,7 @@ class PrefixTable extends Component {
     }
 
     handleIrrRouteSelect = (prefix, asn, sourceName, rpslText, rpkiStatus) => {
-        const {bootstrapModal, titleRef, queryRef, rpslTextRef, rpkiAlertRef} = this.modal;
-        titleRef.current.innerText = `AS${asn} / ${prefix}`;
-        queryRef.current.innerText = `whois -h whois.${sourceName}.net ${prefix}`;
-        rpslTextRef.current.innerText = rpslText;
-        rpkiAlertRef.current.hidden = rpkiStatus !== 'INVALID'
-        bootstrapModal.show();
+        this.whoisModalRef.current.openWithContent(prefix, asn, sourceName, rpslText, rpkiStatus);
     }
 
     renderTableContent() {
@@ -82,7 +66,6 @@ class PrefixTable extends Component {
     }
 
     render() {
-        const {modalRef, titleRef, queryRef, rpslTextRef, rpkiAlertRef} = this.modal;
         return (
             <>
                 <table className="table table-sm mb-5 table-fixed table-striped">
@@ -93,29 +76,7 @@ class PrefixTable extends Component {
                     />
                     {this.renderTableContent()}
                 </table>
-                <div className="modal fade" tabIndex="-1" ref={modalRef}>
-                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" ref={titleRef}>Modal title</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"/>
-                            </div>
-                            <div className="modal-body">
-                                <p className="font-monospace" ref={queryRef}/>
-                                <pre className="text-light bg-dark" ref={rpslTextRef}/>
-                                <div className="alert alert-warning" role="alert" ref={rpkiAlertRef}>
-                                    This route object is RPKI invalid, and may be filtered out
-                                    of whois query output by default.
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <WhoisModal ref={this.whoisModalRef} />
             </>
         );
     }
