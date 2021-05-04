@@ -1,3 +1,7 @@
+pre {
+    padding: 1em;
+}
+
 .logo {
     max-width: 300px;
 }
