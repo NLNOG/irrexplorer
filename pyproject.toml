@@ -50,5 +50,5 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 reformat = "scripts:reformat"
 lint = "scripts:lint"
-build = "scripts:build"
+frontend-build = "scripts:frontend_build"
 frontend-install = "scripts:frontend_install"

@@ -1,11 +1,11 @@
 import axios from "axios";
-import config from "../config.json";
 
 let source = axios.CancelToken.source();
 
-const apiUrl = config.apiUrl;
-// const apiUrl = window.location.origin + "/api";
-console.log(apiUrl);
+let apiUrl = process.env.REACT_APP_BACKEND
+if (!apiUrl) {
+    apiUrl = window.location.origin + "/api";
+}
 
 axios.defaults.headers = {
     'Cache-Control': 'no-cache',

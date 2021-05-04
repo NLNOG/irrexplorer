@@ -17,7 +17,7 @@ def lint() -> None:
     check_call(["mypy", "irrexplorer/"])
 
 
-def build() -> None:
+def frontend_build() -> None:
     check_call(["yarn", "--cwd", "frontend/", "build"])
 
 

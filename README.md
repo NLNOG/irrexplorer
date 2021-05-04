@@ -39,7 +39,7 @@ DEBUG=true
 ### Install
 
 * As a non-privileged user, check out the git repository
-* In the checkout, run `poetry install`, `poetry run frontend-install`, `poetry run build`, `poetry run alembic upgrade head`.
+* In the checkout, run `poetry install`, `poetry run frontend-install`, `poetry run frontend-build`, `poetry run alembic upgrade head`.
 
 ### Running
 

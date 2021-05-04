@@ -52,7 +52,7 @@ jobs:
 
       - run:
           name: build frontend
-          command: poetry run build
+          command: poetry run frontend-build
 
       - run:
           name: run regular tests
