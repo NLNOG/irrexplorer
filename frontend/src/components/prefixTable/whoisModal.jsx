@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import config from "../../config.json";
+
 
 class WhoisModal extends Component {
     constructor(props) {
@@ -24,8 +26,9 @@ class WhoisModal extends Component {
 
     openWithContent = (prefix, asn, sourceName, rpslText, rpkiStatus) => {
         const {bootstrapModal, titleRef, queryRef, rpslTextRef, rpkiAlertRef} = this.modal;
+        const whoisServer = config.whoisServers[sourceName];
         titleRef.current.innerText = `AS${asn} / ${prefix}`;
-        queryRef.current.innerText = `whois -h whois.${sourceName}.net ${prefix}`;
+        queryRef.current.innerText = `whois -h ${whoisServer} ${prefix}`;
         rpslTextRef.current.innerText = rpslText;
         rpkiAlertRef.current.hidden = rpkiStatus !== 'INVALID'
         bootstrapModal.show();

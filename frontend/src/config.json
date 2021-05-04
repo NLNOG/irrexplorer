@@ -1,3 +1,27 @@
 {
-  "apiUrl": "http://localhost:8000/api"
+  "whoisServers": {
+    "AFRINIC": "whois.afrinic.net",
+    "ALTDB": "whois.altdb.net",
+    "AOLTW": "whois.aoltw.net",
+    "APNIC": "whois.apnic.net",
+    "ARIN": "rr.arin.net",
+    "ARIN-NONAUTH": "rr.arin.net",
+    "BELL": "whois.in.bell.ca",
+    "BBOI": "irr.bboi.net",
+    "CANARIE": "whois.canarie.ca",
+    "EPOCH": "whois.epoch.net",
+    "HOST": "rr.host.net",
+    "JPIRR": "jpirr.nic.ad.jp",
+    "LACNIC": "irr.lacnic.net",
+    "LEVEL3": "rr.Level3.net",
+    "NESTEGG": "whois.nestegg.net",
+    "NTTCOM": "rr.ntt.net",
+    "OPENFACE": "whois.openface.ca",
+    "PANIX": "rrdb.access.net",
+    "RADB": "whois.radb.net",
+    "REACH": "rr.telstraglobal.net",
+    "RGNET": "whois.rg.net",
+    "RIPE": "whois.ripe.net",
+    "TC": "whois.bgp.net.br"
+  }
 }
