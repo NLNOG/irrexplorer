@@ -12,6 +12,19 @@ is an improved reimplementation on top of [IRRd](https://github.com/irrdnet/irrd
 for [Stichting NLNOG](https://nlnog.net/) by [DashCare BV](https://dashcare.nl/).
 
 
+## Data sources
+
+Queried from an [IRRd 4.2+ instance](https://irrd.readthedocs.io/):
+
+* IRR objects and relations (route(6) and as-sets)
+* RPKI ROAs and the validation status of route(6) objects
+  
+Loaded into a local PostgreSQL database periodically:
+  
+* BGP origins for prefixes in the DFZ
+* [RIRstats](https://www.apnic.net/about-apnic/corporate-documents/documents/resource-guidelines/rir-statistics-exchange-format/)
+
+
 ## Deployment
 
 IRR explorer consists of a Python backend, based on
@@ -22,8 +35,8 @@ By default, the backend also serves the static files of the frontend. These
 static files are built during installation. Therefore,
 you only need to start one Python HTTP process. Technically, it might be more
 efficient to serve the frontend separately from a CDN, or at least to skip the
-path through the Python backend. However, the frontend small and entirely cacheable,
-which is why this readme uses the simplest option.
+path through the Python backend. However, the frontend is small and entirely
+cacheable, which is why this readme uses the simplest option.
 
 The Python backend is async, which means
 a single Python worker can serve multiple clients at the same time, while waiting
@@ -38,7 +51,7 @@ To run IRR explorer you need a Linux, BSD or MacOS install with:
 * node (tested on version 15 and 16)
 * yarn
 
-You also need access to a PostgreSQL server, and a IRRd 4.2 deployment.
+You also need access to a PostgreSQL server, and an IRRd 4.2+ deployment.
 
 ### Configuration
 
