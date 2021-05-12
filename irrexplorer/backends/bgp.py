@@ -61,17 +61,19 @@ class BGPImporter:
             async with database.transaction():
                 await database.execute(tables.bgp.delete())
                 if prefixes:
-                    values = [
-                        {
-                            "asn": asn,
-                            "prefix": prefix,
-                        }
-                        for prefix, asn in prefixes
-                    ]
-                    try:
-                        await database.execute_many(query=tables.bgp.insert(), values=values)
-                    except DataError as de:
-                        raise ImporterError(f"Failed to insert BGP data: {de}")
+                    for chunk in chunks(prefixes, 5000):
+                        values = [
+                            {
+                                "asn": asn,
+                                "prefix": prefix,
+                            }
+                            for prefix, asn in chunk
+                        ]
+                        try:
+                            print(f'awaiting insert of {len(values)} values')
+                            await database.execute_many(query=tables.bgp.insert(), values=values)
+                        except DataError as de:
+                            raise ImporterError(f"Failed to insert BGP data: {de}")
 
 
 class BGPQuery(LocalSQLQueryBase):
@@ -91,3 +93,9 @@ class BGPQuery(LocalSQLQueryBase):
                 )
             )
         return results
+
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
