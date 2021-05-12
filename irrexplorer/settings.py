@@ -8,6 +8,9 @@ config = Config(".env")
 DEBUG = config("DEBUG", cast=bool, default=False)
 TESTING = config("TESTING", cast=bool, default=False)
 
+HTTP_PORT = config("HTTP_PORT", cast=int, default=8000)
+HTTP_WORKERS = config("HTTP_WORKERS", cast=int, default=4)
+
 BGP_SOURCE = config("BGP_SOURCE", default="http://lg01.infra.ring.nlnog.net/table.txt")
 DATABASE_URL = config("DATABASE_URL", cast=databases.DatabaseURL)
 
