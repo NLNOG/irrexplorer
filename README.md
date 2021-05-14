@@ -80,12 +80,14 @@ You can optionally set:
 * `DEBUG`: enables debug mode in the web server. defaults to `False`.
   Do not enable in production.
 * `BGP_SOURCE`: the source of BGP origin information. Default:
-  `http://lg01.infra.ring.nlnog.net/table.txt`
+  `https://bgp.tools/table.txt`
 * `RIRSTATS_URL_ARIN`, `RIRSTATS_URL_AFRINIC`, etc. URL for the 
   RIR stats file for each RIR (supports basic and extended format).
-* `BGP_IPV4_LENGTH_CUTOFF` / `BGP_IPV6_LENGTH_CUTOFF`: BGP prefixes
-  of this length or longer are dropped when importing BGP origin data.
-  Default: 29 and 124.
+* `BGP_IPV4_LENGTH_MINIMUM` / `BGP_IPV4_LENGTH_MAXIMUM` /
+  `BGP_IPV6_LENGTH_MINIMUM` / `BGP_IPV6_LENGTH_MAXIMUM`: BGP prefixes
+  shorter than the minimum, or longer than the maximum,
+  are dropped when importing BGP origin data.
+  Default: IPv4 permitted from /9 to /29, IPv6 from /23 to /124 (inclusive).
 * `MINIMUM_PREFIX_SIZE_IPV4` / `MINIMUM_PREFIX_SIZE_IPV4`: minimum prefix
   length for queries. Prefixes shorter than this are rejected, to limit
   database load. Default: 9 and 29.
