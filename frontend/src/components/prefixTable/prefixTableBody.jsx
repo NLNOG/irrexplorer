@@ -71,7 +71,7 @@ class PrefixTableBody extends Component {
                     <td key="prefix"><Link to={`/prefix/${prefix}`} className="link-dark">{prefix}</Link></td>
                     <td key="rir" className="nowrap">{rir}</td>
                     <td key="bgpOrigins"><a href={`http://lg.ring.nlnog.net/query/${prefix}`}
-                                            className="link-dark">{bgpOrigins.join()}</a></td>
+                                            className="link-dark">{bgpOrigins.join(', ')}</a></td>
                     {this.renderRpkiCells(rpkiRoutes)}
                     {irrSourceColumns.map(
                         sourceName => this.renderSourceCell(prefix, irrRoutes, sourceName)

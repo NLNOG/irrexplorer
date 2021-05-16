@@ -40,7 +40,6 @@ class PrefixQuery extends Component {
 
     async loadPrefixData(query, target) {
         const data = await api.getPrefixesForPrefix(query);
-        console.log(target, data);
         this.setState({
             [target]: {hasLoaded: true, data},
         })
