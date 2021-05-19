@@ -10,7 +10,6 @@ class DataSource(enum.Enum):
     RIRSTATS = "RIRSTATS"
     BGP = "BGP"
     IRR = "IRR"
-    SPECIAL_USE = "SPECIAL_USE"
 
 
 class RIR(enum.Enum):
@@ -42,7 +41,6 @@ class RouteInfo:
     prefix: IPNetwork
     asn: Optional[int] = None
     rir: Optional[RIR] = None
-    special_use_type: Optional[str] = None
     rpsl_pk: Optional[str] = None
     irr_source: Optional[str] = None
     rpsl_text: Optional[str] = None

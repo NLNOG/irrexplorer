@@ -1,3 +1,5 @@
+from ipaddress import IPv4Network, IPv6Network
+
 import databases
 from starlette.config import Config
 
@@ -54,20 +56,20 @@ MINIMUM_PREFIX_SIZE = {
 }
 
 SPECIAL_USE_SPACE = [
-    ("RFC1122", "0.0.0.0/8", 4),
-    ("RFC1918", "10.0.0.0/8", 4),
-    ("RFC6598", "100.64.0.0/10", 4),
-    ("LOOPBACK", "127.0.0.0/8", 4),
-    ("RFC1918", "172.16.0.0/12", 4),
-    ("RFC5736", "192.0.0.0/24", 4),
-    ("RFC1918", "192.168.0.0/16", 4),
-    ("RFC3927", "169.254.0.0/16", 4),
-    ("RFC5737", "192.0.2.0/24", 4),
-    ("RFC2544", "198.18.0.0/15", 4),
-    ("RFC5737", "198.51.100.0/24", 4),
-    ("RFC5737", "203.0.113.0/24", 4),
-    ("CLASS-E", "240.0.0.0/4", 4),
-    ("IPv4-mapped", "::ffff:0:0/96", 6),
-    ("IPv4-compatible", "::/96", 6),
-    ("IPv6-ULA", "fc00::/7", 6),
+    ("RFC1122", IPv4Network("0.0.0.0/8")),
+    ("RFC1918", IPv4Network("10.0.0.0/8")),
+    ("RFC6598", IPv4Network("100.64.0.0/10")),
+    ("LOOPBACK", IPv4Network("127.0.0.0/8")),
+    ("RFC1918", IPv4Network("172.16.0.0/12")),
+    ("RFC5736", IPv4Network("192.0.0.0/24")),
+    ("RFC1918", IPv4Network("192.168.0.0/16")),
+    ("RFC3927", IPv4Network("169.254.0.0/16")),
+    ("RFC5737", IPv4Network("192.0.2.0/24")),
+    ("RFC2544", IPv4Network("198.18.0.0/15")),
+    ("RFC5737", IPv4Network("198.51.100.0/24")),
+    ("RFC5737", IPv4Network("203.0.113.0/24")),
+    ("CLASS-E", IPv4Network("240.0.0.0/4")),
+    ("IPv4-mapped", IPv6Network("::ffff:0:0/96")),
+    ("IPv4-compatible", IPv6Network("::/96")),
+    ("IPv6-ULA", IPv6Network("fc00::/7")),
 ]

@@ -63,7 +63,6 @@ class PrefixSummary:
     # if applicable.
     prefix: IPNetwork = field(metadata=ip_field_metadata)
     rir: Optional[RIR] = None
-    special_use_type: Optional[str] = None
     rpki_routes: List[PrefixIRRDetail] = field(default_factory=list)
     bgp_origins: Set[int] = field(default_factory=set)
     # Key for irr_routes is the IRR source (not including RPKI)

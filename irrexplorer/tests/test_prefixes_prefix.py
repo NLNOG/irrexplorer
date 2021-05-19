@@ -72,7 +72,6 @@ async def test_prefix_valid(client, httpserver):
             "categoryOverall": "danger",
             "bgpOrigins": [64500],
             "rir": "RIPE NCC",
-            "specialUseType": None,
             "rpkiRoutes": [
                 {
                     "rpkiStatus": "VALID",
@@ -97,6 +96,10 @@ async def test_prefix_valid(client, httpserver):
                 {"category": "danger", "text": "No route objects match DFZ origin"},
                 {"category": "danger", "text": "RPKI origin does not match BGP origin"},
                 {"category": "danger", "text": "RPKI invalid route objects found"},
+                {
+                    "category": "danger",
+                    "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                },
                 {
                     "category": "warning",
                     "text": "Expected route object in RIPE, but only found in other IRRs",
@@ -127,11 +130,14 @@ async def test_prefix_no_data(client, httpserver):
             "categoryOverall": "danger",
             "bgpOrigins": [64500],
             "rir": None,
-            "specialUseType": None,
             "rpkiRoutes": [],
             "irrRoutes": {},
             "messages": [
                 {"category": "danger", "text": "No route objects match DFZ origin"},
+                {
+                    "category": "danger",
+                    "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                },
             ],
         }
     ]

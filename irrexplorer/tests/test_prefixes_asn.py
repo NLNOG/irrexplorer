@@ -69,7 +69,6 @@ async def test_asn_valid(client, httpserver):
                 "goodnessOverall": 0,
                 "categoryOverall": "danger",
                 "bgpOrigins": [64500],
-                "specialUseType": None,
                 "rir": "RIPE NCC",
                 "rpkiRoutes": [
                     {
@@ -96,6 +95,10 @@ async def test_asn_valid(client, httpserver):
                     {"category": "danger", "text": "RPKI origin does not match BGP origin"},
                     {"category": "danger", "text": "RPKI invalid route objects found"},
                     {
+                        "category": "danger",
+                        "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                    },
+                    {
                         "category": "warning",
                         "text": "Expected route object in RIPE, but only found in other IRRs",
                     },
@@ -109,12 +112,15 @@ async def test_asn_valid(client, httpserver):
                 "goodnessOverall": 0,
                 "categoryOverall": "danger",
                 "bgpOrigins": [64501],
-                "specialUseType": None,
                 "rir": "RIPE NCC",
                 "rpkiRoutes": [],
                 "irrRoutes": {},
                 "messages": [
                     {"category": "danger", "text": "No route objects match DFZ origin"},
+                    {
+                        "category": "danger",
+                        "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                    },
                 ],
             }
         ],
@@ -143,11 +149,14 @@ async def test_asn_no_data(client, httpserver):
                 "categoryOverall": "danger",
                 "bgpOrigins": [64500],
                 "rir": None,
-                "specialUseType": None,
                 "rpkiRoutes": [],
                 "irrRoutes": {},
                 "messages": [
                     {"category": "danger", "text": "No route objects match DFZ origin"},
+                    {
+                        "category": "danger",
+                        "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                    },
                 ],
             }
         ],

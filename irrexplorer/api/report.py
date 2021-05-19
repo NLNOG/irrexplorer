@@ -1,6 +1,7 @@
 from typing import List
 
 from irrexplorer.api.interfaces import PrefixSummary
+from irrexplorer.settings import SPECIAL_USE_SPACE
 from irrexplorer.state import RPKIStatus
 
 
@@ -50,5 +51,9 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
             [r.rpki_status == RPKIStatus.not_found for r in s.irr_routes_all]
         ):
             s.info("No (covering) RPKI ROA found for route objects")
+
+        for name, special_use_prefix in SPECIAL_USE_SPACE:
+            if s.prefix.overlaps(special_use_prefix):
+                s.danger(f"Overlaps with {name} special use prefix {special_use_prefix}")
 
         s.finalise_status()
