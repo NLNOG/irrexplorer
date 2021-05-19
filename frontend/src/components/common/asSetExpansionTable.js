@@ -4,12 +4,14 @@ import PropTypes from 'prop-types';
 import api from "../../services/api";
 import Spinner from "./spinner";
 import {Link} from "@reach/router";
+import TableFooter from "./tableFooter";
 
 
 class AsSetExpansionTable extends Component {
     state = {
         hasLoaded: false,
         subSets: [],
+        apiCallUrl: '',
     }
 
     async componentDidMount() {
@@ -26,16 +28,18 @@ class AsSetExpansionTable extends Component {
         this.setState({
             hasLoaded: false,
             subSets: [],
+            apiCallUrl: '',
         });
-        const response = await api.getSetExpansion(this.props.query);
+        const {data, url} = await api.getSetExpansion(this.props.query);
         this.setState({
             hasLoaded: true,
-            subSets: response,
+            subSets: data,
+            apiCallUrl: url,
         });
     }
 
     renderTableContent() {
-        const {hasLoaded, subSets} = this.state;
+        const {hasLoaded, subSets, apiCallUrl} = this.state;
         if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!subSets.length)
@@ -60,6 +64,7 @@ class AsSetExpansionTable extends Component {
                     </tr>
                 )}
                 </tbody>
+                <TableFooter url={apiCallUrl} />
             </>
         );
     }

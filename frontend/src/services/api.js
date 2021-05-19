@@ -38,9 +38,9 @@ export async function cleanQuery(query) {
 async function performRequest(url) {
     try {
         const response = await axios.get(url, {cancelToken: source.token});
-        return response.data;
+        return {data: response.data, url: url};
     } catch (exc) {
-        return null;
+        return {data: null, url: url};
     }
 
 }

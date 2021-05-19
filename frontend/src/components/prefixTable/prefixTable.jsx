@@ -6,6 +6,7 @@ import PrefixTableBody from "./prefixTableBody";
 import {findIrrSourceColumns, sortPrefixesDataBy} from "../../utils/prefixData";
 import PrefixTableHeader from "./prefixTableHeader";
 import WhoisModal from "./whoisModal";
+import TableFooter from "../common/tableFooter";
 
 
 class PrefixTable extends Component {
@@ -75,8 +76,9 @@ class PrefixTable extends Component {
                         reducedColour={this.props.reducedColour}
                     />
                     {this.renderTableContent()}
+                    <TableFooter url={this.props.apiCallUrl} />
                 </table>
-                <WhoisModal ref={this.whoisModalRef} />
+                <WhoisModal ref={this.whoisModalRef}/>
             </>
         );
     }
@@ -86,6 +88,7 @@ PrefixTable.propTypes = {
     prefixesData: PropTypes.arrayOf(PropTypes.object).isRequired,
     hasLoaded: PropTypes.bool,
     reducedColour: PropTypes.bool,
+    apiCallUrl: PropTypes.string,
 };
 
 

@@ -11,6 +11,7 @@ class ASNQuery extends Component {
         hasLoadedPrefixes: false,
         directOriginPrefixes: [],
         overlapPrefixes: [],
+        apiCallUrl: '',
     };
 
     async componentDidMount() {
@@ -28,12 +29,14 @@ class ASNQuery extends Component {
             hasLoadedPrefixes: false,
             directOriginPrefixes: [],
             overlapPrefixes: [],
+            apiCallUrl: '',
         });
-        const response = await api.getPrefixesForASN(this.props.query);
+        const {data, url} = await api.getPrefixesForASN(this.props.query);
         this.setState({
             hasLoadedPrefixes: true,
-            directOriginPrefixes: response.directOrigin,
-            overlapPrefixes: response.overlaps,
+            directOriginPrefixes: data.directOrigin,
+            overlapPrefixes: data.overlaps,
+            apiCallUrl: url,
         });
     }
 
@@ -52,6 +55,7 @@ class ASNQuery extends Component {
                     prefixesData={directOriginPrefixes}
                     hasLoaded={hasLoadedPrefixes}
                     reducedColour={reducedColour}
+                    apiCallUrl={this.state.apiCallUrl}
                 />
                 <h2 className="h3 mt-4">
                     Other prefixes overlapping with prefixes originated by {query}
@@ -61,6 +65,7 @@ class ASNQuery extends Component {
                     prefixesData={overlapPrefixes}
                     hasLoaded={hasLoadedPrefixes}
                     reducedColour={reducedColour}
+                    apiCallUrl={this.state.apiCallUrl}
                 />
                 <h2 className="h3 mt-4">
                     Included in the following sets:

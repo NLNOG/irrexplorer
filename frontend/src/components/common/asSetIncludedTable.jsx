@@ -8,6 +8,7 @@ import _ from 'lodash';
 import Spinner from "./spinner";
 import api from "../../services/api";
 import {Link} from "@reach/router";
+import TableFooter from "./tableFooter";
 
 
 class AsSetIncludedTable extends Component {
@@ -15,6 +16,7 @@ class AsSetIncludedTable extends Component {
         hasLoaded: false,
         irrsSeen: [],
         rows: [],
+        apiCallUrl: '',
     }
 
     async componentDidMount() {
@@ -32,15 +34,16 @@ class AsSetIncludedTable extends Component {
             hasLoaded: false,
             irrsSeen: [],
             rows: [],
+            apiCallUrl: '',
         });
         const response = await api.getSetMemberOf(this.props.query);
         this.processResponse(response);
     }
 
-    processResponse(response) {
+    processResponse({data, url}) {
         const irrsPerSet = {};
-        if (!response.setsPerIrr) return;
-        for (const [irrName, setNames] of Object.entries(response.setsPerIrr)) {
+        if (!data.setsPerIrr) return;
+        for (const [irrName, setNames] of Object.entries(data.setsPerIrr)) {
             for (const setName of setNames) {
                 const existing_entries = irrsPerSet[setName] ? irrsPerSet[setName] : [];
                 irrsPerSet[setName] = [...existing_entries, irrName];
@@ -52,13 +55,14 @@ class AsSetIncludedTable extends Component {
         }
         this.setState({
             rows: _.orderBy(rows, ['setName']),
-            irrsSeen: response.irrsSeen,
+            irrsSeen: data.irrsSeen,
             hasLoaded: true,
+            apiCallUrl: url,
         })
     }
-    // INFO:     127.0.0.1:56435 - "GET /api/prefixes/asn/AS-1 HTTP/1.1" 404 Not Found
+
     renderTableContent() {
-        const {hasLoaded, irrsSeen, rows} = this.state;
+        const {hasLoaded, irrsSeen, rows, apiCallUrl} = this.state;
         if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!rows.length)
@@ -87,6 +91,7 @@ class AsSetIncludedTable extends Component {
                     </tr>
                 )}
                 </tbody>
+                <TableFooter url={apiCallUrl} />
             </>
         );
     }

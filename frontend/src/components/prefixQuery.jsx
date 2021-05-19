@@ -8,8 +8,8 @@ import api from "../services/api";
 class PrefixQuery extends Component {
     state = {
         leastSpecificPrefix: null,
-        directOverlapPrefixes: {hasLoaded: false, data: []},
-        leastSpecificOverlapPrefixes: {hasLoaded: false, data: []},
+        directOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
+        leastSpecificOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
     };
 
     async componentDidMount() {
@@ -25,8 +25,8 @@ class PrefixQuery extends Component {
     async loadPrefixesData() {
         this.setState({
             leastSpecificPrefix: null,
-            directOverlapPrefixes: {hasLoaded: false, data: []},
-            leastSpecificOverlapPrefixes: {hasLoaded: false, data: []},
+            directOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
+            leastSpecificOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
         });
         await this.loadPrefixData(this.props.query, 'directOverlapPrefixes');
         const leastSpecificPrefix = findLeastSpecific(this.props.query, this.state.directOverlapPrefixes.data);
@@ -39,9 +39,9 @@ class PrefixQuery extends Component {
     }
 
     async loadPrefixData(query, target) {
-        const data = await api.getPrefixesForPrefix(query);
+        const {data, url} = await api.getPrefixesForPrefix(query);
         this.setState({
-            [target]: {hasLoaded: true, data},
+            [target]: {hasLoaded: true, data, apiCallUrl: url},
         })
     }
 
@@ -59,6 +59,7 @@ class PrefixQuery extends Component {
                 <PrefixTable
                     prefixesData={directOverlapPrefixes.data}
                     hasLoaded={directOverlapPrefixes.hasLoaded}
+                    apiCallUrl={directOverlapPrefixes.apiCallUrl}
                     reducedColour={reducedColour}
                 />
 
@@ -70,6 +71,7 @@ class PrefixQuery extends Component {
                     <PrefixTable
                         prefixesData={leastSpecificOverlapPrefixes.data}
                         hasLoaded={leastSpecificOverlapPrefixes.hasLoaded}
+                        apiCallUrl={leastSpecificOverlapPrefixes.apiCallUrl}
                         reducedColour={reducedColour}
                     />
                 </>}
