@@ -49,15 +49,17 @@ class AsSetExpansionTable extends Component {
                 <thead>
                 <tr>
                     <th key="name" scope="col">Name</th>
+                    <th key="source" scope="col">Source</th>
                     <th key="depth" scope="col">Depth</th>
                     <th key="path" scope="col">Path</th>
                     <th key="members" scope="col">Members</th>
                 </tr>
                 </thead>
                 <tbody>
-                {subSets.map(({name, depth, path, members}) =>
+                {subSets.map(({name, source, depth, path, members}) =>
                     <tr key={name + path.join()}>
                         <td key="name"><Link to={`/as-set/${name}`}>{name}</Link></td>
+                        <td key="source">{source}</td>
                         <td key="depth">{depth}</td>
                         <td key="path">{path.join(' ➜ ')}</td>
                         <td key="members">{members.join(' ')}</td>

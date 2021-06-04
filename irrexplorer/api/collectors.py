@@ -186,7 +186,7 @@ async def collect_set_expansion(name: str):
     start = time.perf_counter()
     irrd = IRRDQuery()
 
-    resolved: Dict[str, List[str]] = {}
+    resolved: Dict[str, Dict[str, List[str]]] = {name: {}}
     to_resolve = {name}
     tree_depth = 0
 
@@ -202,7 +202,8 @@ async def collect_set_expansion(name: str):
         resolved.update(step_result)
         to_resolve = {
             member
-            for members in step_result.values()
+            for members_per_source in step_result.values()
+            for members in members_per_source.values()
             for member in members
             if is_set(member) and member not in to_resolve
         }
@@ -217,14 +218,16 @@ async def collect_set_expansion(name: str):
             return  # circular reference
         path = path + [stub_name]
         depth += 1
-        results.append(
-            SetExpansion(
-                name=stub_name, depth=depth, path=path, members=sorted(resolved[stub_name])
+        for source, members in resolved[stub_name].items():
+            result = SetExpansion(
+                name=stub_name, source=source, depth=depth, path=path, members=sorted(members)
             )
-        )
-        for sub_member in resolved[stub_name]:
-            if sub_member in resolved:
-                traverse_tree(sub_member, depth, path)
+            if result not in results:
+                results.append(result)
+        for sub_members in resolved[stub_name].values():
+            for sub_member in sub_members:
+                if sub_member in resolved:
+                    traverse_tree(sub_member, depth, path)
 
     traverse_tree(name)
     results.sort(key=lambda item: (item.depth, item.name))
