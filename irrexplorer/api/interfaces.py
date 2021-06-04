@@ -167,6 +167,7 @@ class MemberOf:
 @dataclass
 class SetExpansion:
     name: str
+    source: str
     depth: int
     path: List[str]
     members: List[str]
