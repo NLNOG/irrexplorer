@@ -169,7 +169,7 @@ async def collect_member_of(target: str) -> MemberOf:
     for autnum in data["autNum"]:
         autnum_mntners = set(autnum["mntBy"])
         for member_of in autnum["memberOfObjs"]:
-            expected_mntners = set(member_of.get("mbrsByRef", []))
+            expected_mntners = set(member_of.get("mbrsByRef", [])) if member_of else set()
             if "ANY" in expected_mntners or autnum_mntners.intersection(expected_mntners):
                 irrs_seen.add(member_of["source"])
                 result.sets_per_irr[member_of["source"]].add(member_of["rpslPk"])
