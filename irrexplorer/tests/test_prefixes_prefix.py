@@ -37,6 +37,24 @@ IRRD_PREFIX_VALID_RESPONSE = {
 }
 
 
+IRRD_PREFIX_VALID_RESPONSE_RPKI_AS0 = {
+    "data": {
+        "rpslObjects": [
+            {
+                "rpslPk": "192.0.2.0/24AS0ML24",
+                "objectClass": "route",
+                "prefix": "192.0.2.0/24",
+                "asn": 0,
+                "source": "RPKI",
+                "rpkiStatus": "valid",
+                "rpkiMaxLength": 24,
+                "objectText": "rpsl object text",
+            },
+        ]
+    }
+}
+
+
 async def test_prefix_invalid(client):
     response = await client.get("/api/prefixes/prefix/invalid")
     assert response.status_code == 400
@@ -106,6 +124,44 @@ async def test_prefix_valid(client, httpserver):
                 },
             ],
         }
+    ]
+
+    assert response.json() == expected
+
+
+async def test_prefix_valid_rpki_as0(client, httpserver):
+    environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
+    httpserver.expect_oneshot_request("/graphql").respond_with_json(
+        IRRD_PREFIX_VALID_RESPONSE_RPKI_AS0
+    )
+
+    response = await client.get("/api/prefixes/prefix/192.0.2.0/24")
+    assert response.status_code == 200
+    expected = [
+        {
+            "prefix": "192.0.2.0/24",
+            "prefixSortKey": "3221225984/24",
+            "goodnessOverall": 0,
+            "categoryOverall": "danger",
+            "bgpOrigins": [],
+            "rir": None,
+            "rpkiRoutes": [
+                {
+                    "rpkiStatus": "VALID",
+                    "asn": 0,
+                    "rpslPk": "192.0.2.0/24AS0ML24",
+                    "rpkiMaxLength": 24,
+                    "rpslText": "rpsl object text",
+                }
+            ],
+            "irrRoutes": {},
+            "messages": [
+                {
+                    "category": "danger",
+                    "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
+                },
+            ],
+        },
     ]
 
     assert response.json() == expected

@@ -17,7 +17,7 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
         # Detect superfluous route objects
         if not s.bgp_origins and s.irr_origins:
             s.info("Route objects exist, but prefix not seen in DFZ")
-        if not s.bgp_origins and s.rpki_origins:
+        if not s.bgp_origins and s.rpki_origins and s.rpki_origins != {0}:
             s.info("RPKI ROA exists, but prefix not seen in DFZ")
 
         # Detect route objects in unexpected IRR
