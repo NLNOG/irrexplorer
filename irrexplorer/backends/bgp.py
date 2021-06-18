@@ -7,10 +7,8 @@ from databases import Database
 from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
 from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import (
-    BGP_IPV4_LENGTH_MAXIMUM,
-    BGP_IPV4_LENGTH_MINIMUM,
-    BGP_IPV6_LENGTH_MAXIMUM,
-    BGP_IPV6_LENGTH_MINIMUM,
+    BGP_IPV4_LENGTH_CUTOFF,
+    BGP_IPV6_LENGTH_CUTOFF,
     BGP_SOURCE,
     DATABASE_URL,
 )
@@ -54,11 +52,9 @@ class BGPImporter:
             length = int(prefix.split("/")[1])
         except IndexError as ve:
             raise ImporterError(f"Invalid BGP prefix: {prefix}: {ve}")
-        if ip_version == 6:
-            include = BGP_IPV6_LENGTH_MINIMUM <= length <= BGP_IPV6_LENGTH_MAXIMUM
-        else:
-            include = BGP_IPV4_LENGTH_MINIMUM <= length <= BGP_IPV4_LENGTH_MAXIMUM
-        return include
+        return length < BGP_IPV4_LENGTH_CUTOFF or (
+            ip_version == 6 and length < BGP_IPV6_LENGTH_CUTOFF
+        )
 
     async def _load_prefixes(self, prefixes: List[Tuple[str, int]]):
         async with Database(DATABASE_URL) as database:
@@ -101,4 +97,4 @@ class BGPQuery(LocalSQLQueryBase):
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+        yield lst[i:i + n]

@@ -13,7 +13,7 @@ TESTING = config("TESTING", cast=bool, default=False)
 HTTP_PORT = config("HTTP_PORT", cast=int, default=8000)
 HTTP_WORKERS = config("HTTP_WORKERS", cast=int, default=4)
 
-BGP_SOURCE = config("BGP_SOURCE", default="https://bgp.tools/table.txt")
+BGP_SOURCE = config("BGP_SOURCE", default="http://lg01.infra.ring.nlnog.net/table.txt")
 DATABASE_URL = config("DATABASE_URL", cast=databases.DatabaseURL)
 
 if TESTING:
@@ -45,10 +45,8 @@ RIRSTATS_URL = {
     ),
 }
 
-BGP_IPV4_LENGTH_MINIMUM = config("BGP_IPV4_LENGTH_MINIMUM", cast=int, default=9)
-BGP_IPV4_LENGTH_MAXIMUM = config("BGP_IPV4_LENGTH_MAXIMUM", cast=int, default=29)
-BGP_IPV6_LENGTH_MINIMUM = config("BGP_IPV6_LENGTH_MINIMUM", cast=int, default=23)
-BGP_IPV6_LENGTH_MAXIMUM = config("BGP_IPV6_LENGTH_MAXIMUM", cast=int, default=124)
+BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
+BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 
 MINIMUM_PREFIX_SIZE = {
     4: config("MINIMUM_PREFIX_SIZE_IPV4", cast=int, default=9),
