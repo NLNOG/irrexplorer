@@ -129,7 +129,7 @@ async def test_asn_valid(client, httpserver):
     assert response.json() == expected
 
 
-async def test_asn_no_data(client, httpserver):
+async def test_asn_no_irr_data(client, httpserver):
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
     httpserver.expect_request("/graphql").respond_with_json(IRRD_PREFIX_EMPTY_RESPONSE)
 
@@ -160,6 +160,19 @@ async def test_asn_no_data(client, httpserver):
                 ],
             }
         ],
+        "overlaps": [],
+    }
+    assert response.json() == expected
+
+
+async def test_asn_no_data(client, httpserver):
+    environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
+    httpserver.expect_request("/graphql").respond_with_json(IRRD_PREFIX_EMPTY_RESPONSE)
+
+    response = await client.get("/api/prefixes/asn/64500")
+    assert response.status_code == 200
+    expected = {
+        "directOrigin": [],
         "overlaps": [],
     }
     assert response.json() == expected

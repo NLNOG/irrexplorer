@@ -72,6 +72,12 @@ class PrefixCollector:
         and set the results into self.irrd_per_prefix,
         self.bgp_per_prefix, self.aggregates and self.rirstats.
         """
+        self.irrd_per_prefix = defaultdict(list)
+        self.bgp_per_prefix = defaultdict(list)
+
+        if not search_prefixes:
+            return
+
         tasks = [
             IRRDQuery().query_prefixes_any(search_prefixes),
             BGPQuery(self.database).query_prefixes_any(search_prefixes),
@@ -79,11 +85,9 @@ class PrefixCollector:
         ]
         routes_irrd, routes_bgp, self.rirstats = await _execute_tasks(tasks)
 
-        self.irrd_per_prefix = defaultdict(list)
         for result in routes_irrd:
             self.irrd_per_prefix[result.prefix].append(result)
 
-        self.bgp_per_prefix = defaultdict(list)
         for result in routes_bgp:
             self.bgp_per_prefix[result.prefix].append(result)
 
