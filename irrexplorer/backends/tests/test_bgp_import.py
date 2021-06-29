@@ -35,17 +35,21 @@ async def test_importer_valid():
         await database.execute(query=tables.bgp.delete())
 
 
-async def test_importer_invalid():
+async def test_importer_invalid_extra_data():
     with aioresponses() as http_mock:
         http_mock.get(BGP_SOURCE, status=200, body="""192.0.2.0/24 64500 invalid-extra""")
         with pytest.raises(ImporterError):
             await BGPImporter().run_import()
 
+
+async def test_importer_invalid_prefix():
     with aioresponses() as http_mock:
         http_mock.get(BGP_SOURCE, status=200, body="""invalid 64500""")
         with pytest.raises(ImporterError):
             await BGPImporter().run_import()
 
+
+async def test_importer_invalid_prefix_ip():
     with aioresponses() as http_mock:
         http_mock.get(BGP_SOURCE, status=200, body="""invalid/24 64500""")
         with pytest.raises(ImporterError):
