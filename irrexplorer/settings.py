@@ -13,7 +13,8 @@ TESTING = config("TESTING", cast=bool, default=False)
 HTTP_PORT = config("HTTP_PORT", cast=int, default=8000)
 HTTP_WORKERS = config("HTTP_WORKERS", cast=int, default=4)
 
-BGP_SOURCE = config("BGP_SOURCE", default="http://lg01.infra.ring.nlnog.net/table.txt")
+BGP_SOURCE = config("BGP_SOURCE", default="https://bgp.tools/table.jsonl")
+BGP_SOURCE_MINIMUM_HITS = config("BGP_SOURCE_MINIMUM_HITS", default=20, cast=int)
 DATABASE_URL = config("DATABASE_URL", cast=databases.DatabaseURL)
 
 if TESTING:

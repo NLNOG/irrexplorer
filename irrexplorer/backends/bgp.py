@@ -1,5 +1,6 @@
 from typing import List, Tuple
 
+import json
 from asgiref.sync import sync_to_async
 from asyncpg import DataError
 from databases import Database
@@ -10,6 +11,7 @@ from irrexplorer.settings import (
     BGP_IPV4_LENGTH_CUTOFF,
     BGP_IPV6_LENGTH_CUTOFF,
     BGP_SOURCE,
+    BGP_SOURCE_MINIMUM_HITS,
     DATABASE_URL,
 )
 from irrexplorer.state import DataSource, RouteInfo
@@ -35,10 +37,13 @@ class BGPImporter:
             if not line:
                 continue
             try:
-                prefix, origin_str = line.split(" ")
-                origin = int(origin_str)
-            except ValueError as ve:
-                raise ImporterError(f"Invalid BGP line: {line.split('|')}: {ve}")
+                record = json.loads(line)
+                prefix, origin, hits = record["CIDR"], record["ASN"], record["Hits"]
+            except (ValueError, KeyError) as ve:
+                raise ImporterError(f"Invalid BGP line: {line}: {ve}")
+
+            if hits < BGP_SOURCE_MINIMUM_HITS:
+                continue
 
             ip_version = 6 if ":" in prefix else 4
             if self._include_route(ip_version, prefix):
@@ -97,4 +102,4 @@ class BGPQuery(LocalSQLQueryBase):
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]

@@ -80,7 +80,9 @@ You can optionally set:
 * `DEBUG`: enables debug mode in the web server. defaults to `False`.
   Do not enable in production.
 * `BGP_SOURCE`: the source of BGP origin information. Default:
-  `http://lg01.infra.ring.nlnog.net/table.txt`
+  `https://bgp.tools/table.jsonl`.
+* `BGP_SOURCE_MINIMUM_HITS`: the minimum number of hits a `BGP_SOURCE`
+  record needs to be included. Default: 250.
 * `RIRSTATS_URL_ARIN`, `RIRSTATS_URL_AFRINIC`, etc. URL for the 
   RIR stats file for each RIR (supports basic and extended format).
 * `BGP_IPV4_LENGTH_CUTOFF` / `BGP_IPV6_LENGTH_CUTOFF`: BGP prefixes
