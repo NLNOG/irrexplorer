@@ -8,7 +8,7 @@ function Footer() {
                 DashCare BV
             </a> for <a className="link-dark" href="https://www.nlnog.net/">
                 Stichting NLNOG
-            </a> · Source on <a className="link-dark" href="https://github.com/dashcare/irrexplorer">
+            </a> · Source on <a className="link-dark" href="https://github.com/nlnog/irrexplorer">
                 GitHub
             </a>
 
