@@ -51,7 +51,7 @@ BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 
 MINIMUM_PREFIX_SIZE = {
     4: config("MINIMUM_PREFIX_SIZE_IPV4", cast=int, default=9),
-    6: config("MINIMUM_PREFIX_SIZE_IPV4", cast=int, default=29),
+    6: config("MINIMUM_PREFIX_SIZE_IPV6", cast=int, default=29),
 }
 
 SPECIAL_USE_SPACE = [

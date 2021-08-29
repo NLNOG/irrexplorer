@@ -88,7 +88,7 @@ You can optionally set:
 * `BGP_IPV4_LENGTH_CUTOFF` / `BGP_IPV6_LENGTH_CUTOFF`: BGP prefixes
   of this length or longer are dropped when importing BGP origin data.
   Default: 29 and 124.
-* `MINIMUM_PREFIX_SIZE_IPV4` / `MINIMUM_PREFIX_SIZE_IPV4`: minimum prefix
+* `MINIMUM_PREFIX_SIZE_IPV4` / `MINIMUM_PREFIX_SIZE_IPV6`: minimum prefix
   length for queries. Prefixes shorter than this are rejected, to limit
   database load. Default: 9 and 29.
 
