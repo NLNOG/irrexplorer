@@ -39,6 +39,7 @@ function QueryForm() {
                         placeholder="Prefix, IP, ASN or AS-set"
                         onChange={handleSearchChange}
                         className={inputClasses}
+                        autoFocus
                     />
                     <div className="invalid-feedback">
                         {validationError}
