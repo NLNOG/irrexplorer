@@ -10,7 +10,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15",
     "@fortawesome/free-solid-svg-icons": "^5.15",
     "@fortawesome/react-fontawesome": "^0.1",
-    "@popperjs/core": "^2.8",
+    "@popperjs/core": "^2.11",
     "@reach/router": "^1.3",
     "axios": "^0.21",
     "bootstrap": "^5.0.0-beta3",
