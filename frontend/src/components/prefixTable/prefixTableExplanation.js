@@ -29,9 +29,9 @@ function PrefixTableExplanation() {
                     <dd className="col-sm-10">
                         The originating AS number(s) seen in route(6) objects in various IRR databases.
                         For each origin,
-                        {' '}<FontAwesomeIcon icon={faCheckCircle} title="Route object is RPKI valid"/>{' '}
+                        {' '}<FontAwesomeIcon icon={faCheckCircle} title="Route object is RPKI-valid"/>{' '}
                         means the object is valid according to RPKI origin validation,
-                        {' '}<FontAwesomeIcon icon={faTimesCircle} title="Route object is RPKI invalid"/>{' '}
+                        {' '}<FontAwesomeIcon icon={faTimesCircle} title="Route object is RPKI-invalid"/>{' '}
                         means it is invalid, and no icon means that no relevant ROA was found.
                     </dd>
                     <dt className="col-sm-2">Advice</dt>
@@ -73,10 +73,10 @@ function PrefixTableExplanation() {
                     <dd className="col-sm-9">
                         The origin(s) in the ROA(s) for this prefix do not match the
                         origin in the DFZ. This means your prefix is not reachable by
-                        anyone dropping RPKI invalid routes, which is increasingly common.
+                        anyone dropping RPKI-invalid routes, which is increasingly common.
                         You should create the appropriate ROA(s) for this prefix.
                     </dd>
-                    <dt className="col-sm-3">RPKI invalid route objects found</dt>
+                    <dt className="col-sm-3">RPKI-invalid route objects found</dt>
                     <dd className="col-sm-9">
                         Some or all of the IRR route objects for this prefix are invalid according
                         to RPKI origin validation. This means they are misconfigured or outdated.

@@ -10,10 +10,10 @@ function AsnWithRPKIStatus({rpkiStatus, asn}) {
     let text = '';
     if (rpkiStatus === "VALID") {
         rpkiIcon = faCheckCircle;
-        text = "Route object is RPKI valid"
+        text = "Route object is RPKI-valid"
     } else if (rpkiStatus === "INVALID") {
         rpkiIcon = faTimesCircle;
-        text = "Route object is RPKI invalid"
+        text = "Route object is RPKI-invalid"
     }
 
     return (

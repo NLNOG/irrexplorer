@@ -46,7 +46,7 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
         if s.rpki_origins and s.bgp_origins - s.rpki_origins:
             s.danger("RPKI origin does not match BGP origin")
         if any([r.rpki_status == RPKIStatus.invalid for r in s.irr_routes_all]):
-            s.danger("RPKI invalid route objects found")
+            s.danger("RPKI-invalid route objects found")
         elif s.irr_routes and all(
             [r.rpki_status == RPKIStatus.not_found for r in s.irr_routes_all]
         ):
