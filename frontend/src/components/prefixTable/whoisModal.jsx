@@ -50,7 +50,7 @@ class WhoisModal extends Component {
                             <p className="font-monospace" ref={queryRef}/>
                             <pre className="text-light bg-dark" ref={rpslTextRef}/>
                             <div className="alert alert-warning" role="alert" ref={rpkiAlertRef}>
-                                This route object is RPKI invalid, and may be filtered out
+                                This route object is RPKI-invalid, and may be filtered out
                                 of whois query output by default.
                             </div>
                         </div>

@@ -151,7 +151,7 @@ def test_report_rpki_invalid():
         ReportMessage(
             category=MessageCategory.DANGER, text="RPKI origin does not match BGP origin"
         ),
-        ReportMessage(category=MessageCategory.DANGER, text="RPKI invalid route objects found"),
+        ReportMessage(category=MessageCategory.DANGER, text="RPKI-invalid route objects found"),
     ]
 
 

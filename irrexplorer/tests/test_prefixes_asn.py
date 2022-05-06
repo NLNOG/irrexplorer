@@ -93,7 +93,7 @@ async def test_asn_valid(client, httpserver):
                 "messages": [
                     {"category": "danger", "text": "No route objects match DFZ origin"},
                     {"category": "danger", "text": "RPKI origin does not match BGP origin"},
-                    {"category": "danger", "text": "RPKI invalid route objects found"},
+                    {"category": "danger", "text": "RPKI-invalid route objects found"},
                     {
                         "category": "danger",
                         "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
