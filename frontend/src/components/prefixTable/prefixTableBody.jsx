@@ -70,7 +70,7 @@ class PrefixTableBody extends Component {
                 <tr key={prefix} className={this.classNameForRow(categoryOverall)}>
                     <td key="prefix"><Link to={`/prefix/${prefix}`} className="link-dark">{prefix}</Link></td>
                     <td key="rir" className="nowrap">{rir}</td>
-                    <td key="bgpOrigins"><a href={`http://lg.ring.nlnog.net/query/${prefix}`}
+                    <td key="bgpOrigins"><a href={`https://lg.ring.nlnog.net/prefix?q=${prefix}&match=exact&peer=all`}
                                             className="link-dark">{bgpOrigins.join(', ')}</a></td>
                     {this.renderRpkiCells(rpkiRoutes)}
                     {irrSourceColumns.map(
