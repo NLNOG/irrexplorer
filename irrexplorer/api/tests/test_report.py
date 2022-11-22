@@ -261,6 +261,47 @@ def test_report_multiple_irr_origins():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.WARNING,
-            text="Multiple route objects exist with different origins",
+            text="Multiple route objects exist with different origins, but DFZ only has one",
+        ),
+    ]
+
+
+def test_report_multiple_bgp_and_irr_origins():
+    summary = PrefixSummary(
+        prefix=ip_network("2001:db8::/48"),
+        rir=RIR.RIPENCC,
+        bgp_origins={65540, 65542},
+        irr_routes={
+            "RIPE": [
+                PrefixIRRDetail(
+                    rpsl_pk="2001:db8::/48AS65540",
+                    asn=65540,
+                    rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
+                ),
+            ],
+            "RADB": [
+                PrefixIRRDetail(
+                    rpsl_pk="2001:db8::/48AS65540",
+                    asn=65540,
+                    rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
+                ),
+                PrefixIRRDetail(
+                    rpsl_pk="2001:db8::/48AS65541",
+                    asn=65541,
+                    rpki_status=RPKIStatus.valid,
+                    rpsl_text="rpsl object text",
+                ),
+            ],
+        },
+    )
+    enrich_prefix_summaries_with_report([summary])
+    assert summary.category_overall == MessageCategory.DANGER
+    assert summary.goodness_overall == 0
+    assert summary.messages == [
+        ReportMessage(
+            category=MessageCategory.DANGER,
+            text="No route objects for some DFZ origins",
         ),
     ]
