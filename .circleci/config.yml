@@ -56,7 +56,7 @@ jobs:
 
       - run:
           name: run regular tests
-          command: poetry run py.test -s -vvvv --cov=irrexplorer irrexplorer --junitxml=test-reports/junit.xml -cov-fail-under=100 --cov-report term-missing:skip-covered
+          command: poetry run py.test -s -vvvv --cov=irrexplorer irrexplorer --junitxml=test-reports/junit.xml -cov-fail-under=100 --cov-report term-missing:skip-covered --asyncio-mode=auto
 
       - store_test_results:
           path: test-reports

@@ -11,8 +11,6 @@ from irrexplorer.storage import tables
 
 from ..rirstats import RIRStatsImporter
 
-pytestmark = pytest.mark.asyncio
-
 VALID_RIRSTATS = """
 2|ripencc|1614293940|143246|19830705|20210225|+0100
 ripencc|*|ipv4|*|84420|summary

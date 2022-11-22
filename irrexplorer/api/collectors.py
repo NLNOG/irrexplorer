@@ -218,7 +218,7 @@ async def collect_set_expansion(name: str):
 
     results = []
 
-    def traverse_tree(stub_name: str, depth: int = 0, path: List[str] = None) -> None:
+    def traverse_tree(stub_name: str, depth: int = 0, path: Optional[List[str]] = None) -> None:
         if path is None:
             path = []
         if stub_name in path:
