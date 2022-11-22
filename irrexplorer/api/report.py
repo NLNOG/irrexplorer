@@ -28,7 +28,10 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
 
         # Check route objects against origins
         if s.bgp_origins - s.irr_origins:
-            s.danger("No route objects match DFZ origin")
+            if s.bgp_origins.intersection(s.irr_origins):
+                s.danger("No route objects for some DFZ origins")
+            else:
+                s.danger("No route objects match DFZ origin")
         elif s.irr_routes_expected_rir and s.bgp_origins - s.irr_origins_expected_rir:
             s.danger(
                 f"Expected route object in {s.irr_expected_rir}, but BGP origin does not "
@@ -39,8 +42,8 @@ def enrich_prefix_summaries_with_report(prefix_summaries: List[PrefixSummary]):
                 f"Expected route object in {s.irr_expected_rir} matches BGP origin, "
                 f"but non-matching objects exist in other IRRs"
             )
-        elif len(s.irr_origins) > 1:
-            s.warning("Multiple route objects exist with different origins")
+        elif len(s.irr_origins) > 1 and len(s.bgp_origins) == 1:
+            s.warning("Multiple route objects exist with different origins, but DFZ only has one")
 
         # Detect RPKI situation
         if s.rpki_origins and s.bgp_origins - s.rpki_origins:
