@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import api from "../../services/api";
-import Spinner from "./spinner";
+import Spinner from "../common/spinner";
 import {Link} from "@reach/router";
-import TableFooter from "./tableFooter";
+import TableFooter from "../common/tableFooter";
 
 
 class AsSetExpansionTable extends Component {
@@ -62,11 +62,13 @@ class AsSetExpansionTable extends Component {
                         <td key="source">{source}</td>
                         <td key="depth">{depth}</td>
                         <td key="path">{path.join(' ➜ ')}</td>
-                        <td key="members">{members.join(' ')}</td>
+                        <td key="members">{members.map(
+                            name => <><Link to={`/query/${name}`}>{name}</Link>{" "}</>
+                        )}</td>
                     </tr>
                 )}
                 </tbody>
-                <TableFooter url={apiCallUrl} />
+                <TableFooter url={apiCallUrl}/>
             </>
         );
     }

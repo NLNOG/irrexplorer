@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import AsSetIncludedTable from "./common/asSetIncludedTable";
-import AsSetExpansionTable from "./common/asSetExpansionTable";
+import AsSetExpansionTable from "./setExpansionTable/asSetExpansionTable";
 
 class AsSetQuery extends Component {
     render() {
