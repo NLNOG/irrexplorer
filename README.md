@@ -131,3 +131,19 @@ the local port and number of workers with the `HTTP_PORT` and `HTTP_WORKERS` set
 For more advanced deployments, see the
 [Uvicorn deployment documentation](https://www.uvicorn.org/deployment/#using-a-process-manager).
 The app name for IRR explorer is `irrexplorer.app:app`. 
+
+### Development
+
+For development, it can be helpful to run the uvicorn and react apps separately.
+This also allow auto reloading.
+
+* Activate the virtualenv, and run uvicorn with `uvicorn --reload irrexplorer.app:app`.
+  This will listen on port 8000 by default and read settings from the `.env` file or
+  environment as in production.
+* Run the frontend from the frontend directory with `yarn start`. This will start
+  a small webserver on port 3000. You need to set and export `REACT_APP_BACKEND`
+  in the environment - this command will not read `.env`.
+
+To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
+(that build is used for static serving tests), activate the virtualenv,
+then run `pytest`.
