@@ -1,11 +1,7 @@
 from os import environ
 
-import pytest
-
 from irrexplorer.state import RIR
 from irrexplorer.storage import tables
-
-pytestmark = pytest.mark.asyncio
 
 IRRD_PREFIX_EMPTY_RESPONSE = {"data": {"rpslObjects": []}}  # type: ignore
 

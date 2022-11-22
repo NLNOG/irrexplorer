@@ -1,4 +1,5 @@
 from ipaddress import IPv4Network, IPv6Network
+from typing import Union, Tuple, List
 
 import databases
 from starlette.config import Config
@@ -54,7 +55,7 @@ MINIMUM_PREFIX_SIZE = {
     6: config("MINIMUM_PREFIX_SIZE_IPV6", cast=int, default=29),
 }
 
-SPECIAL_USE_SPACE = [
+SPECIAL_USE_SPACE: List[Tuple[str, Union[IPv4Network, IPv6Network]]] = [
     ("RFC1122", IPv4Network("0.0.0.0/8")),
     ("RFC1918", IPv4Network("10.0.0.0/8")),
     ("RFC6598", IPv4Network("100.64.0.0/10")),
