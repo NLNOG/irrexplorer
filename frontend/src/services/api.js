@@ -31,7 +31,10 @@ export async function cleanQuery(query) {
         const response = await axios.get(`${apiUrl}/clean_query/${query}`);
         return response.data;
     } catch (exc) {
-        return {error: exc.response.data};
+        if (exc.response) {
+            return {error: exc.response.data};
+        }
+        return {error: 'Error: unable to reach API'}
     }
 }
 

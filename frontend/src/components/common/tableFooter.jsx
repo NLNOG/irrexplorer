@@ -1,7 +1,7 @@
 import React from 'react';
 
 function TableFooter({url}) {
-    if (!url) return '';
+    if (!url) return null;
     return (
         <tfoot>
             <tr>
