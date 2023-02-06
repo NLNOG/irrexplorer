@@ -15,7 +15,7 @@ jobs:
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 
-      - image: circleci/postgres:9.6-ram
+      - image: cimg/postgres:15.0
         environment:
           POSTGRES_USER: test
           POSTGRES_DB: test
@@ -28,13 +28,13 @@ jobs:
 
       - restore_cache:
           keys:
-          - v3-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
+          - v4-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v3-dependencies-{{ .Environment.CIRCLE_JOB }}
+          - v4-dependencies-{{ .Environment.CIRCLE_JOB }}
 
       - run:
           name: install python dependencies
-          command: poetry install
+          command: poetry --no-ansi install
 
       - run:
           name: install frontend dependencies
@@ -44,7 +44,7 @@ jobs:
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
             - /mnt/ramdisk/frontend/node_modules
-          key: v3-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
+          key: v4-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
 
       - run:
           name: run linter
@@ -71,7 +71,7 @@ jobs:
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 
-      - image: circleci/postgres:9.6-ram
+      - image: cimg/postgres:15.0
         environment:
           POSTGRES_USER: test
           POSTGRES_DB: test
