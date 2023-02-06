@@ -1,3 +1,9 @@
+import os
+import signal
+import sys
+import threading
+import traceback
+
 import databases
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -10,6 +16,7 @@ from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 
 async def startup():
+    signal.signal(signal.SIGUSR1, sigusr1_handler)
     app.state.database = databases.Database(DATABASE_URL, force_rollback=TESTING)
     await app.state.database.connect()
 
@@ -48,3 +55,13 @@ app = Starlette(
     on_startup=[startup],
     on_shutdown=[shutdown],
 )
+
+
+def sigusr1_handler(signal, frame):
+    thread_names = {th.ident: th.name for th in threading.enumerate()}
+    code = [f"Traceback follows for all threads of process {os.getpid()}:"]
+    for thread_id, stack in sys._current_frames().items():
+        thread_name = thread_names.get(thread_id, "")
+        code.append(f"\n## Thread: {thread_name}({thread_id}) ##\n")
+        code += traceback.format_list(traceback.extract_stack(stack))
+    print("".join(code))
