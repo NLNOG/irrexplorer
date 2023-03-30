@@ -7,7 +7,9 @@ import sqlalchemy.dialects.postgresql as pg
 from databases import Database
 
 from irrexplorer.exceptions import ImporterError
-from irrexplorer.state import DataSource, IPNetwork, RouteInfo
+from irrexplorer.settings import DATABASE_URL
+from irrexplorer.state import RIR, DataSource, IPNetwork, RouteInfo
+from irrexplorer.storage import tables
 
 
 class LocalSQLQueryBase(metaclass=ABCMeta):
@@ -53,3 +55,19 @@ async def retrieve_url_text(url: str):
             if response.status != 200:
                 raise ImporterError(f"Failed import from {url}: status {response.status}")
             return await response.text()
+
+
+async def store_rir_prefixes(rir: RIR, prefixes: List[str]):
+    async with Database(DATABASE_URL) as database:
+        async with database.transaction():
+            query = tables.rirstats.delete(tables.rirstats.c.rir == rir)
+            await database.execute(query)
+            if prefixes:
+                values = [
+                    {
+                        "rir": rir,
+                        "prefix": prefix,
+                    }
+                    for prefix in prefixes
+                ]
+                await database.execute_many(query=tables.rirstats.insert(), values=values)

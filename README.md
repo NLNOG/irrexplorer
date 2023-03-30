@@ -85,6 +85,7 @@ You can optionally set:
   record needs to be included. Default: 250.
 * `RIRSTATS_URL_ARIN`, `RIRSTATS_URL_AFRINIC`, etc. URL for the 
   RIR stats file for each RIR (supports basic and extended format).
+* `REGISTROBR_URL`: URL for the Registro.BR asn-blk file.
 * `BGP_IPV4_LENGTH_CUTOFF` / `BGP_IPV6_LENGTH_CUTOFF`: BGP prefixes
   of this length or longer are dropped when importing BGP origin data.
   Default: 29 and 124.

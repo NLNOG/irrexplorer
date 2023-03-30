@@ -1,6 +1,7 @@
 import asyncio
 
 from irrexplorer.backends.bgp import BGPImporter
+from irrexplorer.backends.registro import RegistroImporter
 from irrexplorer.backends.rirstats import RIRStatsImporter
 from irrexplorer.state import RIR
 
@@ -12,7 +13,10 @@ async def main():
     """
     tasks = []
     for rir in RIR:
-        tasks.append(RIRStatsImporter(rir).run_import())
+        if rir == RIR.REGISTROBR:
+            tasks.append(RegistroImporter().run_import())
+        else:
+            tasks.append(RIRStatsImporter(rir).run_import())
     tasks.append(BGPImporter().run_import())
     await asyncio.gather(*tasks)
 

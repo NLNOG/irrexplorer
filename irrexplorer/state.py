@@ -18,6 +18,7 @@ class RIR(enum.Enum):
     AFRINIC = "AFRINIC"
     LACNIC = "LACNIC"
     APNIC = "APNIC"
+    REGISTROBR = "Registro.BR"
 
 
 class RPKIStatus(enum.Enum):
@@ -32,6 +33,7 @@ RIR_EXPECTED_IRR = {
     RIR.ARIN: "ARIN",
     RIR.LACNIC: "LACNIC",
     RIR.RIPENCC: "RIPE",
+    RIR.REGISTROBR: "TC",
 }
 
 
