@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from os import environ
 
 import pytest
@@ -19,14 +19,14 @@ IRRD_LAST_UPDATE_RESPONSE = {
 async def test_metadata_last_update(client, httpserver):
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
     httpserver.expect_request("/graphql").respond_with_json(IRRD_LAST_UPDATE_RESPONSE)
-    await update_last_data_import(datetime(2023, 1, 2))
+    await update_last_data_import(datetime(2023, 1, 2, tzinfo=timezone.utc))
 
     response = await client.get("/api/metadata/")
     assert response.status_code == 200
     expected = {
         "last_update": {
             "irr": {"DEMO": "2023-01-01 00:00:00+00:00"},
-            "importer": "2023-01-01 23:00:00+00:00",
+            "importer": "2023-01-02 00:00:00+00:00",
         }
     }
     assert response.json() == expected

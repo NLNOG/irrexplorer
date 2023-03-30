@@ -25,11 +25,11 @@ function Status() {
                             <li>Prefix to DFZ mapping from <a href="https://bgp.tools/">bgp.tools</a></li>
                             <li>
                                 IRRs mirrored over NRTMv3 with
-                                <a href="https://irrd.readthedocs.io/en/stable/">IRRD v4</a>
+                                with <a href="https://irrd.readthedocs.io/en/stable/">IRRD v4</a>
                             </li>
                             <li>
-                                RPKI data imported through
-                                <a href="https://irrd.readthedocs.io/en/stable/">IRRD v4</a>
+                                RPKI data imported
+                                through <a href="https://irrd.readthedocs.io/en/stable/">IRRD v4</a>
                             </li>
                         </ul>
                     </p>
