@@ -58,6 +58,10 @@ async def retrieve_url_text(url: str):
 
 
 async def store_rir_prefixes(rir: RIR, prefixes: List[str]):
+    """
+    Store a list of prefixes as associated with a given RIR.
+    All existing rows for this RIR are deleted.
+    """
     async with Database(DATABASE_URL) as database:
         async with database.transaction():
             query = tables.rirstats.delete(tables.rirstats.c.rir == rir)
