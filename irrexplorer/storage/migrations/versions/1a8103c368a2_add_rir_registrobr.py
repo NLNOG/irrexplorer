@@ -1,7 +1,7 @@
 """add_rir_registrobr
 
 Revision ID: 1a8103c368a2
-Revises: 484f38cffab1
+Revises: 5b62d14388b0
 Create Date: 2023-03-30 15:51:13.935002
 
 """
@@ -10,7 +10,7 @@ from sqlalchemy.exc import ProgrammingError
 
 # revision identifiers, used by Alembic.
 revision = "1a8103c368a2"
-down_revision = "484f38cffab1"
+down_revision = "5b62d14388b0"
 branch_labels = None
 depends_on = None
 
