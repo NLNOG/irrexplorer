@@ -26,6 +26,19 @@ axios.interceptors.response.use(null, error => {
 })
 
 
+export async function getMetadata() {
+    try {
+        const url = `${apiUrl}/metadata/`
+        const response = await axios.get(url);
+        return {data: response.data, url: url};
+    } catch (exc) {
+        if (exc.response) {
+            return {error: exc.response.data};
+        }
+        return {error: 'Error: unable to reach API'}
+    }
+}
+
 export async function cleanQuery(query) {
     try {
         const response = await axios.get(`${apiUrl}/clean_query/${query}`);
@@ -70,6 +83,7 @@ export async function cancelAllRequests() {
 }
 
 const api = {
+    getMetadata,
     getPrefixesForPrefix,
     getPrefixesForASN,
     cleanQuery,

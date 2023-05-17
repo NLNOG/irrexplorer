@@ -1,5 +1,6 @@
 import asyncio
 from collections import defaultdict
+from datetime import datetime
 from ipaddress import ip_network
 from typing import Dict, List
 
@@ -101,12 +102,31 @@ GQL_QUERY_SET_MEMBERS = gql(
 """
 )
 
+GQL_QUERY_LAST_UPDATE = gql(
+    """
+    query lastUpdate {
+        databaseStatus {
+            source
+            lastUpdate
+        }
+    }
+"""
+)
+
 
 class IRRDQuery:
     def __init__(self):
         # Read at this point to allow tests to change the endpoint
         endpoint = config("IRRD_ENDPOINT")
         self.transport = AIOHTTPTransport(url=endpoint, timeout=IRRD_TIMEOUT)
+
+    async def query_last_update(self) -> Dict[str, datetime]:
+        async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
+            response = await session.execute(GQL_QUERY_LAST_UPDATE)
+            return {
+                status["source"]: datetime.fromisoformat(status["lastUpdate"])
+                for status in response["databaseStatus"]
+            }
 
     async def query_set_members(self, names: List[str]) -> Dict[str, Dict[str, List[str]]]:
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:

@@ -141,8 +141,8 @@ This also allow auto reloading.
   This will listen on port 8000 by default and read settings from the `.env` file or
   environment as in production.
 * Run the frontend from the frontend directory with `yarn start`. This will start
-  a small webserver on port 3000. You need to set and export `REACT_APP_BACKEND`
-  in the environment - this command will not read `.env`.
+  a small webserver on port 3000. You need to set `REACT_APP_BACKEND` in the `.env`
+  file to your local API URL.
 
 To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
 (that build is used for static serving tests), activate the virtualenv,

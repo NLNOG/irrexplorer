@@ -1,15 +1,18 @@
 import enum
+import json
 import re
 from dataclasses import dataclass
 from ipaddress import ip_network
 
 import IPy
 from dataclasses_json import LetterCase, dataclass_json
-from starlette.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse, Response
 
 from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
+from irrexplorer.backends.irrd import IRRDQuery
+from irrexplorer.backends.metadata import get_last_data_import
 from irrexplorer.settings import MINIMUM_PREFIX_SIZE
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)
@@ -62,6 +65,16 @@ class Query:
             return
 
         raise InvalidQueryError("Not a valid prefix, IP, ASN or AS-set.")
+
+
+async def metadata(request):
+    data = {
+        "last_update": {
+            "irr": await IRRDQuery().query_last_update(),
+            "importer": await get_last_data_import(),
+        }
+    }
+    return Response(json.dumps(data, default=str), media_type="application/json")
 
 
 async def clean_query(request):

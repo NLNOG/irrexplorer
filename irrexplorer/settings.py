@@ -1,5 +1,5 @@
 from ipaddress import IPv4Network, IPv6Network
-from typing import Union, Tuple, List
+from typing import List, Tuple, Union
 
 import databases
 from starlette.config import Config
