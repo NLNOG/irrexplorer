@@ -26,6 +26,7 @@ async def shutdown():
 
 
 routes = [
+    Route("/api/metadata/", queries.metadata),
     Route("/api/clean_query/{query:path}", queries.clean_query),
     Route("/api/prefixes/asn/AS{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/asn/{asn:int}", queries.prefixes_asn),
@@ -57,7 +58,7 @@ app = Starlette(
 )
 
 
-def sigusr1_handler(signal, frame):
+def sigusr1_handler(signal, frame):  # pragma: no cover
     thread_names = {th.ident: th.name for th in threading.enumerate()}
     code = [f"Traceback follows for all threads of process {os.getpid()}:"]
     for thread_id, stack in sys._current_frames().items():

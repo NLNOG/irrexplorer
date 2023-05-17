@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {navigate} from "@reach/router";
+import {Link, navigate} from "@reach/router";
 
 import api from "../../services/api";
 
@@ -50,6 +50,7 @@ function QueryForm() {
                 <button type="submit" className="btn btn-success btn-lg" disabled={!search}>Search
                 </button>
             </div>
+            <Link to="/status/">Data source status</Link>
         </form>
     );
 }
