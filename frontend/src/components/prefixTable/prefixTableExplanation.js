@@ -89,6 +89,12 @@ function PrefixTableExplanation() {
                         to be covered, there does not need to be a ROA for this exact prefix -
                         a less specific ROA with appropriate max length will also suffice.
                     </dd>
+                    <dt className="col-sm-3">Expected route object in &lt;IRR&gt;, but only found in other IRRs</dt>
+                   <dd className="col-sm-9">
+                       No route object is found in the database of the RIR responsible for
+                       assigning/allocating the prefix, only in another IRR.
+                       You should add a route object in the RIR's database.
+                    </dd>
                 </dl>
                 <p>
                     For more guidance on RPKI, <a href="https://rpki.readthedocs.io/en/latest/rpki/securing-bgp.html">
