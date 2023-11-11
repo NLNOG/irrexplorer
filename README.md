@@ -85,6 +85,7 @@ You can optionally set:
   record needs to be included. Default: 250.
 * `RIRSTATS_URL_ARIN`, `RIRSTATS_URL_AFRINIC`, etc. URL for the 
   RIR stats file for each RIR (supports basic and extended format).
+* `REGISTROBR_URL`: URL for the Registro.BR asn-blk file.
 * `BGP_IPV4_LENGTH_CUTOFF` / `BGP_IPV6_LENGTH_CUTOFF`: BGP prefixes
   of this length or longer are dropped when importing BGP origin data.
   Default: 29 and 124.
@@ -141,8 +142,8 @@ This also allow auto reloading.
   This will listen on port 8000 by default and read settings from the `.env` file or
   environment as in production.
 * Run the frontend from the frontend directory with `yarn start`. This will start
-  a small webserver on port 3000. You need to set and export `REACT_APP_BACKEND`
-  in the environment - this command will not read `.env`.
+  a small webserver on port 3000. You need to set `REACT_APP_BACKEND` in the `.env`
+  file to your local API URL.
 
 To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
 (that build is used for static serving tests), activate the virtualenv,

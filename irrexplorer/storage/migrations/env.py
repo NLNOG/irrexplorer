@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from irrexplorer.settings import DATABASE_URL
-from irrexplorer.storage.tables import metadata
+from irrexplorer.storage.tables import sa_metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -15,7 +15,7 @@ config = context.config
 fileConfig(config.config_file_name)
 
 config.set_main_option("sqlalchemy.url", str(DATABASE_URL))
-target_metadata = metadata
+target_metadata = sa_metadata
 
 
 # other values from the config, defined by the needs of env.py,

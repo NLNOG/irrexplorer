@@ -1,5 +1,5 @@
 from ipaddress import IPv4Network, IPv6Network
-from typing import Union, Tuple, List
+from typing import List, Tuple, Union
 
 import databases
 from starlette.config import Config
@@ -46,6 +46,7 @@ RIRSTATS_URL = {
         key="RIRSTATS_URL_APNIC", default="https://ftp.apnic.net/stats/apnic/delegated-apnic-latest"
     ),
 }
+REGISTROBR_URL = "https://ftp.registro.br/pub/numeracao/origin/nicbr-asn-blk-latest.txt"
 
 BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
 BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)

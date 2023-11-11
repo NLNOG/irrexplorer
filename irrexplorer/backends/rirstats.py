@@ -1,13 +1,11 @@
 import ipaddress
-from typing import List
 
 import aggregate6
 from asgiref.sync import sync_to_async
-from databases import Database
 
-from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text
+from irrexplorer.backends.common import LocalSQLQueryBase, retrieve_url_text, store_rir_prefixes
 from irrexplorer.exceptions import ImporterError
-from irrexplorer.settings import DATABASE_URL, RIRSTATS_URL
+from irrexplorer.settings import RIRSTATS_URL
 from irrexplorer.state import RIR, DataSource
 from irrexplorer.storage import tables
 
@@ -26,7 +24,7 @@ class RIRStatsImporter:
         url = RIRSTATS_URL[self.rir]
         text = await retrieve_url_text(url)
         prefixes = await self._parse_rirstats(text)
-        await self._load_prefixes(prefixes)
+        await store_rir_prefixes(self.rir, prefixes)
 
     @sync_to_async
     def _parse_rirstats(self, text: str):
@@ -70,21 +68,6 @@ class RIRStatsImporter:
                 continue
 
             yield ip_version, start_ip, size
-
-    async def _load_prefixes(self, prefixes: List[str]):
-        async with Database(DATABASE_URL) as database:
-            async with database.transaction():
-                query = tables.rirstats.delete(tables.rirstats.c.rir == self.rir)
-                await database.execute(query)
-                if prefixes:
-                    values = [
-                        {
-                            "rir": self.rir,
-                            "prefix": prefix,
-                        }
-                        for prefix in prefixes
-                    ]
-                    await database.execute_many(query=tables.rirstats.insert(), values=values)
 
 
 class RIRStatsQuery(LocalSQLQueryBase):
