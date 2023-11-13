@@ -38,14 +38,16 @@ routes = [
         DefaultIndexStaticFiles(
             directory="frontend/build",
             html=True,
-            defaulted_paths=["prefix/", "asn/", "as-set/"],
+            defaulted_paths=["prefix/", "asn/", "as-set/", "status/"],
         ),
     ),
 ]
 
 middleware = [
     Middleware(
-        CORSMiddleware, allow_origins=["*"], allow_headers=["Cache-Control", "Pragma", "Expires"]
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_headers=["Cache-Control", "Pragma", "Expires"],
     )
 ]
 
