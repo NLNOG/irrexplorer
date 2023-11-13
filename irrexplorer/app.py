@@ -38,7 +38,7 @@ routes = [
         DefaultIndexStaticFiles(
             directory="frontend/build",
             html=True,
-            defaulted_paths=["prefix/", "asn/", "as-set/", "status/"],
+            defaulted_paths=["prefix/", "asn/", "as-set/", "status"],
         ),
     ),
 ]
