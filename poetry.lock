@@ -748,45 +748,45 @@ files = [
 
 [[package]]
 name = "gql"
-version = "3.5.0b3"
+version = "3.5.0b6"
 description = "GraphQL client for Python"
 optional = false
 python-versions = "*"
 files = [
-    {file = "gql-3.5.0b3-py2.py3-none-any.whl", hash = "sha256:b74829ecb3805ebe7141d5c0cb53530343ac779027011d7e98857320e1f0ce32"},
-    {file = "gql-3.5.0b3.tar.gz", hash = "sha256:71341e31a2e11cd874a89f4dbd2e4140394b32a2e6e7a3bd10b65a8b3a457f3c"},
+    {file = "gql-3.5.0b6-py2.py3-none-any.whl", hash = "sha256:e8631e0875a69c5b9a4501ad4c5387e3a3e3ff89bb2aa54c856a358a70431802"},
+    {file = "gql-3.5.0b6.tar.gz", hash = "sha256:7ec2adfab1aafba938b0668c4f4578c1aa90df587b0c792b48b4a7c873c1d9aa"},
 ]
 
 [package.dependencies]
-aiohttp = {version = ">=3.8.0,<3.9.0", optional = true, markers = "extra == \"aiohttp\""}
+aiohttp = {version = ">=3.8.0,<4", optional = true, markers = "extra == \"aiohttp\""}
 backoff = ">=1.11.1,<3.0"
-graphql-core = ">=3.3.0a2,<3.4"
+graphql-core = ">=3.3.0a3,<3.4"
 yarl = ">=1.6,<2.0"
 
 [package.extras]
-aiohttp = ["aiohttp (>=3.8.0,<3.9.0)"]
-all = ["aiohttp (>=3.8.0,<3.9.0)", "botocore (>=1.21,<2)", "httpx (>=0.23.1,<1)", "requests (>=2.26,<3)", "requests-toolbelt (>=0.9.1,<1)", "urllib3 (>=1.26)", "websockets (>=10,<11)"]
+aiohttp = ["aiohttp (>=3.8.0,<4)"]
+all = ["aiohttp (>=3.8.0,<4)", "botocore (>=1.21,<2)", "httpx (>=0.23.1,<1)", "requests (>=2.26,<3)", "requests-toolbelt (>=1.0.0,<2)", "websockets (>=10,<12)"]
 botocore = ["botocore (>=1.21,<2)"]
-dev = ["aiofiles", "aiohttp (>=3.8.0,<3.9.0)", "black (==22.3.0)", "botocore (>=1.21,<2)", "check-manifest (>=0.42,<1)", "flake8 (==3.8.1)", "httpx (>=0.23.1,<1)", "isort (==4.3.21)", "mock (==4.0.2)", "mypy (==0.910)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "requests (>=2.26,<3)", "requests-toolbelt (>=0.9.1,<1)", "sphinx (>=5.3.0,<6)", "sphinx-argparse (==0.2.5)", "sphinx-rtd-theme (>=0.4,<1)", "types-aiofiles", "types-mock", "types-requests", "urllib3 (>=1.26)", "vcrpy (==4.0.2)", "websockets (>=10,<11)"]
+dev = ["aiofiles", "aiohttp (>=3.8.0,<4)", "black (==22.3.0)", "botocore (>=1.21,<2)", "check-manifest (>=0.42,<1)", "flake8 (==3.8.1)", "httpx (>=0.23.1,<1)", "isort (==4.3.21)", "mock (==4.0.2)", "mypy (==0.910)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "requests (>=2.26,<3)", "requests-toolbelt (>=1.0.0,<2)", "sphinx (>=5.3.0,<6)", "sphinx-argparse (==0.2.5)", "sphinx-rtd-theme (>=0.4,<1)", "types-aiofiles", "types-mock", "types-requests", "vcrpy (==4.4.0)", "websockets (>=10,<12)"]
 httpx = ["httpx (>=0.23.1,<1)"]
-requests = ["requests (>=2.26,<3)", "requests-toolbelt (>=0.9.1,<1)", "urllib3 (>=1.26)"]
-test = ["aiofiles", "aiohttp (>=3.8.0,<3.9.0)", "botocore (>=1.21,<2)", "httpx (>=0.23.1,<1)", "mock (==4.0.2)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "requests (>=2.26,<3)", "requests-toolbelt (>=0.9.1,<1)", "urllib3 (>=1.26)", "vcrpy (==4.0.2)", "websockets (>=10,<11)"]
-test-no-transport = ["aiofiles", "mock (==4.0.2)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "vcrpy (==4.0.2)"]
-websockets = ["websockets (>=10,<11)"]
+requests = ["requests (>=2.26,<3)", "requests-toolbelt (>=1.0.0,<2)"]
+test = ["aiofiles", "aiohttp (>=3.8.0,<4)", "botocore (>=1.21,<2)", "httpx (>=0.23.1,<1)", "mock (==4.0.2)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "requests (>=2.26,<3)", "requests-toolbelt (>=1.0.0,<2)", "vcrpy (==4.4.0)", "websockets (>=10,<12)"]
+test-no-transport = ["aiofiles", "mock (==4.0.2)", "parse (==1.15.0)", "pytest (==6.2.5)", "pytest-asyncio (==0.16.0)", "pytest-console-scripts (==1.3.1)", "pytest-cov (==3.0.0)", "vcrpy (==4.4.0)"]
+websockets = ["websockets (>=10,<12)"]
 
 [[package]]
 name = "graphql-core"
-version = "3.3.0a2"
+version = "3.3.0a3"
 description = "GraphQL-core is a Python port of GraphQL.js,the JavaScript reference implementation for GraphQL."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "graphql_core-3.3.0a2-py3-none-any.whl", hash = "sha256:02357b4ae72f1ddf47d6056ffbcb4f074ad880aa4d31b4d55bfffb0755b57404"},
-    {file = "graphql_core-3.3.0a2.tar.gz", hash = "sha256:0c75767517f06d98447f7cd34e93d5f45518daf27d976ee009a137dfa456e2eb"},
+    {file = "graphql_core-3.3.0a3-py3-none-any.whl", hash = "sha256:b441346e61b2d7465a6f4001334ba1ddb123498a7e9dfe76cd323db8159aa707"},
+    {file = "graphql_core-3.3.0a3.tar.gz", hash = "sha256:065d23881d00d0b52b9a7c0a8d63451585549c13f3f05a214923b20dabbda290"},
 ]
 
 [package.dependencies]
-typing-extensions = {version = ">=4.4,<5.0", markers = "python_version < \"3.10\""}
+typing-extensions = {version = ">=4.5,<5.0", markers = "python_version < \"3.10\""}
 
 [[package]]
 name = "greenlet"
