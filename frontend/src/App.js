@@ -12,6 +12,7 @@ class App extends Component {
                     <Home path="/"/>
                     <Status path="/status/"/>
                     {/* Reach does not have native support for a slash in the url, hence two Query paths */}
+                    <Query path="/query/:query"/>
                     <Query path="/:category/:query"/>
                     <Query path="/:category/:query1/:query2"/>
                     <Redirect default from="/" to="/" noThrow/>
