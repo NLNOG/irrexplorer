@@ -22,7 +22,7 @@ requests = ">=2.25.1"
 aiofiles = ">=0.6.0"
 dataclasses-json = ">=0.5.2"
 IPy = ">=1.01"
-gunicorn = "^21.2"
+gunicorn = "^22.0"
 
 [tool.poetry.dev-dependencies]
 # Testing and related packages
