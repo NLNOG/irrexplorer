@@ -7,7 +7,7 @@ license = "BSD-2-Clause"
 readme = 'README.md'
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.8,<4.0"
 starlette = ">=0.14.2"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 databases = {extras = ["postgresql"], version = "^0.6.2"}
