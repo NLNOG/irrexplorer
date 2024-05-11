@@ -146,3 +146,80 @@ This also allow auto reloading.
 To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
 (that build is used for static serving tests), activate the virtualenv,
 then run `pytest`.
+
+### Setting up a Development Environment with Docker Compose
+
+To quickly set up your local infrastructure for development on your laptop using Docker containers, follow these three simple steps (assuming that you already have Docker and Docker-compose pre-installed):
+
+```bash
+# clone the repository
+git clone git@github.com:NLNOG/irrexplorer.git`
+# go to the dev directory
+cd dev/
+# start the development environment
+docker-compose -f docker-up -d
+```
+
+After executing these steps, you will have all the necessary services up and running for development:
+```bash
+% docker ps
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS                    PORTS                                            NAMES
+9b2ee198962f   dev-irrexplorer   "/app/irrexplorer/in…"   34 minutes ago   Up 33 minutes (healthy)   0.0.0.0:8000->8000/tcp                           irrexplorer
+3b08fb5ba0c8   dev-irrd          "/app/irrd/init"         34 minutes ago   Up 33 minutes (healthy)   0.0.0.0:8043->8043/tcp, 0.0.0.0:8080->8080/tcp   irrd
+67284918c7ea   postgres          "docker-entrypoint.s…"   34 minutes ago   Up 34 minutes (healthy)   5432/tcp                                         postgres_irre
+c689fad6d0e9   postgres          "docker-entrypoint.s…"   34 minutes ago   Up 34 minutes (healthy)   5432/tcp                                         postgres_irrd
+36414b39a412   redis             "docker-entrypoint.s…"   34 minutes ago   Up 34 minutes (healthy)   6379/tcp                                         redis_irrd
+```
+
+> You can can access IRR explorer web interface at http://localhost:8000/ and the API at http://localhost:8000/api/.
+
+> IRRd web interface available at http://localhost:8080/.
+
+> If you need to include or remove Routing Registries, check the file `irrd.yaml`/`sources`.
+
+If you need to access the containers, use the following command:
+```bash
+docker exec -it <container_name> /bin/sh
+```
+
+Since uvicorn is running in the foreground, you can access the logs with:
+```bash
+docker logs -f irrexplorer
+```
+
+Uvicorn supports auto-reloading, making it easy to check changes. If a complete reload is required, simply run:
+```bash
+docker container restart irrexplorer
+```
+
+ Tail container logs:
+```bash
+docker-compose logs -f --tail 100
+```
+
+
+#### To streamline your development workflow, we have included several convenient `Make` commands:
+
+`make clean`: Removes all unused Docker objects (containers, networks, volumes, and images) using `docker system prune --all`.
+
+`make start`: Starts the Docker containers defined in the `docker-compose.yml` file using `docker-compose up -d`.
+
+`make stop`: Stops and removes the Docker containers defined in the docker-compose.yml file using docker-compose down.
+
+`make rebuild`: Executes the stop, clean, and start commands in sequence to rebuild the development environment.
+
+`make dump_irrd_db`: Dumps the irrd database from the `postgres_irrd` container to a file named `irrdb.sql` using `docker exec` and `pg_dump`.
+
+`make dump_irre_db`: Dumps the irrexplorer database from the `postgres_irre` container to a file named `irrexplorer_db.sql` using `docker exec` and `pg_dump`.
+
+These commands provide a convenient way to manage the development environment, including starting, stopping, rebuilding, and dumping the databases.
+
+#### The infrastructure includes the following components:
+
+- PostgreSQL running for IRR Explorer using credentials specified in the docker-compose.yml;
+- PostgreSQL running for IRRd using credentials specified in the docker-compose.yml;
+- Redis used by IRRd;
+- IRRd caching registry data, keeping it updated using NRTM, and serving this data to IRR Explorer;
+- **Finally, IRR Explorer itself!**
+
+Happy coding!

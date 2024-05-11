@@ -5,6 +5,8 @@
 .tmpdirs
 .pytest_cache
 /.env
+dev/data/
+venv/
 
 syntax: glob
 __pycache__

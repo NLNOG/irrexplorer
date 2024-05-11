@@ -1,0 +1,23 @@
+# description="IRR explorer Docker Image"
+# Dockerfile for the IRR explorer application.
+#
+# This Dockerfile sets up a Python 3.12.3 environment with the necessary dependencies to run the IRR explorer application. It installs Git, Node.js, and npm, and then uses pip and yarn to install additional dependencies.
+#
+# The resulting Docker image can be used to install/run the IRR explorer application in a containerized environment.
+
+FROM python:3.12.3-bookworm
+
+WORKDIR /app/irrexplorer
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git nodejs npm 
+
+RUN pip install --no-cache-dir -U pip
+
+RUN npm install -g yarn
+
+RUN apt-get clean autoclean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+CMD ["/app/irrexplorer/init"]
