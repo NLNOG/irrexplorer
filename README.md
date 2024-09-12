@@ -107,13 +107,16 @@ IRRD_ENDPOINT=https://irrd.example.net/graphql/
   * `poetry run frontend-build`, to make a local production build of the frontend
   * `poetry run alembic upgrade head`, to create the database schema
     
-To update a local install, update your local checkout, then run the steps
-above again - they are aware of existing state and safe to execute multiple
-times.
 
 Poetry is a Python package manager that automatically creates and manages a
 virtual environment. You can get more details about the virtual environment
 poetry is using with `poetry env info`.
+
+### Updating
+
+To update a local install, update your local checkout, then run the installation
+steps again - they are aware of existing state and safe to execute multiple
+times.
 
 ### Running
 
