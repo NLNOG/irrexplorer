@@ -59,7 +59,7 @@ class Metadata extends Component {
         dayjs.extend(relativeTime);
         const date_parsed = dayjs(date);
         const format = 'YYYY-MM-DD HH:mm';
-        return `${date_parsed.fromNow()} (${date_parsed.format(format) UTC})`
+        return `${date_parsed.fromNow()} (${date_parsed.format(format)} UTC)`
     }
 
     renderTablePlaceholder(placeholder) {
