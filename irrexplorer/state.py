@@ -26,7 +26,7 @@ class NIR(enum.Enum):
     This enum classifies specific RIR entries that are considered NIRs.
     Each entry in the enum represents a recognized NIR with its official designation.
     """
-    REGISTROBR = "Registro.BR"  # Represents the Brazilian Internet Registry
+    REGISTROBR = RIR.REGISTROBR.value  # Represents the Brazilian Internet Registry
 
 
 class RPKIStatus(enum.Enum):
