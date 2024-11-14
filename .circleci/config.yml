@@ -5,13 +5,13 @@ workflows:
   version: 2
   test:
     jobs:
-      - cpython-3.7
+      - cpython-3.12
       - cpython-3.9
 
 jobs:
-  cpython-3.7: &test-template
+  cpython-3.12: &test-template
     docker:
-      - image: cimg/python:3.7-node
+      - image: cimg/python:3.12-node
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 
