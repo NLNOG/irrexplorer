@@ -33,7 +33,7 @@ export async function getMetadata() {
         return {data: response.data, url: url};
     } catch (exc) {
         if (exc.response) {
-            return {error: exc.response.data};
+            return {error: 'Error: unable to reach API: ' + exc.response.data}
         }
         return {error: 'Error: unable to reach API'}
     }
@@ -45,7 +45,7 @@ export async function cleanQuery(query) {
         return response.data;
     } catch (exc) {
         if (exc.response) {
-            return {error: exc.response.data};
+            return {error: 'Error: unable to reach API: ' + exc.response.data}
         }
         return {error: 'Error: unable to reach API'}
     }
