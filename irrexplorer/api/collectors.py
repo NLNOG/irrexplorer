@@ -48,7 +48,7 @@ class PrefixCollector:
 
         await self._collect_for_prefixes([search_prefix])
         prefix_summaries = self._collate_per_prefix()
-        print(f"complete in {time.perf_counter()-start}")
+        print(f"complete in {time.perf_counter() - start}")
         return prefix_summaries
 
     async def asn_summary(self, asn: int) -> ASNPrefixes:
@@ -63,7 +63,7 @@ class PrefixCollector:
                 response.direct_origin.append(p)
             else:
                 response.overlaps.append(p)
-        print(f"complete in {time.perf_counter()-start}")
+        print(f"complete in {time.perf_counter() - start}")
         return response
 
     async def _collect_for_prefixes(self, search_prefixes: List[IPNetwork]) -> None:
@@ -182,7 +182,7 @@ async def collect_member_of(target: str) -> MemberOf:
                 result.sets_per_irr[member_of["source"]].add(member_of["rpslPk"])
 
     result.irrs_seen = sorted(irrs_seen)
-    print(f"complete in {time.perf_counter()-start}")
+    print(f"complete in {time.perf_counter() - start}")
     return result
 
 
