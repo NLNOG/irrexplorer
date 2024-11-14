@@ -72,6 +72,14 @@ async def test_prefix_valid(client, httpserver):
         values={"prefix": "192.0.0.0/8", "rir": RIR.RIPENCC},
     )
     await client.app.state.database.execute(
+        query=tables.rirstats.insert(),
+        values={"prefix": "192.0.0.0/9", "rir": RIR.REGISTROBR},
+    )
+    await client.app.state.database.execute(
+        query=tables.rirstats.insert(),
+        values={"prefix": "192.0.0.0/7", "rir": RIR.RIPENCC},
+    )
+    await client.app.state.database.execute(
         query=tables.bgp.insert(),
         values={"prefix": "192.0.2.0/24", "asn": 64500},
     )
@@ -85,7 +93,7 @@ async def test_prefix_valid(client, httpserver):
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [64500],
-            "rir": "RIPE NCC",
+            "rir": "Registro.BR",
             "rpkiRoutes": [
                 {
                     "rpkiStatus": "VALID",
@@ -116,7 +124,7 @@ async def test_prefix_valid(client, httpserver):
                 },
                 {
                     "category": "warning",
-                    "text": "Expected route object in RIPE, but only found in other IRRs",
+                    "text": "Expected route object in TC, but only found in other IRRs",
                 },
             ],
         }

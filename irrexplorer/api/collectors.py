@@ -18,9 +18,10 @@ from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
 from irrexplorer.settings import MINIMUM_PREFIX_SIZE, TESTING
-from irrexplorer.state import RIR, IPNetwork, RouteInfo
+from irrexplorer.state import RIR, IPNetwork, RouteInfo, NIR
 
 SET_SIZE_LIMIT = 1000
+NIR_NAMES = [nir.name for nir in NIR]
 
 
 class PrefixCollector:
@@ -148,16 +149,19 @@ class PrefixCollector:
 
     def _rir_for_prefix(self, prefix: IPNetwork) -> Optional[RIR]:
         """
-        Find the responsible RIR for a prefix, from self.rirstats previously
-        gathered by _collect()
+        Find the responsible RIR/NIR for a prefix, from self.rirstats previously
+        gathered by _collect(), and prefer NIR over RIR.
         """
-        relevant_rirstats = (
-            rirstat for rirstat in self.rirstats if rirstat.prefix.overlaps(prefix)  # type: ignore
-        )
-        try:
-            return next(relevant_rirstats).rir
-        except StopIteration:
-            return None
+        relevant_rirstat = None
+
+        for rirstat in self.rirstats:
+            if rirstat.prefix.overlaps(prefix):
+                relevant_rirstat = rirstat
+                if rirstat.rir and rirstat.rir.name in NIR_NAMES:
+                    # Break early if this is a NIR, as those take priority
+                    break
+        print(relevant_rirstat)
+        return relevant_rirstat.rir if relevant_rirstat else None
 
 
 async def collect_member_of(target: str) -> MemberOf:
