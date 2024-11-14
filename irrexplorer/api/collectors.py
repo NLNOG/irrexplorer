@@ -154,18 +154,18 @@ class PrefixCollector:
         # This will hold the most relevant RIR statistic found
         relevant_rirstat = None
         # Flag to indicate if a NIR prefix has been found
-        NIR_PFX = False
+        nir_found = False
 
         # Iterate through all RIR statistics to find the one that overlaps with the given prefix
         for rirstat in self.rirstats:
             if rirstat.prefix.overlaps(prefix):
                 # Check if the current RIR is a NIR
-                if any(nir.name == rirstat.rir.name for nir in NIR):
+                if rirstat.rir and rirstat.rir.name in NIR:
                     # Set the flag if it's an NIR
-                    NIR_PFX = True
+                    nir_found = True
                     # Update the relevant RIR statistic
                     relevant_rirstat = rirstat
-                elif not NIR_PFX:
+                elif not nir_found:
                     # If no NIR has been found yet, update the relevant RIR
                     relevant_rirstat = rirstat
         # Return the RIR of the relevant statistic if found, otherwise return None
