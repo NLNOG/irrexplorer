@@ -11,6 +11,7 @@ class WhoisModal extends Component {
             modalRef: React.createRef(),
             titleRef: React.createRef(),
             queryRef: React.createRef(),
+            queryUrlRef: React.createRef(),
             rpslTextRef: React.createRef(),
             rpkiAlertRef: React.createRef(),
         };
@@ -25,17 +26,25 @@ class WhoisModal extends Component {
     }
 
     openWithContent = (prefix, asn, sourceName, rpslText, rpkiStatus) => {
-        const {bootstrapModal, titleRef, queryRef, rpslTextRef, rpkiAlertRef} = this.modal;
+        const {bootstrapModal, titleRef, queryRef, queryUrlRef, rpslTextRef, rpkiAlertRef} = this.modal;
         const whoisServer = config.whoisServers[sourceName];
+        const whoisUrl = config.whoisUrls[sourceName];
         titleRef.current.innerText = `AS${asn} / ${prefix}`;
         queryRef.current.innerText = `whois -h ${whoisServer} ${prefix}`;
+        if (whoisUrl) {
+            queryUrlRef.current.innerText = `Open this object on the ${sourceName} website`;
+            queryUrlRef.current.href = whoisUrl.replace('SEARCHPLACEHOLDER', `${prefix}AS${asn}`);
+            queryUrlRef.current.hidden = false;
+        } else {
+            queryUrlRef.current.hidden = true;
+        }
         rpslTextRef.current.innerText = rpslText;
         rpkiAlertRef.current.hidden = rpkiStatus !== 'INVALID'
         bootstrapModal.show();
     }
 
     render() {
-        const {modalRef, titleRef, queryRef, rpslTextRef, rpkiAlertRef} = this.modal;
+        const {modalRef, titleRef, queryRef, queryUrlRef, rpslTextRef, rpkiAlertRef} = this.modal;
 
         return (
             <div className="modal fade" tabIndex="-1" ref={modalRef}>
@@ -49,6 +58,13 @@ class WhoisModal extends Component {
                         <div className="modal-body">
                             <p className="font-monospace" ref={queryRef}/>
                             <pre className="text-light bg-dark" ref={rpslTextRef}/>
+                            <p>
+                                The object shown below is mirrored, and may be modified or slightly outdated.
+                                You can get the latest version directly from the IRR registry.
+                            </p>
+                            <p>
+                                <a className="btn btn-success" href="/" ref={queryUrlRef}>#</a><br/>
+                            </p>
                             <div className="alert alert-warning" role="alert" ref={rpkiAlertRef}>
                                 This route object is RPKI-invalid, and may be filtered out
                                 of whois query output by default.

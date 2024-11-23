@@ -23,5 +23,13 @@
     "RGNET": "whois.rg.net",
     "RIPE": "whois.ripe.net",
     "TC": "whois.bgp.net.br"
+  },
+  "whoisUrls": {
+    "AFRINIC": "https://afrinic.net/whois-web/public/plain-text?sourceDatabases=AFRINIC&id=SEARCHPLACEHOLDER&type=route,route6",
+    "IDNIC": "https://idnic.net/service/whois/search?key=SEARCHPLACEHOLDER",
+    "LACNIC": "https://query.milacnic.lacnic.net/search?id=SEARCHPLACEHOLDER",
+    "RIPE": "https://apps.db.ripe.net/db-web-ui/query?searchtext=SEARCHPLACEHOLDER",
+    "RADB": "https://www.radb.net/query?keywords=SEARCHPLACEHOLDER",
+    "TC": "https://bgp.net.br/whois.html?q=SEARCHPLACEHOLDER"
   }
 }
