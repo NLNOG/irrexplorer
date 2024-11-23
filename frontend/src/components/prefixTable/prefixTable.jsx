@@ -52,6 +52,7 @@ class PrefixTable extends Component {
             irrSourceColumns={this.state.irrSourceColumns}
             prefixesData={this.state.sortedPrefixesData}
             reducedColour={this.props.reducedColour}
+            filterWarningError={this.props.filterWarningError}
             handleIrrRouteSelect={this.handleIrrRouteSelect}
         />
     }
@@ -88,6 +89,7 @@ PrefixTable.propTypes = {
     prefixesData: PropTypes.arrayOf(PropTypes.object).isRequired,
     hasLoaded: PropTypes.bool,
     reducedColour: PropTypes.bool,
+    filterWarningError: PropTypes.bool,
     apiCallUrl: PropTypes.string,
 };
 

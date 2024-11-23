@@ -10,7 +10,7 @@ import ASNQuery from "./asnQuery";
 import AsSetQuery from "./asSetQuery";
 
 class Query extends Component {
-    state = {cleanQuery: '', queryCategory: '', reducedColour: false};
+    state = {cleanQuery: '', queryCategory: '', reducedColour: false, filterWarningError: false};
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps === this.props) return;
@@ -55,6 +55,9 @@ class Query extends Component {
     handleReducedColourChange = ({currentTarget: input}) => {
         this.setState({reducedColour: input.checked});
     }
+    handleFilterWarningErrorChange = ({currentTarget: input}) => {
+        this.setState({filterWarningError: input.checked});
+    }
 
     render() {
         const ContentClass = this.contentClass();
@@ -77,12 +80,20 @@ class Query extends Component {
                             checked={this.state.reducedColour}
                             onChange={this.handleReducedColourChange}
                         />
-                        <label htmlFor="reducedColour">Reduced colour mode</label>
+                        <label htmlFor="reducedColour" className="me-4">Reduced colour mode</label>
+                        <input
+                            type="checkbox"
+                            id="filterWarningError"
+                            className="me-2"
+                            checked={this.state.filterWarningError}
+                            onChange={this.handleFilterWarningErrorChange}
+                        />
+                        <label htmlFor="filterWarningError">Show only error/warning</label>
                     </form>
                 </div>
                 {
                     this.state.cleanQuery
-                    && <ContentClass query={this.state.cleanQuery} reducedColour={this.state.reducedColour}/>
+                    && <ContentClass query={this.state.cleanQuery} reducedColour={this.state.reducedColour} filterWarningError={this.state.filterWarningError} />
                 }
             </div>
         );

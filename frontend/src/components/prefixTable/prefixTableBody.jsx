@@ -62,10 +62,19 @@ class PrefixTableBody extends Component {
     }
 
     render() {
-        const {prefixesData, irrSourceColumns, reducedColour} = this.props;
+        const {prefixesData, irrSourceColumns, reducedColour, filterWarningError} = this.props;
+        let tableData = prefixesData;
+        if (filterWarningError) {
+            tableData = tableData.filter(({categoryOverall}) => categoryOverall === "danger" || categoryOverall === "warning");
+        }
+        if (!tableData.length) {
+            return (
+                <tbody><tr key="nodata"><td key="nodata" colSpan="100">No records with an error or warning status.</td></tr></tbody>
+            )
+        }
         return (
             <tbody>
-            {prefixesData.map((
+            {tableData.map((
                 {prefix, categoryOverall, rir, bgpOrigins, rpkiRoutes, irrRoutes, messages}) =>
                 <tr key={prefix} className={this.classNameForRow(categoryOverall)}>
                     <td key="prefix"><Link to={`/prefix/${prefix}`} className="link-dark">{prefix}</Link></td>
@@ -96,6 +105,7 @@ PrefixTableBody.propTypes = {
     irrSourceColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
     prefixesData: PropTypes.arrayOf(PropTypes.object).isRequired,
     reducedColour: PropTypes.bool,
+    filterWarningError: PropTypes.bool,
     handleIrrRouteSelect: PropTypes.func,
 };
 

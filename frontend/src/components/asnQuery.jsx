@@ -41,7 +41,7 @@ class ASNQuery extends Component {
     }
 
     render() {
-        const {query, reducedColour} = this.props;
+        const {query, reducedColour, filterWarningError} = this.props;
         const {overlapPrefixes, hasLoadedPrefixes, directOriginPrefixes} = this.state;
         return (
             <>
@@ -55,6 +55,7 @@ class ASNQuery extends Component {
                     prefixesData={directOriginPrefixes}
                     hasLoaded={hasLoadedPrefixes}
                     reducedColour={reducedColour}
+                    filterWarningError={filterWarningError}
                     apiCallUrl={this.state.apiCallUrl}
                 />
                 <h2 className="h3 mt-4">
@@ -65,6 +66,7 @@ class ASNQuery extends Component {
                     prefixesData={overlapPrefixes}
                     hasLoaded={hasLoadedPrefixes}
                     reducedColour={reducedColour}
+                    filterWarningError={filterWarningError}
                     apiCallUrl={this.state.apiCallUrl}
                 />
                 <h2 className="h3 mt-4">
@@ -80,6 +82,7 @@ class ASNQuery extends Component {
 ASNQuery.propTypes = {
     query: PropTypes.string.isRequired,
     reducedColour: PropTypes.bool,
+    filterWarningError: PropTypes.bool,
 };
 
 export default ASNQuery;
