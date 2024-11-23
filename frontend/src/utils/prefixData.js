@@ -33,7 +33,8 @@ export function findLeastSpecific(queryPrefix, prefixesData) {
 }
 
 export function sortPrefixesDataBy(prefixesData, key, order = 'asc') {
-    if (key === 'prefix') key = 'prefixSortKey';
+    if (key === 'prefix') key = 'prefixSortKeyIpPrefix';
+    if (key === 'prefixSmallestFirst') key = 'prefixSortKeyReverseNetworklenIp';
     if (key === 'bgpOrigins') key = 'bgpOrigins.0';
     if (key === 'rpkiRoutes') key = 'rpkiRoutes.0.asn';
     if (key.startsWith('irrRoutes')) key += '.0.asn';
