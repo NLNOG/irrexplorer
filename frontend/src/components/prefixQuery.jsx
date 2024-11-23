@@ -46,7 +46,7 @@ class PrefixQuery extends Component {
     }
 
     render() {
-        const {query, reducedColour} = this.props;
+        const {query, reducedColour, filterWarningError} = this.props;
         const {leastSpecificOverlapPrefixes, directOverlapPrefixes, leastSpecificPrefix} = this.state;
         return (
             <>
@@ -61,6 +61,7 @@ class PrefixQuery extends Component {
                     hasLoaded={directOverlapPrefixes.hasLoaded}
                     apiCallUrl={directOverlapPrefixes.apiCallUrl}
                     reducedColour={reducedColour}
+                    filterWarningError={filterWarningError}
                 />
 
                 {leastSpecificPrefix && <>
@@ -73,6 +74,7 @@ class PrefixQuery extends Component {
                         hasLoaded={leastSpecificOverlapPrefixes.hasLoaded}
                         apiCallUrl={leastSpecificOverlapPrefixes.apiCallUrl}
                         reducedColour={reducedColour}
+                        filterWarningError={filterWarningError}
                     />
                 </>}
             </>
@@ -83,6 +85,7 @@ class PrefixQuery extends Component {
 PrefixQuery.propTypes = {
     query: PropTypes.string.isRequired,
     reducedColour: PropTypes.bool,
+    filterWarningError: PropTypes.bool,
 };
 
 export default PrefixQuery;

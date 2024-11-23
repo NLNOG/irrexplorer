@@ -160,7 +160,6 @@ class PrefixCollector:
                 if rirstat.rir and rirstat.rir.name in NIR_NAMES:
                     # Break early if this is a NIR, as those take priority
                     break
-        print(relevant_rirstat)
         return relevant_rirstat.rir if relevant_rirstat else None
 
 
