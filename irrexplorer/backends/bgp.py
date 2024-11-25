@@ -87,7 +87,7 @@ class BGPQuery(LocalSQLQueryBase):
 
     async def query_asn(self, asn: int):
         results = []
-        query = self.table.select(self.table.c.asn == asn)
+        query = self.table.select().where(self.table.c.asn == asn)
         async for row in self.database.iterate(query=query):
             results.append(
                 RouteInfo(
