@@ -10,11 +10,11 @@ readme = 'README.md'
 python = "^3.9"
 starlette = ">=0.41"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
-databases = {extras = ["postgresql"], version = "^0.7"}
+databases = {extras = ["postgresql"], version = "^0.9"}
 alembic = ">=1.5"
-SQLAlchemy = "^1.4"
+SQLAlchemy = "^2.0"
 psycopg2-binary = ">=2.8.6"
-aiohttp = "3.10.11"
+aiohttp = "3.11.7"
 aggregate6 = ">=1.0.12"
 asgiref = ">=3.3.1"
 gql = {extras = ["aiohttp"], version = ">=2.0.0", allow-prereleases = true}
