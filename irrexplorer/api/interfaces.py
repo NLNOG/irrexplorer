@@ -84,14 +84,17 @@ class PrefixSummary:
     # category_overall converted into a number for sorting
     goodness_overall: Optional[int] = 0
     # Numerical IP plus prefix length. Used as sorting key in the frontend.
-    prefix_sort_key: Optional[str] = None
+    prefix_sort_key_ip_prefix: Optional[str] = None
+    # (128 - prefix length) plus numerical IP. Used as sorting key in the frontend.
+    prefix_sort_key_reverse_networklen_ip: Optional[str] = None
 
     def finalise_status(self):
         """
         Set a few properties that depend on others.
         Should be called before returning to the user.
         """
-        self.prefix_sort_key = f"{self.prefix.network_address._ip}/{self.prefix.prefixlen}"
+        self.prefix_sort_key_ip_prefix = f"{self.prefix.network_address._ip}/{self.prefix.prefixlen}"
+        self.prefix_sort_key_reverse_networklen_ip = f"{128 - self.prefix.prefixlen}-{self.prefix.network_address._ip}"
         if not self.messages:
             self.success("Everything looks good")
 
