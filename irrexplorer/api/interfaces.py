@@ -31,6 +31,12 @@ class MessageCategory(enum.Enum):
     SUCCESS = "success"
 
 
+class ObjectClass(enum.Enum):
+    # Not complete, used in limited scopes
+    ROUTESET = "route-set"
+    ASSET = "as-set"
+
+
 # dataclass_json needs a serializer IPv4/6Network
 ip_field_metadata = config(
     encoder=str,

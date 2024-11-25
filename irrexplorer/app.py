@@ -31,6 +31,8 @@ routes = [
     Route("/api/prefixes/asn/AS{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/asn/{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/prefix/{prefix:path}", queries.prefixes_prefix),
+    Route("/api/sets/member-of/{object_class}/{target}", queries.member_of),
+    # legacy endpoint before object class was added:
     Route("/api/sets/member-of/{target}", queries.member_of),
     Route("/api/sets/expand/{target}", queries.set_expansion),
     Mount(

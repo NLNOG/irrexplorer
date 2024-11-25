@@ -9,6 +9,7 @@ from gql.transport.aiohttp import AIOHTTPTransport
 
 from irrexplorer.settings import config
 from irrexplorer.state import DataSource, IPNetwork, RouteInfo, RPKIStatus
+from irrexplorer.api.interfaces import ObjectClass
 
 IRRD_TIMEOUT = 600
 
@@ -59,10 +60,10 @@ GQL_QUERY_PREFIX = gql(
 """
 )
 
-GQL_QUERY_AS_MEMBER_OF = gql(
+GQL_QUERY_AS_MEMBER_OF_AS_SET = gql(
     """
     query getMemberOf($target: String!) {
-        asSet: rpslObjects(
+        set: rpslObjects(
             members: [$target]
             objectClass: ["as-set"]
             rpkiStatus: [valid, invalid, not_found]
@@ -85,6 +86,21 @@ GQL_QUERY_AS_MEMBER_OF = gql(
                     mbrsByRef
                 }
             }
+        }
+    }
+"""
+)
+
+GQL_QUERY_AS_MEMBER_OF_ROUTE_SET = gql(
+    """
+    query getMemberOf($target: String!) {
+        set: rpslObjects(
+            members: [$target]
+            objectClass: ["route-set"]
+            rpkiStatus: [valid, invalid, not_found]
+        ) {
+            rpslPk
+            source
         }
     }
 """
@@ -136,11 +152,15 @@ class IRRDQuery:
                 members_per_set[item["rpslPk"]][item["rootSource"]] = item["members"]
             return dict(members_per_set)
 
-    async def query_member_of(self, target: str):
+    async def query_member_of(self, target: str, object_class: ObjectClass):
+        queries = {
+            ObjectClass.ASSET: GQL_QUERY_AS_MEMBER_OF_AS_SET,
+            ObjectClass.ROUTESET: GQL_QUERY_AS_MEMBER_OF_ROUTE_SET,
+        }
         if target.isnumeric():
             target = "AS" + target
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            return await session.execute(GQL_QUERY_AS_MEMBER_OF, {"target": target})
+            return await session.execute(queries[object_class], {"target": target})
 
     async def query_asn(self, asn: int):
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:

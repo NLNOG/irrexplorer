@@ -20,7 +20,7 @@ function Home() {
                             and highlights potential issues.
                         </p>
                         <p>
-                            Enter a prefix, IP address, AS number or AS set name.
+                            Enter a prefix, IP address, AS number or AS/route set name.
                         </p>
                         <QueryForm/>
                     </div>

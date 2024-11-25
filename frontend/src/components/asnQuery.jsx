@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import PrefixTableExplanation from "./prefixTable/prefixTableExplanation";
 import PrefixTable from "./prefixTable/prefixTable";
 import api from "../services/api";
-import AsSetIncludedTable from "./common/asSetIncludedTable";
+import SetIncludedTable from "./common/setIncludedTable";
 
 class ASNQuery extends Component {
     state = {
@@ -70,10 +70,15 @@ class ASNQuery extends Component {
                     apiCallUrl={this.state.apiCallUrl}
                 />
                 <h2 className="h3 mt-4">
-                    Included in the following sets:
+                    Included in the following AS sets:
                 </h2>
                 <hr/>
-                <AsSetIncludedTable query={this.props.query}/>
+                <SetIncludedTable query={this.props.query} objectClass="as-set"/>
+                <h2 className="h3 mt-4">
+                    Included in the following route sets:
+                </h2>
+                <hr/>
+                <SetIncludedTable query={this.props.query} objectClass="route-set"/>
             </>
         );
     }
