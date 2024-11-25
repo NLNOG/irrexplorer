@@ -1,3 +1,4 @@
+import contextlib
 import os
 import signal
 import sys
@@ -15,13 +16,12 @@ from irrexplorer.api.utils import DefaultIndexStaticFiles
 from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 
-async def startup():
+@contextlib.asynccontextmanager
+async def lifespan(app):
     signal.signal(signal.SIGUSR1, sigusr1_handler)
     app.state.database = databases.Database(DATABASE_URL, force_rollback=TESTING)
     await app.state.database.connect()
-
-
-async def shutdown():
+    yield
     await app.state.database.disconnect()
 
 
@@ -57,8 +57,7 @@ app = Starlette(
     debug=DEBUG,
     routes=routes,
     middleware=middleware,
-    on_startup=[startup],
-    on_shutdown=[shutdown],
+    lifespan=lifespan,
 )
 
 
