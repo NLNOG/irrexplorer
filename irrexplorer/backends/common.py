@@ -32,7 +32,7 @@ class LocalSQLQueryBase(metaclass=ABCMeta):
         prefix_selectors = [self.table.c.prefix.op("<<=")(p) for p in prefixes_cidr]
         prefix_selectors += [self.table.c.prefix.op(">>")(p) for p in prefixes_cidr]
         # noinspection PyPropertyAccess
-        query = self.table.select(sa.or_(*prefix_selectors))
+        query = self.table.select().where(sa.or_(*prefix_selectors))
         async for row in self.database.iterate(query=query):
             results.append(
                 RouteInfo(
@@ -64,7 +64,7 @@ async def store_rir_prefixes(rir: RIR, prefixes: List[str]):
     """
     async with Database(DATABASE_URL) as database:
         async with database.transaction():
-            query = tables.rirstats.delete(tables.rirstats.c.rir == rir)
+            query = tables.rirstats.delete().where(tables.rirstats.c.rir == rir)
             await database.execute(query)
             if prefixes:
                 values = [
