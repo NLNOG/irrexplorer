@@ -32,6 +32,16 @@ async def test_clean_query_as_set(client):
     assert response.status_code == 200
     assert response.json() == {"cleanedValue": "FOOBAR", "category": "as-set"}
 
+    response = await client.get("/api/clean_query/AS-3")
+    assert response.status_code == 200
+    assert response.json() == {"cleanedValue": "AS-3", "category": "as-set"}
+
+
+async def test_clean_query_route_set(client):
+    response = await client.get("/api/clean_query/RS-DEMo")
+    assert response.status_code == 200
+    assert response.json() == {"cleanedValue": "RS-DEMO", "category": "route-set"}
+
 
 async def test_clean_query_invalid(client):
     response = await client.get("/api/clean_query/--invalid-💩")

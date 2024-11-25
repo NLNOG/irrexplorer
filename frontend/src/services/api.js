@@ -69,8 +69,8 @@ export async function getPrefixesForASN(asn) {
     return await performRequest(`${apiUrl}/prefixes/asn/${asn}`);
 }
 
-export async function getSetMemberOf(target) {
-    return await performRequest(`${apiUrl}/sets/member-of/${target}`);
+export async function getSetMemberOf(target, object_class) {
+    return await performRequest(`${apiUrl}/sets/member-of/${object_class}/${target}`);
 }
 
 export async function getSetExpansion(target) {

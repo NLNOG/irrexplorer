@@ -7,7 +7,7 @@ import {Link} from "@reach/router";
 import TableFooter from "../common/tableFooter";
 
 
-class AsSetExpansionTable extends Component {
+class SetExpansionTable extends Component {
     state = {
         hasLoaded: false,
         subSets: [],
@@ -43,7 +43,7 @@ class AsSetExpansionTable extends Component {
         if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!subSets.length)
-            return this.renderTablePlaceholder("AS set was not found.");
+            return this.renderTablePlaceholder(`${this.props.objectClass} was not found.`);
         return (
             <>
                 <thead>
@@ -58,7 +58,7 @@ class AsSetExpansionTable extends Component {
                 <tbody>
                 {subSets.map(({name, source, depth, path, members}) =>
                     <tr key={name + path.join()}>
-                        <td key="name"><Link to={`/as-set/${name}`}>{name}</Link></td>
+                        <td key="name"><Link to={`/${this.props.objectClass}/${name}`}>{name}</Link></td>
                         <td key="source">{source}</td>
                         <td key="depth">{depth}</td>
                         <td key="path">{path.join(' ➜ ')}</td>
@@ -86,16 +86,17 @@ class AsSetExpansionTable extends Component {
     render() {
         return (
             <table className="table mb-5 table-fixed table-striped">
-                <caption>Expansion depth is limited beyond 1000 total as-sets.</caption>
+                <caption>Expansion depth is limited beyond 1000 total {this.props.objectClass}s.</caption>
                 {this.renderTableContent()}
             </table>
         );
     }
 }
 
-AsSetExpansionTable.propTypes = {
+SetExpansionTable.propTypes = {
     query: PropTypes.string.isRequired,
+    objectClass: PropTypes.string.isRequired,
 };
 
 
-export default AsSetExpansionTable;
+export default SetExpansionTable;

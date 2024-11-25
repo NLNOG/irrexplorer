@@ -7,7 +7,7 @@ import {Link, navigate} from "@reach/router";
 import api from "../services/api";
 import PrefixQuery from "./prefixQuery";
 import ASNQuery from "./asnQuery";
-import AsSetQuery from "./asSetQuery";
+import setQuery from "./setQuery";
 
 class Query extends Component {
     state = {cleanQuery: '', queryCategory: '', reducedColour: false, filterWarningError: false};
@@ -46,7 +46,8 @@ class Query extends Component {
             case 'asn':
                 return ASNQuery;
             case 'as-set':
-                return AsSetQuery;
+            case 'route-set':
+                return setQuery;
             default:
                 return undefined;
         }
@@ -93,7 +94,7 @@ class Query extends Component {
                 </div>
                 {
                     this.state.cleanQuery
-                    && <ContentClass query={this.state.cleanQuery} reducedColour={this.state.reducedColour} filterWarningError={this.state.filterWarningError} />
+                    && <ContentClass query={this.state.cleanQuery} reducedColour={this.state.reducedColour} filterWarningError={this.state.filterWarningError} queryCategory={this.state.queryCategory} />
                 }
             </div>
         );

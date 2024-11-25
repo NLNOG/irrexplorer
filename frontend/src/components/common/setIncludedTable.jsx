@@ -11,7 +11,7 @@ import {Link} from "@reach/router";
 import TableFooter from "./tableFooter";
 
 
-class AsSetIncludedTable extends Component {
+class SetIncludedTable extends Component {
     state = {
         hasLoaded: false,
         irrsSeen: [],
@@ -36,7 +36,7 @@ class AsSetIncludedTable extends Component {
             rows: [],
             apiCallUrl: '',
         });
-        const response = await api.getSetMemberOf(this.props.query);
+        const response = await api.getSetMemberOf(this.props.query, this.props.objectClass);
         this.processResponse(response);
     }
 
@@ -66,7 +66,7 @@ class AsSetIncludedTable extends Component {
         if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
         if (!rows.length)
-            return this.renderTablePlaceholder("No sets were found.");
+            return this.renderTablePlaceholder(`No ${this.props.objectClass}s were found.`);
         return (
             <>
                 <thead>
@@ -80,7 +80,7 @@ class AsSetIncludedTable extends Component {
                 <tbody>
                 {rows.map(({setName, irrNames: irrNamesForRow}) =>
                     <tr key={setName}>
-                        <td key="name"><Link to={`/as-set/${setName}`}>{setName}</Link></td>
+                        <td key="name"><Link to={`/${this.props.objectClass}/${setName}`}>{setName}</Link></td>
                         {irrsSeen.map(seenIrr =>
                             <td key={seenIrr} className="text-center">{
                                 irrNamesForRow.includes(seenIrr)
@@ -115,9 +115,10 @@ class AsSetIncludedTable extends Component {
     }
 }
 
-AsSetIncludedTable.propTypes = {
+SetIncludedTable.propTypes = {
     query: PropTypes.string.isRequired,
+    objectClass: PropTypes.string.isRequired,
 };
 
 
-export default AsSetIncludedTable;
+export default SetIncludedTable;

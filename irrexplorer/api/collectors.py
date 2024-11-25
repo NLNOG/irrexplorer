@@ -19,6 +19,7 @@ from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
 from irrexplorer.settings import MINIMUM_PREFIX_SIZE, TESTING
 from irrexplorer.state import RIR, IPNetwork, RouteInfo, NIR
+from irrexplorer.api.interfaces import ObjectClass
 
 SET_SIZE_LIMIT = 1000
 NIR_NAMES = [nir.name for nir in NIR]
@@ -163,26 +164,27 @@ class PrefixCollector:
         return relevant_rirstat.rir if relevant_rirstat else None
 
 
-async def collect_member_of(target: str) -> MemberOf:
+async def collect_member_of(target: str, object_class: ObjectClass) -> MemberOf:
     start = time.perf_counter()
     result = MemberOf()
-    data = await IRRDQuery().query_member_of(target)
+    data = await IRRDQuery().query_member_of(target, object_class)
     irrs_seen = set()
 
-    for found_set in data["asSet"]:
+    for found_set in data["set"]:
         irrs_seen.add(found_set["source"])
         result.sets_per_irr[found_set["source"]].add(found_set["rpslPk"])
 
-    for autnum in data["autNum"]:
-        autnum_mntners = set(autnum["mntBy"])
-        for member_of in autnum["memberOfObjs"]:
-            expected_mntners = set()
-            if member_of and member_of.get("mbrsByRef"):
-                expected_mntners = set(member_of["mbrsByRef"])
+    if object_class == ObjectClass.ASSET:
+        for autnum in data.get("autNum", []):
+            autnum_mntners = set(autnum["mntBy"])
+            for member_of in autnum["memberOfObjs"]:
+                expected_mntners = set()
+                if member_of and member_of.get("mbrsByRef"):
+                    expected_mntners = set(member_of["mbrsByRef"])
 
-            if "ANY" in expected_mntners or autnum_mntners.intersection(expected_mntners):
-                irrs_seen.add(member_of["source"])
-                result.sets_per_irr[member_of["source"]].add(member_of["rpslPk"])
+                if "ANY" in expected_mntners or autnum_mntners.intersection(expected_mntners):
+                    irrs_seen.add(member_of["source"])
+                    result.sets_per_irr[member_of["source"]].add(member_of["rpslPk"])
 
     result.irrs_seen = sorted(irrs_seen)
     print(f"complete in {time.perf_counter() - start}")

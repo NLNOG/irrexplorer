@@ -36,7 +36,7 @@ function QueryForm() {
                     <input
                         type="text"
                         id="search"
-                        placeholder="Prefix, IP, ASN or AS-set"
+                        placeholder="Prefix, IP, ASN or AS/route-set"
                         onChange={handleSearchChange}
                         className={inputClasses}
                     />
