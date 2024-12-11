@@ -89,7 +89,8 @@ async def test_prefix_valid(client, httpserver):
     expected = [
         {
             "prefix": "192.0.2.0/24",
-            "prefixSortKey": "3221225984/24",
+            "prefixSortKeyIpPrefix": "3221225984/24",
+            "prefixSortKeyReverseNetworklenIp": "104-3221225984",
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [64500],
@@ -144,7 +145,8 @@ async def test_prefix_valid_rpki_as0(client, httpserver):
     expected = [
         {
             "prefix": "192.0.2.0/24",
-            "prefixSortKey": "3221225984/24",
+            "prefixSortKeyIpPrefix": "3221225984/24",
+            "prefixSortKeyReverseNetworklenIp": "104-3221225984",
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [],
@@ -185,7 +187,8 @@ async def test_prefix_no_data(client, httpserver):
     expected = [
         {
             "prefix": "192.0.2.0/24",
-            "prefixSortKey": "3221225984/24",
+            "prefixSortKeyIpPrefix": "3221225984/24",
+            "prefixSortKeyReverseNetworklenIp": "104-3221225984",
             "goodnessOverall": 0,
             "categoryOverall": "danger",
             "bgpOrigins": [64500],

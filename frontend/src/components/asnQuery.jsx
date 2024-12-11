@@ -68,6 +68,7 @@ class ASNQuery extends Component {
                     reducedColour={reducedColour}
                     filterWarningError={filterWarningError}
                     apiCallUrl={this.state.apiCallUrl}
+                    defaultSortSmallestFirst={true}
                 />
                 <h2 className="h3 mt-4">
                     Included in the following AS sets:

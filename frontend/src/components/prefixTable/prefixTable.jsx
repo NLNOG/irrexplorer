@@ -27,8 +27,9 @@ class PrefixTable extends Component {
     }
 
     updateState() {
+        const defaultKey = this.props.defaultSortSmallestFirst ? 'prefixSmallestFirst' : 'prefix';
         this.setState({
-            sortedPrefixesData: sortPrefixesDataBy(this.props.prefixesData, 'prefix'),
+            sortedPrefixesData: sortPrefixesDataBy(this.props.prefixesData, defaultKey),
             irrSourceColumns: findIrrSourceColumns(this.props.prefixesData),
         });
 
@@ -91,6 +92,7 @@ PrefixTable.propTypes = {
     reducedColour: PropTypes.bool,
     filterWarningError: PropTypes.bool,
     apiCallUrl: PropTypes.string,
+    defaultSortSmallestFirst: PropTypes.bool,
 };
 
 
