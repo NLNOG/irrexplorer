@@ -149,3 +149,15 @@ This also allow auto reloading.
 To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
 (that build is used for static serving tests), activate the virtualenv,
 then run `pytest`.
+
+### Third-party Tools
+
+#### IRRexplorer CLI
+A command-line interface to query and explore IRR & BGP data from IRRexplorer.net in real-time.
+
+Installation:
+```bash
+pip install irrexplorer-cli
+```
+
+For full documentation and usage examples, visit: https://github.com/kiraum/irrexplorer-cli
