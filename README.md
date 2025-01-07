@@ -149,3 +149,10 @@ This also allow auto reloading.
 To run tests, run `yarn build` (or `poetry run frontend-build`) at least once
 (that build is used for static serving tests), activate the virtualenv,
 then run `pytest`.
+
+## Third party tools
+Since IRR Explorer offers a JSON endpoint for retrieving data, it's possible to
+build custom tools using data from IRR Explorer. Here's a list of known tools:
+
+* [irrexplorer-cli](https://github.com/kiraum/irrexplorer-cli) - a CLI tool to
+retrieve data from IRR Explorer.
