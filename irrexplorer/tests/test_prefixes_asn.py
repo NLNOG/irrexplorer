@@ -65,8 +65,7 @@ async def test_asn_valid(client, httpserver):
         "directOrigin": [
             {
                 "prefix": "192.0.2.0/24",
-                "prefixSortKeyIpPrefix": "3221225984/24",
-                "prefixSortKeyReverseNetworklenIp": "104-3221225984",
+                "prefixSortKey": "3221225984/24",
                 "goodnessOverall": 0,
                 "categoryOverall": "danger",
                 "bgpOrigins": [64500],
@@ -109,8 +108,7 @@ async def test_asn_valid(client, httpserver):
         "overlaps": [
             {
                 "prefix": "192.0.2.128/25",
-                "prefixSortKeyIpPrefix": "3221226112/25",
-                "prefixSortKeyReverseNetworklenIp": "103-3221226112",
+                "prefixSortKey": "3221226112/25",
                 "goodnessOverall": 0,
                 "categoryOverall": "danger",
                 "bgpOrigins": [64501],
@@ -146,8 +144,7 @@ async def test_asn_no_irr_data(client, httpserver):
         "directOrigin": [
             {
                 "prefix": "192.0.2.0/24",
-                "prefixSortKeyIpPrefix": "3221225984/24",
-                "prefixSortKeyReverseNetworklenIp": "104-3221225984",
+                "prefixSortKey": "3221225984/24",
                 "goodnessOverall": 0,
                 "categoryOverall": "danger",
                 "bgpOrigins": [64500],
