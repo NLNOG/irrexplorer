@@ -5,6 +5,7 @@ import Spinner from "./spinner";
 import api from "../../services/api";
 import TableFooter from "./tableFooter";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 
@@ -57,9 +58,10 @@ class Metadata extends Component {
 
     renderDate(date) {
         dayjs.extend(relativeTime);
+        dayjs.extend(utc);
         const date_parsed = dayjs(date);
         const format = 'YYYY-MM-DD HH:mm';
-        return `${date_parsed.fromNow()} (${date_parsed.format(format)} UTC)`
+        return `${date_parsed.fromNow()} (${date_parsed.utc().format(format)} UTC)`
     }
 
     renderTablePlaceholder(placeholder) {
