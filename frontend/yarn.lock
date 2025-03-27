@@ -1269,12 +1269,12 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.7.1"
 
-"@fortawesome/free-brands-svg-icons@^6.6":
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/@fortawesome/free-brands-svg-icons/-/free-brands-svg-icons-6.6.0.tgz#2797f2cc66d21e7e47fa64e680b8835e8d30e825"
-  integrity sha512-1MPD8lMNW/earme4OQi1IFHtmHUwAKgghXlNwWi9GO7QkTfD+IIaYpIai4m2YJEzqfEji3jFHX1DZI5pbY/biQ==
+"@fortawesome/free-brands-svg-icons@^6.7":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-brands-svg-icons/-/free-brands-svg-icons-6.7.2.tgz#4ebee8098f31da5446dda81edc344025eb59b27e"
+  integrity sha512-zu0evbcRTgjKfrr77/2XX+bU+kuGfjm0LbajJHVIgBWNIDzrhpRxiCPNT8DW5AdmSsq7Mcf9D1bH0aSeSUSM+Q==
   dependencies:
-    "@fortawesome/fontawesome-common-types" "6.6.0"
+    "@fortawesome/fontawesome-common-types" "6.7.2"
 
 "@fortawesome/free-regular-svg-icons@^6.7":
   version "6.7.1"
