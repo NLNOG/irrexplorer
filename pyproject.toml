@@ -9,7 +9,7 @@ readme = 'README.md'
 [tool.poetry.dependencies]
 python = "^3.9"
 starlette = ">=0.41"
-uvicorn = {extras = ["standard"], version = "^0.32.0"}
+uvicorn = {extras = ["standard"], version = "^0.34.3"}
 databases = {extras = ["postgresql"], version = "^0.9"}
 alembic = ">=1.5"
 SQLAlchemy = "^2.0"
