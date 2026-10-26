@@ -51,6 +51,10 @@ REGISTROBR_URL = "https://ftp.registro.br/pub/numeracao/origin/nicbr-asn-blk-lat
 # Timeout for a full run of the data importer, in seconds
 IMPORT_TIMEOUT = config("IMPORT_TIMEOUT", cast=int, default=3600)
 
+SET_EXPANSION_TIMEOUT = config("SET_EXPANSION_TIMEOUT", cast=int, default=120)
+SET_COUNT_LIMIT = config("SET_COUNT_LIMIT", cast=int, default=1000)
+SET_PATH_LIMIT = config("SET_PATH_LIMIT", cast=int, default=10000)
+
 BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
 BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 
