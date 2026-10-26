@@ -48,6 +48,9 @@ RIRSTATS_URL = {
 }
 REGISTROBR_URL = "https://ftp.registro.br/pub/numeracao/origin/nicbr-asn-blk-latest.txt"
 
+# Timeout for a full run of the data importer, in seconds
+IMPORT_TIMEOUT = config("IMPORT_TIMEOUT", cast=int, default=3600)
+
 BGP_IPV4_LENGTH_CUTOFF = config("BGP_IPV4_LENGTH_CUTOFF", cast=int, default=29)
 BGP_IPV6_LENGTH_CUTOFF = config("BGP_IPV6_LENGTH_CUTOFF", cast=int, default=124)
 

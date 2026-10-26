@@ -1,5 +1,7 @@
+import asyncio
 from ipaddress import IPv4Network, IPv6Network
 
+import aiohttp
 import pytest
 from databases import Database
 
@@ -55,3 +57,14 @@ async def test_importer_404(httpserver, monkeypatch):
     mock_rirstats_source(httpserver, monkeypatch, "not found", status=404)
     with pytest.raises(ImporterError):
         await RIRStatsImporter(RIR.RIPENCC).run_import()
+
+
+async def test_importer_http_timeout(monkeypatch):
+    # ClientSession.get is not a coroutine function: it returns a context manager
+    def timeout_get(*args, **kwargs):
+        raise asyncio.TimeoutError()
+
+    monkeypatch.setattr(aiohttp.ClientSession, "get", timeout_get)
+    with pytest.raises(ImporterError) as exc_info:
+        await RIRStatsImporter(RIR.RIPENCC).run_import()
+    assert "Timeout retrieving" in str(exc_info.value)
