@@ -1,4 +1,6 @@
 import asyncio
+import logging
+import time
 from collections import defaultdict
 from datetime import datetime
 from ipaddress import ip_network
@@ -12,6 +14,8 @@ from irrexplorer.state import DataSource, IPNetwork, RouteInfo, RPKIStatus
 from irrexplorer.api.interfaces import ObjectClass
 
 IRRD_TIMEOUT = 600
+
+logger = logging.getLogger(__name__)
 
 COMMON_GRAPHQL_FIELDS = """
     rpslPk
@@ -145,8 +149,14 @@ class IRRDQuery:
             }
 
     async def query_set_members(self, names: List[str]) -> Dict[str, Dict[str, List[str]]]:
+        start = time.perf_counter()
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
             response = await session.execute(GQL_QUERY_SET_MEMBERS, {"names": names})
+            logger.info(
+                f"IRRd query for {len(names)} sets returned "
+                f"{len(response['recursiveSetMembers'])} objects "
+                f"in {time.perf_counter() - start:.2f}s"
+            )
             members_per_set: Dict[str, Dict[str, List[str]]] = defaultdict(dict)
             for item in response["recursiveSetMembers"]:
                 members_per_set[item["rpslPk"]][item["rootSource"]] = item["members"]
