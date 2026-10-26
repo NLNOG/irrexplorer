@@ -19,11 +19,8 @@ from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 @contextlib.asynccontextmanager
 async def lifespan(app):
-    # Not on import, which would reconfigure logging for any importer.
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
+    logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    logging.getLogger("irrexplorer").setLevel(logging.INFO)
     signal.signal(signal.SIGUSR1, sigusr1_handler)
     app.state.database = databases.Database(DATABASE_URL, force_rollback=TESTING)
     await app.state.database.connect()

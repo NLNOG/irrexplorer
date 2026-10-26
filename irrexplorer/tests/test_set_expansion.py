@@ -155,7 +155,7 @@ async def test_expand_path_limit(client, httpserver, monkeypatch):
 
 async def test_expand_timeout(client, httpserver, monkeypatch):
     def slow_handler(request):
-        time.sleep(0.5)
+        time.sleep(0.3)
         return Response("{}", content_type="application/json")
 
     environ["IRRD_ENDPOINT"] = httpserver.url_for("/graphql")
