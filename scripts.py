@@ -30,6 +30,7 @@ def frontend_install() -> None:
 
 def import_data() -> None:
     from irrexplorer.commands import import_data as import_data_command
+    import_data_command.configure_process()
     asyncio.run(import_data_command.main())
 
 
