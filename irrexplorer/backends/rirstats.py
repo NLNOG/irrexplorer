@@ -1,4 +1,5 @@
 import ipaddress
+import logging
 
 import aggregate6
 from asgiref.sync import sync_to_async
@@ -15,6 +16,8 @@ ADDRESS_FAMILY_MAPPING = {
 }
 RELEVANT_STATUSES = ["allocated", "assigned"]
 
+logger = logging.getLogger(__name__)
+
 
 class RIRStatsImporter:
     def __init__(self, rir: RIR):
@@ -24,6 +27,7 @@ class RIRStatsImporter:
         url = RIRSTATS_URL[self.rir]
         text = await retrieve_url_text(url)
         prefixes = await self._parse_rirstats(text)
+        logger.info(f"{self.rir.name}: storing {len(prefixes)} aggregated prefixes")
         await store_rir_prefixes(self.rir, prefixes)
 
     @sync_to_async

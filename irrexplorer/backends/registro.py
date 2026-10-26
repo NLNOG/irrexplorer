@@ -1,3 +1,5 @@
+import logging
+
 import aggregate6
 from asgiref.sync import sync_to_async
 
@@ -5,6 +7,8 @@ from irrexplorer.backends.common import retrieve_url_text, store_rir_prefixes
 from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import REGISTROBR_URL
 from irrexplorer.state import RIR
+
+logger = logging.getLogger(__name__)
 
 
 class RegistroRirImporter:
@@ -21,6 +25,7 @@ class RegistroRirImporter:
         url = REGISTROBR_URL
         text = await retrieve_url_text(url)
         prefixes = await self._parse_registrobr(text)
+        logger.info(f"{self.rir.name}: storing {len(prefixes)} aggregated prefixes")
         await store_rir_prefixes(self.rir, prefixes)
 
     @sync_to_async
