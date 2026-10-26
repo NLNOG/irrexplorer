@@ -12,6 +12,7 @@ class SetExpansionTable extends Component {
         hasLoaded: false,
         subSets: [],
         apiCallUrl: '',
+        error: '',
     }
 
     async componentDidMount() {
@@ -29,20 +30,24 @@ class SetExpansionTable extends Component {
             hasLoaded: false,
             subSets: [],
             apiCallUrl: '',
+            error: '',
         });
-        const {data, url} = await api.getSetExpansion(this.props.query);
+        const {data, url, error} = await api.getSetExpansion(this.props.query);
         this.setState({
             hasLoaded: true,
             subSets: data,
             apiCallUrl: url,
+            error: error,
         });
     }
 
     renderTableContent() {
-        const {hasLoaded, subSets, apiCallUrl} = this.state;
+        const {hasLoaded, subSets, apiCallUrl, error} = this.state;
         if (!hasLoaded)
             return this.renderTablePlaceholder(<Spinner/>);
-        if (!subSets.length)
+        if (error)
+            return this.renderTablePlaceholder(error);
+        if (!subSets || !subSets.length)
             return this.renderTablePlaceholder(`${this.props.objectClass} was not found.`);
         return (
             <>

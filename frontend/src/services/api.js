@@ -14,11 +14,12 @@ axios.defaults.headers = {
 };
 
 axios.interceptors.response.use(null, error => {
+    const status = error.response && error.response.status;
+    // 504 is the API's own response to a set expansion timing out
     const expectedError =
         error.message === 'cancel' ||
-        (error.response &&
-            error.response.status >= 400 &&
-            error.response.status < 500);
+        (status >= 400 && status < 500) ||
+        status === 504;
     if (!expectedError) {
         console.log('Unexpected HTTP error', error);
     }
@@ -56,7 +57,13 @@ async function performRequest(url) {
         const response = await axios.get(url, {cancelToken: source.token});
         return {data: response.data, url: url};
     } catch (exc) {
-        return {data: null, url: url};
+        // Cancelling happens when the user starts a new query, i.e. not a failure.
+        if (axios.isCancel(exc))
+            return {data: null, url: url};
+        const error = exc.response && exc.response.data
+            ? String(exc.response.data)
+            : 'Unable to retrieve data from the IRR Explorer API.';
+        return {data: null, url: url, error: error};
     }
 
 }
