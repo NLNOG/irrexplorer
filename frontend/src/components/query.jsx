@@ -3,11 +3,12 @@ import React, {Component} from 'react';
 import QueryForm from "./common/queryForm";
 
 import logo from "../logo.png";
-import {Link, navigate} from "@reach/router";
+import {Link} from "react-router";
 import api from "../services/api";
 import PrefixQuery from "./prefixQuery";
 import ASNQuery from "./asnQuery";
 import setQuery from "./setQuery";
+import withRouter from "../utils/withRouter";
 
 class Query extends Component {
     state = {cleanQuery: '', queryCategory: '', reducedColour: false, filterWarningError: false};
@@ -24,12 +25,14 @@ class Query extends Component {
     async cleanQuery() {
         const cleanResult = await api.cleanQuery(this.queryInput());
         if (cleanResult.error) {
-            await navigate('/');
+            this.props.navigate('/');
         } else if (cleanResult.category !== this.props.category) {
-            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});
+            this.props.navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`, {replace: true});
         } else {
             this.setState({cleanQuery: cleanResult.cleanedValue, queryCategory: cleanResult.category})
-            document.title = 'IRR explorer: ' + this.state.cleanQuery;
+            // Read from cleanResult, not state: setState is batched and
+            // has not been applied at this point.
+            document.title = 'IRR explorer: ' + cleanResult.cleanedValue;
         }
     }
 
@@ -101,4 +104,4 @@ class Query extends Component {
     }
 }
 
-export default Query;
+export default withRouter(Query);

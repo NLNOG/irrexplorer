@@ -34,8 +34,8 @@ class ASNQuery extends Component {
         const {data, url} = await api.getPrefixesForASN(this.props.query);
         this.setState({
             hasLoadedPrefixes: true,
-            directOriginPrefixes: data.directOrigin,
-            overlapPrefixes: data.overlaps,
+            directOriginPrefixes: data ? data.directOrigin : [],
+            overlapPrefixes: data ? data.overlaps : [],
             apiCallUrl: url,
         });
     }

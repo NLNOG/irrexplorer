@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Redirect, Router} from "@reach/router";
+import {Navigate, Route, Routes} from "react-router";
 import Home from "./components/home";
 import Query from "./components/query";
 import Status from "./components/status";
@@ -8,15 +8,15 @@ class App extends Component {
     render() {
         return (
             <main className="flex-shrink-0">
-                <Router>
-                    <Home path="/"/>
-                    <Status path="/status/"/>
-                    {/* Reach does not have native support for a slash in the url, hence two Query paths */}
-                    <Query path="/query/:query"/>
-                    <Query path="/:category/:query"/>
-                    <Query path="/:category/:query1/:query2"/>
-                    <Redirect default from="/" to="/" noThrow/>
-                </Router>
+                <Routes>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/status" element={<Status/>}/>
+                    {/* A prefix query contains a slash, hence two segments */}
+                    <Route path="/query/:query" element={<Query/>}/>
+                    <Route path="/:category/:query" element={<Query/>}/>
+                    <Route path="/:category/:query1/:query2" element={<Query/>}/>
+                    <Route path="*" element={<Navigate to="/" replace/>}/>
+                </Routes>
             </main>
         );
     }
