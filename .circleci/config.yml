@@ -4,13 +4,18 @@ version: 2.1
 workflows:
   test:
     jobs:
-      - cpython-3.14
-      - cpython-3.11
+      - cpython:
+          matrix:
+            parameters:
+              python-version: ["3.11", "3.14"]
 
 jobs:
-  cpython-3.14: &test-template
+  cpython:
+    parameters:
+      python-version:
+        type: string
     docker:
-      - image: cimg/python:3.14-node
+      - image: cimg/python:<< parameters.python-version >>-node
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 
@@ -63,15 +68,3 @@ jobs:
       - store_artifacts:
           path: /tmp/pytest-of-circleci/
 
-  cpython-3.11:
-    <<: *test-template
-    docker:
-      - image: cimg/python:3.11-node
-        environment:
-          DATABASE_URL: 'postgresql://test@localhost/test'
-
-      - image: cimg/postgres:15.0
-        environment:
-          POSTGRES_USER: test
-          POSTGRES_DB: test
-          POSTGRES_HOST_AUTH_METHOD: trust
