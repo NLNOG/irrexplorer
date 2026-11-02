@@ -12,7 +12,7 @@ import {
     faQuestionCircle,
     faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
-import {Link} from "@reach/router";
+import {Link} from "react-router";
 
 
 class PrefixTableBody extends Component {
