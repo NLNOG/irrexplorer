@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import api from "../../services/api";
 import Spinner from "../common/spinner";
-import {Link} from "@reach/router";
+import {Link} from "react-router";
 import TableFooter from "../common/tableFooter";
 
 

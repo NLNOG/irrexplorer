@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
+import {BrowserRouter} from 'react-router';
 
 import App from './App';
 
@@ -11,17 +12,17 @@ import Footer from "./components/footer";
 window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <App/>
-    </React.StrictMode>,
-    document.getElementById('root')
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
+    </React.StrictMode>
 );
 
 
-ReactDOM.render(
+createRoot(document.getElementById('footer')).render(
     <React.StrictMode>
         <Footer/>
-    </React.StrictMode>,
-    document.getElementById('footer')
+    </React.StrictMode>
 );

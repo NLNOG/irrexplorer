@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import logo from "../logo.png";
 import Metadata from "./common/metadata";
-import {Link} from "@reach/router";
+import {Link} from "react-router";
 
 function Status() {
     useEffect(() => {
