@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {Link, navigate} from "@reach/router";
+import {Link, useNavigate} from "react-router";
 
 import api from "../../services/api";
 
 function QueryForm() {
     const [search, setSearch] = useState('');
     const [validationError, setValidationError] = useState('');
+    const navigate = useNavigate();
 
     const handleSearchSubmit = async (event) => {
         await api.cancelAllRequests();
@@ -16,7 +17,7 @@ function QueryForm() {
         if (cleanResult.error) {
             setValidationError(cleanResult.error);
         } else {
-            await navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
+            navigate(`/${cleanResult.category}/${cleanResult.cleanedValue}`);
         }
     }
 
@@ -50,7 +51,7 @@ function QueryForm() {
                 <button type="submit" className="btn btn-success btn-lg" disabled={!search}>Search
                 </button>
             </div>
-            <Link to="/status/">Data source status</Link>
+            <Link to="/status">Data source status</Link>
         </form>
     );
 }

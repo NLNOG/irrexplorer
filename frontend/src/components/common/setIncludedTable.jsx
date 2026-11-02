@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import Spinner from "./spinner";
 import api from "../../services/api";
-import {Link} from "@reach/router";
+import {Link} from "react-router";
 import TableFooter from "./tableFooter";
 
 

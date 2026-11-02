@@ -28,8 +28,8 @@ class PrefixQuery extends Component {
             directOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
             leastSpecificOverlapPrefixes: {hasLoaded: false, data: [], apiCallUrl: ''},
         });
-        await this.loadPrefixData(this.props.query, 'directOverlapPrefixes');
-        const leastSpecificPrefix = findLeastSpecific(this.props.query, this.state.directOverlapPrefixes.data);
+        const directOverlaps = await this.loadPrefixData(this.props.query, 'directOverlapPrefixes');
+        const leastSpecificPrefix = findLeastSpecific(this.props.query, directOverlaps);
         this.setState({
             leastSpecificPrefix: leastSpecificPrefix,
         })
@@ -40,9 +40,11 @@ class PrefixQuery extends Component {
 
     async loadPrefixData(query, target) {
         const {data, url} = await api.getPrefixesForPrefix(query);
+        const prefixesData = data || [];
         this.setState({
-            [target]: {hasLoaded: true, data, apiCallUrl: url},
+            [target]: {hasLoaded: true, data: prefixesData, apiCallUrl: url},
         })
+        return prefixesData;
     }
 
     render() {
