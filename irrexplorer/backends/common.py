@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from abc import ABCMeta
 from typing import List
 
@@ -10,6 +12,8 @@ from irrexplorer.exceptions import ImporterError
 from irrexplorer.settings import DATABASE_URL
 from irrexplorer.state import RIR, DataSource, IPNetwork, RouteInfo
 from irrexplorer.storage import tables
+
+logger = logging.getLogger(__name__)
 
 
 class LocalSQLQueryBase(metaclass=ABCMeta):
@@ -50,11 +54,16 @@ async def retrieve_url_text(url: str):
     Retrieve `url` and return the text in the response.
     Raises ImporterException if the response status is not 200.
     """
-    async with aiohttp.ClientSession(headers={"User-Agent": "IRRExplorer"}) as session:
-        async with session.get(url) as response:
-            if response.status != 200:
-                raise ImporterError(f"Failed import from {url}: status {response.status}")
-            return await response.text()
+    try:
+        async with aiohttp.ClientSession(headers={"User-Agent": "IRRExplorer"}) as session:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    raise ImporterError(f"Failed import from {url}: status {response.status}")
+                text = await response.text()
+    except asyncio.TimeoutError as exc:
+        raise ImporterError(f"Timeout retrieving {url}") from exc
+    logger.info(f"retrieved {url} ({len(text)} bytes)")
+    return text
 
 
 async def store_rir_prefixes(rir: RIR, prefixes: List[str]):

@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import List, Tuple
 
 from asgiref.sync import sync_to_async
@@ -17,6 +18,8 @@ from irrexplorer.settings import (
 from irrexplorer.state import DataSource, RouteInfo
 from irrexplorer.storage import tables
 
+logger = logging.getLogger(__name__)
+
 
 class BGPImporter:
     """
@@ -28,6 +31,7 @@ class BGPImporter:
         url = BGP_SOURCE
         text = await retrieve_url_text(url)
         prefixes = await self._parse_table(text)
+        logger.info(f"BGP: storing {len(prefixes)} prefixes")
         await self._load_prefixes(prefixes)
 
     @sync_to_async

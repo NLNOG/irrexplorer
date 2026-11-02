@@ -1,9 +1,4 @@
 import contextlib
-import os
-import signal
-import sys
-import threading
-import traceback
 
 import databases
 from starlette.applications import Starlette
@@ -13,12 +8,13 @@ from starlette.routing import Mount, Route
 
 from irrexplorer.api import queries
 from irrexplorer.api.utils import DefaultIndexStaticFiles
+from irrexplorer.debugging import install_sigusr1_handler
 from irrexplorer.settings import DATABASE_URL, DEBUG, TESTING
 
 
 @contextlib.asynccontextmanager
 async def lifespan(app):
-    signal.signal(signal.SIGUSR1, sigusr1_handler)
+    install_sigusr1_handler()
     app.state.database = databases.Database(DATABASE_URL, force_rollback=TESTING)
     await app.state.database.connect()
     yield
@@ -59,13 +55,3 @@ app = Starlette(
     middleware=middleware,
     lifespan=lifespan,
 )
-
-
-def sigusr1_handler(signal, frame):  # pragma: no cover
-    thread_names = {th.ident: th.name for th in threading.enumerate()}
-    code = [f"Traceback follows for all threads of process {os.getpid()}:"]
-    for thread_id, stack in sys._current_frames().items():
-        thread_name = thread_names.get(thread_id, "")
-        code.append(f"\n## Thread: {thread_name}({thread_id}) ##\n")
-        code += traceback.format_list(traceback.extract_stack(stack))
-    print("".join(code))

@@ -90,6 +90,8 @@ You can optionally set:
 * `MINIMUM_PREFIX_SIZE_IPV4` / `MINIMUM_PREFIX_SIZE_IPV6`: minimum prefix
   length for queries. Prefixes shorter than this are rejected, to limit
   database load. Default: 9 and 29.
+* `IMPORT_TIMEOUT`: timeout in seconds for the entire data import,
+  including downloads, parsing and database storage. Default: 3600.
 
 
 If you choose to create a `.env` file, it should look similar to:
