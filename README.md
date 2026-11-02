@@ -90,6 +90,12 @@ You can optionally set:
 * `MINIMUM_PREFIX_SIZE_IPV4` / `MINIMUM_PREFIX_SIZE_IPV6`: minimum prefix
   length for queries. Prefixes shorter than this are rejected, to limit
   database load. Default: 9 and 29.
+* `SET_EXPANSION_TIMEOUT`: maximum total time in seconds for a single
+  set expansion request. Default: 120.
+* `SET_COUNT_LIMIT`: maximum number of sets resolved in a single set
+  expansion. Default: 1000.
+* `SET_PATH_LIMIT`: maximum number of paths reported in a single set
+  expansion. Default: 10000.
 
 
 If you choose to create a `.env` file, it should look similar to:

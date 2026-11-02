@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import time
 from collections import defaultdict
 from ipaddress import ip_network
@@ -17,12 +18,18 @@ from irrexplorer.api.interfaces import (
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.rirstats import RIRStatsQuery
-from irrexplorer.settings import MINIMUM_PREFIX_SIZE, TESTING
+from irrexplorer.settings import (
+    MINIMUM_PREFIX_SIZE,
+    SET_COUNT_LIMIT,
+    SET_PATH_LIMIT,
+    TESTING,
+)
 from irrexplorer.state import RIR, IPNetwork, RouteInfo, NIR
 from irrexplorer.api.interfaces import ObjectClass
 
-SET_SIZE_LIMIT = 1000
 NIR_NAMES = [nir.name for nir in NIR]
+
+logger = logging.getLogger(__name__)
 
 
 class PrefixCollector:
@@ -198,55 +205,76 @@ async def collect_set_expansion(name: str):
     start = time.perf_counter()
     irrd = IRRDQuery()
 
-    resolved: Dict[str, Dict[str, List[str]]] = {name: {}}
+    resolved: Dict[str, Dict[str, List[str]]] = {}
+    queried = {name}
     to_resolve = {name}
-    tree_depth = 0
 
+    # Collect data on all relevant sets
     while to_resolve:
-        tree_depth += 1
-        print(
-            f"starting step {tree_depth} with {len(to_resolve)} items to resolve, {len(resolved)} already done"
+        logger.info(
+            f"set expansion of {name!r}: resolving {len(to_resolve)} sets, "
+            f"{len(resolved)} already resolved"
         )
-        if len(to_resolve) > SET_SIZE_LIMIT or len(resolved) > SET_SIZE_LIMIT:
-            print("breaking")
+        if len(to_resolve) > SET_COUNT_LIMIT or len(resolved) > SET_COUNT_LIMIT:
+            logger.warning(
+                f"set expansion of {name!r}: limit of {SET_COUNT_LIMIT} sets "
+                f"exceeded, truncating expansion"
+            )
             break
-        step_result = await irrd.query_set_members(list(to_resolve))
+        step_result = await irrd.query_set_members(sorted(to_resolve))
         resolved.update(step_result)
-        to_resolve = {
+        found_sets = {
             member
             for members_per_source in step_result.values()
             for members in members_per_source.values()
             for member in members
-            if is_set(member) and member not in to_resolve
+            if is_set(member)
         }
-        to_resolve = to_resolve - set(resolved.keys())
+        to_resolve = found_sets - queried
+        queried |= to_resolve
 
-    results = []
+    # Then, tie them into a structure to show all their paths,
+    # in a breadth first approach
+    results: List[SetExpansion] = []
+    paths = [[name]]
+    while paths and len(results) < SET_PATH_LIMIT:
+        next_paths: List[List[str]] = []
+        for path in paths:
+            if len(results) >= SET_PATH_LIMIT:
+                logger.warning(
+                    f"set expansion of {name!r}: path limit of {SET_PATH_LIMIT} "
+                    f"reached, truncating expansion"
+                )
+                break
+            members_per_source = resolved.get(path[-1], {})
+            for source, members in sorted(members_per_source.items()):
+                results.append(
+                    SetExpansion(
+                        name=path[-1],
+                        source=source,
+                        depth=len(path),
+                        path=path,
+                        members=sorted(members),
+                    )
+                )
+            sub_sets = {
+                member
+                for members in members_per_source.values()
+                for member in members
+                # not all members are resolvable,
+                # and we don't follow circular references
+                if member in resolved and member not in path
+            }
+            next_paths.extend(path + [sub_set] for sub_set in sorted(sub_sets))
+        paths = next_paths
+        # yield to the event loop to not starve others
+        await asyncio.sleep(0)
 
-    def traverse_tree(stub_name: str, depth: int = 0, path: Optional[List[str]] = None) -> None:
-        print(f"traverse_tree called with: stub_name={stub_name} depth={depth} path={path}")
-        if path is None:
-            path = []
-        if stub_name in path:
-            return  # circular reference
-        path = path + [stub_name]
-        depth += 1
-        for source, members in resolved[stub_name].items():
-            result = SetExpansion(
-                name=stub_name, source=source, depth=depth, path=path, members=sorted(members)
-            )
-            if result not in results:
-                results.append(result)
-        for sub_members in resolved[stub_name].values():
-            for sub_member in sub_members:
-                if sub_member in resolved:
-                    traverse_tree(sub_member, depth, path)
-
-    print("completed initial resolve loop, traversing tree")
-    traverse_tree(name)
     results.sort(key=lambda item: (item.depth, item.name))
-
-    print(f"set expansion complete in {time.perf_counter() - start}")
+    logger.info(
+        f"set expansion of {name!r} complete in {time.perf_counter() - start:.2f}s, "
+        f"{len(results)} results"
+    )
     return results
 
 

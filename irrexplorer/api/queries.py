@@ -1,3 +1,4 @@
+import asyncio
 import enum
 import json
 import re
@@ -14,7 +15,7 @@ from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
 from irrexplorer.backends.irrd import IRRDQuery
 from irrexplorer.backends.metadata import get_last_data_import
-from irrexplorer.settings import MINIMUM_PREFIX_SIZE
+from irrexplorer.settings import MINIMUM_PREFIX_SIZE, SET_EXPANSION_TIMEOUT
 
 re_rpsl_name = re.compile(r"^[A-Z][A-Z0-9_:-]*[A-Z0-9]$", re.IGNORECASE)
 
@@ -118,5 +119,12 @@ async def member_of(request):
 
 
 async def set_expansion(request):
-    result = await collect_set_expansion(request.path_params["target"])
+    target = request.path_params["target"]
+    try:
+        result = await asyncio.wait_for(collect_set_expansion(target), timeout=SET_EXPANSION_TIMEOUT)
+    except asyncio.TimeoutError:
+        return PlainTextResponse(
+            status_code=504,
+            content=f"Expansion of {target} timed out after {SET_EXPANSION_TIMEOUT} seconds.",
+        )
     return DataClassJSONResponse(result)
