@@ -5,10 +5,9 @@ from dataclasses import dataclass
 from ipaddress import ip_network
 
 import IPy
-from dataclasses_json import LetterCase, dataclass_json
 from starlette.responses import PlainTextResponse, Response
 
-from irrexplorer.api.interfaces import ObjectClass
+from irrexplorer.api.interfaces import ObjectClass, camel_case_json
 from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
@@ -30,7 +29,7 @@ class QueryCategory(enum.Enum):
     ROUTESET = "route-set"
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class Query:
     category: QueryCategory

@@ -2,12 +2,15 @@ import enum
 from collections import defaultdict
 from dataclasses import dataclass, field
 from ipaddress import ip_network
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import marshmallow
 from dataclasses_json import LetterCase, config, dataclass_json
 
 from irrexplorer.state import RIR, RIR_EXPECTED_IRR, IPNetwork, RPKIStatus
+
+# mypy rejects LetterCase.CAMEL: it is a function, not an enum member
+camel_case_json: Any = dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore[call-overload]
 
 """
 This file defines a number of properties that essentially form the
@@ -45,7 +48,7 @@ ip_field_metadata = config(
 )
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class PrefixIRRDetail:
     asn: int
@@ -55,14 +58,14 @@ class PrefixIRRDetail:
     rpki_max_length: Optional[int] = None
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class ReportMessage(object):
     category: MessageCategory
     text: str
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class PrefixSummary:
     # This first set of fields has to be filled with data,
@@ -158,21 +161,21 @@ class PrefixSummary:
         self.add_message(MessageCategory.DANGER, text)
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class ASNPrefixes:
     direct_origin: List[PrefixSummary] = field(default_factory=list)
     overlaps: List[PrefixSummary] = field(default_factory=list)
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class MemberOf:
     irrs_seen: List[str] = field(default_factory=list)
     sets_per_irr: Dict[str, Set[str]] = field(default_factory=lambda: defaultdict(set))
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+@camel_case_json
 @dataclass
 class SetExpansion:
     name: str

@@ -1,13 +1,13 @@
 from ipaddress import IPv4Network, IPv6Network
 
 import pytest
-from aioresponses import aioresponses
 from databases import Database
 
 from irrexplorer.exceptions import ImporterError
-from irrexplorer.settings import BGP_SOURCE, DATABASE_URL
+from irrexplorer.settings import DATABASE_URL
 from irrexplorer.storage import tables
 
+from .. import bgp
 from ..bgp import BGPImporter
 
 pytestmark = pytest.mark.asyncio
@@ -21,10 +21,14 @@ VALID_BGP_BODY = """
 """
 
 
-async def test_importer_valid():
-    with aioresponses() as http_mock:
-        http_mock.get(BGP_SOURCE, status=200, body=VALID_BGP_BODY)
-        await BGPImporter().run_import()
+def mock_bgp_source(httpserver, monkeypatch, body, status=200):
+    monkeypatch.setattr(bgp, "BGP_SOURCE", httpserver.url_for("/bgp"))
+    httpserver.expect_oneshot_request("/bgp").respond_with_data(body, status=status)
+
+
+async def test_importer_valid(httpserver, monkeypatch):
+    mock_bgp_source(httpserver, monkeypatch, VALID_BGP_BODY)
+    await BGPImporter().run_import()
 
     async with Database(DATABASE_URL) as database:
         rows = await database.fetch_all(query=tables.bgp.select())
@@ -36,33 +40,27 @@ async def test_importer_valid():
         await database.execute(query=tables.bgp.delete())
 
 
-async def test_importer_invalid_json():
-    with aioresponses() as http_mock:
-        http_mock.get(
-            BGP_SOURCE, status=200, body="""{"CIDR":"192.0.2.0/24","ASN":64500,Hits":1000}"""
-        )
-        with pytest.raises(ImporterError):
-            await BGPImporter().run_import()
+async def test_importer_invalid_json(httpserver, monkeypatch):
+    mock_bgp_source(
+        httpserver, monkeypatch, """{"CIDR":"192.0.2.0/24","ASN":64500,Hits":1000}"""
+    )
+    with pytest.raises(ImporterError):
+        await BGPImporter().run_import()
 
 
-async def test_importer_invalid_prefix():
-    with aioresponses() as http_mock:
-        http_mock.get(BGP_SOURCE, status=200, body="""{"CIDR":"invalid","ASN":64500,"Hits":1000}""")
-        with pytest.raises(ImporterError):
-            await BGPImporter().run_import()
+async def test_importer_invalid_prefix(httpserver, monkeypatch):
+    mock_bgp_source(httpserver, monkeypatch, """{"CIDR":"invalid","ASN":64500,"Hits":1000}""")
+    with pytest.raises(ImporterError):
+        await BGPImporter().run_import()
 
 
-async def test_importer_invalid_prefix_ip():
-    with aioresponses() as http_mock:
-        http_mock.get(
-            BGP_SOURCE, status=200, body="""{"CIDR":"invalid/24","ASN":64500,"Hits":1000}"""
-        )
-        with pytest.raises(ImporterError):
-            await BGPImporter().run_import()
+async def test_importer_invalid_prefix_ip(httpserver, monkeypatch):
+    mock_bgp_source(httpserver, monkeypatch, """{"CIDR":"invalid/24","ASN":64500,"Hits":1000}""")
+    with pytest.raises(ImporterError):
+        await BGPImporter().run_import()
 
 
-async def test_importer_404():
-    with aioresponses() as http_mock:
-        http_mock.get(BGP_SOURCE, status=404)
-        with pytest.raises(ImporterError):
-            await BGPImporter().run_import()
+async def test_importer_404(httpserver, monkeypatch):
+    mock_bgp_source(httpserver, monkeypatch, "not found", status=404)
+    with pytest.raises(ImporterError):
+        await BGPImporter().run_import()

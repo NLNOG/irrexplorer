@@ -44,9 +44,9 @@ on results from backends.
 
 To run IRR explorer you need a Linux, BSD or MacOS install with:
 
-* Python 3.9-3.12
+* Python 3.11-3.14
 * Poetry (package manager for Python)
-* node (tested on version 15-20)
+* node 20 or newer
 * yarn
 
 You also need access to a PostgreSQL server, and an IRRd 4.2+ deployment.
