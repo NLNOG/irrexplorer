@@ -4,7 +4,7 @@ from datetime import datetime
 from ipaddress import ip_network
 from typing import Dict, List
 
-from gql import Client, gql
+from gql import Client, GraphQLRequest, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 from irrexplorer.settings import config
@@ -138,7 +138,7 @@ class IRRDQuery:
 
     async def query_last_update(self) -> Dict[str, datetime]:
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            response = await session.execute(GQL_QUERY_LAST_UPDATE)
+            response = await session.execute(GraphQLRequest(GQL_QUERY_LAST_UPDATE))
             return {
                 status["source"]: datetime.fromisoformat(status["lastUpdate"])
                 for status in response["databaseStatus"]
@@ -146,7 +146,7 @@ class IRRDQuery:
 
     async def query_set_members(self, names: List[str]) -> Dict[str, Dict[str, List[str]]]:
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            response = await session.execute(GQL_QUERY_SET_MEMBERS, {"names": names})
+            response = await session.execute(GraphQLRequest(GQL_QUERY_SET_MEMBERS, variable_values={"names": names}))
             members_per_set: Dict[str, Dict[str, List[str]]] = defaultdict(dict)
             for item in response["recursiveSetMembers"]:
                 members_per_set[item["rpslPk"]][item["rootSource"]] = item["members"]
@@ -160,11 +160,11 @@ class IRRDQuery:
         if target.isnumeric():
             target = "AS" + target
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            return await session.execute(queries[object_class], {"target": target})
+            return await session.execute(GraphQLRequest(queries[object_class], variable_values={"target": target}))
 
     async def query_asn(self, asn: int):
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
-            result = await session.execute(GQL_QUERY_ASN, {"asn": asn})
+            result = await session.execute(GraphQLRequest(GQL_QUERY_ASN, variable_values={"asn": asn}))
             return self._graphql_to_route_info(result)
 
     async def query_prefixes_any(self, prefixes: List[IPNetwork]) -> List[RouteInfo]:
@@ -172,13 +172,14 @@ class IRRDQuery:
         async with Client(transport=self.transport, execute_timeout=IRRD_TIMEOUT) as session:
             for prefix in prefixes:
                 object_class = ["route"] if prefix.version == 4 else ["route6"]
-                task = session.execute(
+                request = GraphQLRequest(
                     GQL_QUERY_PREFIX,
-                    {
+                    variable_values={
                         "prefix": str(prefix),
                         "object_class": object_class,
                     },
                 )
+                task = session.execute(request)
                 tasks.append(task)
             results_lists = await asyncio.gather(*tasks)
             objects_lists = [

@@ -5,13 +5,13 @@ workflows:
   version: 2
   test:
     jobs:
-      - cpython-3.12
-      - cpython-3.9
+      - cpython-3.14
+      - cpython-3.11
 
 jobs:
-  cpython-3.12: &test-template
+  cpython-3.14: &test-template
     docker:
-      - image: cimg/python:3.12-node
+      - image: cimg/python:3.14-node
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 
@@ -28,9 +28,9 @@ jobs:
 
       - restore_cache:
           keys:
-          - v4-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
+          - v5-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v4-dependencies-{{ .Environment.CIRCLE_JOB }}
+          - v5-dependencies-{{ .Environment.CIRCLE_JOB }}
 
       - run:
           name: install python dependencies
@@ -44,7 +44,7 @@ jobs:
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
             - /mnt/ramdisk/frontend/node_modules
-          key: v4-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
+          key: v5-dependencies-{{ .Environment.CIRCLE_JOB }}-{{ checksum "poetry.lock" }}-{{ checksum "frontend/yarn.lock" }}
 
       - run:
           name: run linter
@@ -64,10 +64,10 @@ jobs:
       - store_artifacts:
           path: /tmp/pytest-of-circleci/
 
-  cpython-3.9:
+  cpython-3.11:
     <<: *test-template
     docker:
-      - image: cimg/python:3.9-node
+      - image: cimg/python:3.11-node
         environment:
           DATABASE_URL: 'postgresql://test@localhost/test'
 

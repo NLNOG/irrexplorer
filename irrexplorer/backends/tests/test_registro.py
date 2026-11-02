@@ -1,13 +1,14 @@
 from ipaddress import IPv4Network, IPv6Network
 
 import pytest
-from aioresponses import aioresponses
 from databases import Database
 
 from irrexplorer.exceptions import ImporterError
-from irrexplorer.settings import DATABASE_URL, REGISTROBR_URL
+from irrexplorer.settings import DATABASE_URL
 from irrexplorer.state import RIR
 from irrexplorer.storage import tables
+
+from .. import registro
 from ..registro import RegistroRirImporter
 
 VALID_ASN_BLK = """
@@ -17,10 +18,14 @@ AS64502|orgname3|orgid3|198.51.100.0/25
 """
 
 
-async def test_importer_valid():
-    with aioresponses() as http_mock:
-        http_mock.get(REGISTROBR_URL, status=200, body=VALID_ASN_BLK)
-        await RegistroRirImporter().run_import()
+def mock_registro_source(httpserver, monkeypatch, body, status=200):
+    monkeypatch.setattr(registro, "REGISTROBR_URL", httpserver.url_for("/registro"))
+    httpserver.expect_oneshot_request("/registro").respond_with_data(body, status=status)
+
+
+async def test_importer_valid(httpserver, monkeypatch):
+    mock_registro_source(httpserver, monkeypatch, VALID_ASN_BLK)
+    await RegistroRirImporter().run_import()
 
     async with Database(DATABASE_URL) as database:
         rows = await database.fetch_all(query=tables.rirstats.select())
@@ -33,15 +38,13 @@ async def test_importer_valid():
         await database.execute(query=tables.rirstats.delete())
 
 
-async def test_importer_invalid():
-    with aioresponses() as http_mock:
-        http_mock.get(REGISTROBR_URL, status=200, body="asn|orgname|orgid|invalid-ip")
-        with pytest.raises(ImporterError):
-            await RegistroRirImporter().run_import()
+async def test_importer_invalid(httpserver, monkeypatch):
+    mock_registro_source(httpserver, monkeypatch, "asn|orgname|orgid|invalid-ip")
+    with pytest.raises(ImporterError):
+        await RegistroRirImporter().run_import()
 
 
-async def test_importer_404():
-    with aioresponses() as http_mock:
-        http_mock.get(REGISTROBR_URL, status=404)
-        with pytest.raises(ImporterError):
-            await RegistroRirImporter().run_import()
+async def test_importer_404(httpserver, monkeypatch):
+    mock_registro_source(httpserver, monkeypatch, "not found", status=404)
+    with pytest.raises(ImporterError):
+        await RegistroRirImporter().run_import()

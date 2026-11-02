@@ -1,14 +1,14 @@
 from ipaddress import IPv4Network, IPv6Network
 
 import pytest
-from aioresponses import aioresponses
 from databases import Database
 
 from irrexplorer.exceptions import ImporterError
-from irrexplorer.settings import DATABASE_URL, RIRSTATS_URL
+from irrexplorer.settings import DATABASE_URL
 from irrexplorer.state import RIR
 from irrexplorer.storage import tables
 
+from .. import rirstats
 from ..rirstats import RIRStatsImporter
 
 VALID_RIRSTATS = """
@@ -26,10 +26,14 @@ ripencc|EU|ipv6|2001:610:2b::|48|20200702|ignored|signature-extended
 """
 
 
-async def test_importer_valid():
-    with aioresponses() as http_mock:
-        http_mock.get(RIRSTATS_URL[RIR.RIPENCC], status=200, body=VALID_RIRSTATS)
-        await RIRStatsImporter(RIR.RIPENCC).run_import()
+def mock_rirstats_source(httpserver, monkeypatch, body, status=200):
+    monkeypatch.setitem(rirstats.RIRSTATS_URL, RIR.RIPENCC, httpserver.url_for("/rirstats"))
+    httpserver.expect_oneshot_request("/rirstats").respond_with_data(body, status=status)
+
+
+async def test_importer_valid(httpserver, monkeypatch):
+    mock_rirstats_source(httpserver, monkeypatch, VALID_RIRSTATS)
+    await RIRStatsImporter(RIR.RIPENCC).run_import()
 
     async with Database(DATABASE_URL) as database:
         rows = await database.fetch_all(query=tables.rirstats.select())
@@ -41,15 +45,13 @@ async def test_importer_valid():
         await database.execute(query=tables.rirstats.delete())
 
 
-async def test_importer_invalid():
-    with aioresponses() as http_mock:
-        http_mock.get(RIRSTATS_URL[RIR.RIPENCC], status=200, body="invalid|number|fields")
-        with pytest.raises(ImporterError):
-            await RIRStatsImporter(RIR.RIPENCC).run_import()
+async def test_importer_invalid(httpserver, monkeypatch):
+    mock_rirstats_source(httpserver, monkeypatch, "invalid|number|fields")
+    with pytest.raises(ImporterError):
+        await RIRStatsImporter(RIR.RIPENCC).run_import()
 
 
-async def test_importer_404():
-    with aioresponses() as http_mock:
-        http_mock.get(RIRSTATS_URL[RIR.RIPENCC], status=404)
-        with pytest.raises(ImporterError):
-            await RIRStatsImporter(RIR.RIPENCC).run_import()
+async def test_importer_404(httpserver, monkeypatch):
+    mock_rirstats_source(httpserver, monkeypatch, "not found", status=404)
+    with pytest.raises(ImporterError):
+        await RIRStatsImporter(RIR.RIPENCC).run_import()
