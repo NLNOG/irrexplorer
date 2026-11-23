@@ -40,6 +40,22 @@ export async function getMetadata() {
     }
 }
 
+let messageCatalogue = null;
+
+export function getMessageCatalogue() {
+    // Cached, as it only changes with the backend
+    if (!messageCatalogue) {
+        messageCatalogue = axios.get(`${apiUrl}/messages/`).then(
+            response => ({data: response.data}),
+            () => {
+                messageCatalogue = null;
+                return {error: 'Error: unable to retrieve the explanation of messages from the API'};
+            },
+        );
+    }
+    return messageCatalogue;
+}
+
 export async function cleanQuery(query) {
     try {
         const response = await axios.get(`${apiUrl}/clean_query/${query}`);
@@ -91,6 +107,7 @@ export async function cancelAllRequests() {
 
 const api = {
     getMetadata,
+    getMessageCatalogue,
     getPrefixesForPrefix,
     getPrefixesForASN,
     cleanQuery,

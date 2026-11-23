@@ -92,15 +92,29 @@ async def test_asn_valid(client, httpserver):
                     ]
                 },
                 "messages": [
-                    {"category": "danger", "text": "No route objects match DFZ origin"},
-                    {"category": "danger", "text": "RPKI origin does not match BGP origin"},
-                    {"category": "danger", "text": "RPKI-invalid route objects found"},
                     {
                         "category": "danger",
+                        "key": "no_route_objects_match_origin",
+                        "text": "No route objects match DFZ origin",
+                    },
+                    {
+                        "category": "danger",
+                        "key": "rpki_origin_mismatch",
+                        "text": "RPKI origin does not match BGP origin",
+                    },
+                    {
+                        "category": "danger",
+                        "key": "rpki_invalid_route_objects",
+                        "text": "RPKI-invalid route objects found",
+                    },
+                    {
+                        "category": "danger",
+                        "key": "special_use_overlap",
                         "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
                     },
                     {
                         "category": "warning",
+                        "key": "expected_irr_no_route_object",
                         "text": "Expected route object in RIPE, but only found in other IRRs",
                     },
                 ],
@@ -118,9 +132,14 @@ async def test_asn_valid(client, httpserver):
                 "rpkiRoutes": [],
                 "irrRoutes": {},
                 "messages": [
-                    {"category": "danger", "text": "No route objects match DFZ origin"},
                     {
                         "category": "danger",
+                        "key": "no_route_objects_match_origin",
+                        "text": "No route objects match DFZ origin",
+                    },
+                    {
+                        "category": "danger",
+                        "key": "special_use_overlap",
                         "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
                     },
                 ],
@@ -155,9 +174,14 @@ async def test_asn_no_irr_data(client, httpserver):
                 "rpkiRoutes": [],
                 "irrRoutes": {},
                 "messages": [
-                    {"category": "danger", "text": "No route objects match DFZ origin"},
                     {
                         "category": "danger",
+                        "key": "no_route_objects_match_origin",
+                        "text": "No route objects match DFZ origin",
+                    },
+                    {
+                        "category": "danger",
+                        "key": "special_use_overlap",
                         "text": "Overlaps with RFC5737 special use prefix 192.0.2.0/24",
                     },
                 ],

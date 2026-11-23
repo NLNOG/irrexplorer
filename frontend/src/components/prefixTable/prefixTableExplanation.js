@@ -1,9 +1,19 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckCircle, faTimesCircle} from "@fortawesome/free-regular-svg-icons";
 
+import api from "../../services/api";
+import MessageBadge from "./messageBadge";
+
 function PrefixTableExplanation() {
+    // The API lists every message the report can include
+    const [catalogue, setCatalogue] = useState({});
+
+    useEffect(() => {
+        api.getMessageCatalogue().then(setCatalogue);
+    }, []);
+
     function renderPrefixTableBody() {
         return (
             <>
@@ -53,49 +63,26 @@ function PrefixTableExplanation() {
         );
     }
 
+    function renderMessageExplanations() {
+        const {data, error} = catalogue;
+        if (error)
+            return <p>{error}</p>;
+        return data && <dl className="row">
+            {data.map(({key, category, text, explanation}) => <React.Fragment key={key}>
+                <dt className="col-sm-3"><MessageBadge category={category} text={text}/></dt>
+                <dd className="col-sm-9">{explanation}</dd>
+            </React.Fragment>)}
+        </dl>;
+    }
+
     function renderAdviceExplanationBody() {
         return (
             <>
-                <dl className="row">
-                    <dt className="col-sm-3">Route objects exist, but prefix not seen in DFZ</dt>
-                    <dd className="col-sm-9">
-                        There are route objects for this prefix, but the prefix is not seen in the DFZ.
-                        If the prefix is no longer in use, you should clean up these route objects.
-                        If you plan to announce this prefix in the future, this is harmless.
-                    </dd>
-                    <dt className="col-sm-3">No route objects match DFZ origin</dt>
-                    <dd className="col-sm-9">
-                        None of the route objects (if there are any) match the origin(s) seen
-                        in the DFZ. This can have a significant on reachability, and you
-                        should create route objects for this prefix.
-                    </dd>
-                    <dt className="col-sm-3">RPKI origin does not match BGP origin</dt>
-                    <dd className="col-sm-9">
-                        The origin(s) in the ROA(s) for this prefix do not match the
-                        origin in the DFZ. This means your prefix is not reachable by
-                        anyone dropping RPKI-invalid routes, which is increasingly common.
-                        You should create the appropriate ROA(s) for this prefix.
-                    </dd>
-                    <dt className="col-sm-3">RPKI-invalid route objects found</dt>
-                    <dd className="col-sm-9">
-                        Some or all of the IRR route objects for this prefix are invalid according
-                        to RPKI origin validation. This means they are misconfigured or outdated.
-                        You should look into whether your ROAs or route objects are wrong
-                        or outdated, and update them.
-                    </dd>
-                    <dt className="col-sm-3">No (covering) RPKI ROA found for route objects</dt>
-                    <dd className="col-sm-9">
-                        IRR route objects were found, that are not covered by any ROA. Note that
-                        to be covered, there does not need to be a ROA for this exact prefix -
-                        a less specific ROA with appropriate max length will also suffice.
-                    </dd>
-                    <dt className="col-sm-3">Expected route object in &lt;IRR&gt;, but only found in other IRRs</dt>
-                   <dd className="col-sm-9">
-                       No route object is found in the database of the RIR responsible for
-                       assigning/allocating the prefix, only in another IRR.
-                       You should add a route object in the RIR's database.
-                    </dd>
-                </dl>
+                <p>
+                    Below, &lt;IRR&gt; stands for the IRR of the RIR responsible for the prefix,
+                    for example RIPE for RIPE NCC address space.
+                </p>
+                {renderMessageExplanations()}
                 <p>
                     For more guidance on RPKI, <a href="https://rpki.readthedocs.io/en/latest/rpki/securing-bgp.html">
                     see this very extensive guide</a>.
