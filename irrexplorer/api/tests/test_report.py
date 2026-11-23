@@ -40,8 +40,7 @@ def test_report_good():
     assert summary.messages == [
         ReportMessage(category=MessageCategory.SUCCESS, text="Everything looks good"),
     ]
-    assert summary.prefix_sort_key_ip_prefix == "42540766411282592856903984951653826560/48"
-    assert summary.prefix_sort_key_reverse_networklen_ip == "80-42540766411282592856903984951653826560"
+    assert summary.prefix_sort_key == "42540766411282592856903984951653826560/48"
 
 
 def test_report_no_origin():

@@ -77,7 +77,6 @@ class PrefixQuery extends Component {
                         apiCallUrl={leastSpecificOverlapPrefixes.apiCallUrl}
                         reducedColour={reducedColour}
                         filterWarningError={filterWarningError}
-                        defaultSortSmallestFirst={true}
                     />
                 </>}
             </>
