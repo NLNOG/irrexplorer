@@ -24,6 +24,10 @@ pre {
     border-bottom-width: 0.25em;
 }
 
+.table td[title], .table span[title] {
+    cursor: help;
+}
+
 .table-fixed th {
     background: white;
     -webkit-position: sticky;

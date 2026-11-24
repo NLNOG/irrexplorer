@@ -5,6 +5,7 @@ import {faCheckCircle, faTimesCircle} from "@fortawesome/free-regular-svg-icons"
 
 import api from "../../services/api";
 import MessageBadge from "./messageBadge";
+import columnDescriptions from "./columnDescriptions";
 
 function PrefixTableExplanation() {
     // The API lists every message the report can include
@@ -26,38 +27,33 @@ function PrefixTableExplanation() {
                 <p>The table has a number of columns:</p>
                 <dl className="row">
                     <dt className="col-sm-2">Prefix</dt>
-                    <dd className="col-sm-10">The prefix found in either BGP, RPKI or IRR.</dd>
+                    <dd className="col-sm-10">{columnDescriptions.prefix}</dd>
                     <dt className="col-sm-2">RIR</dt>
-                    <dd className="col-sm-10">The RIR that allocated/assigned this prefix.</dd>
+                    <dd className="col-sm-10">{columnDescriptions.rir}</dd>
                     <dt className="col-sm-2">BGP</dt>
-                    <dd className="col-sm-10">The originating AS number(s) seen in the DFZ for this prefix.</dd>
+                    <dd className="col-sm-10">{columnDescriptions.bgp}</dd>
                     <dt className="col-sm-2">RPKI</dt>
-                    <dd className="col-sm-10">
-                        ASNs seen in RPKI ROAs for this prefix, along with the maximum prefix length in the ROA.
-                    </dd>
+                    <dd className="col-sm-10">{columnDescriptions.rpki}</dd>
                     <dt className="col-sm-2">Columns for each IRR</dt>
                     <dd className="col-sm-10">
-                        The originating AS number(s) seen in route(6) objects in various IRR databases.
-                        For each origin,
+                        {columnDescriptions.irr}
+                        {' '}For each origin,
                         {' '}<FontAwesomeIcon icon={faCheckCircle} title="Route object is RPKI-valid"/>{' '}
-                        means the object is valid according to RPKI origin validation,
+                        means the route object is RPKI-valid and
                         {' '}<FontAwesomeIcon icon={faTimesCircle} title="Route object is RPKI-invalid"/>{' '}
-                        means it is invalid, and no icon means that no relevant ROA was found.
+                        means it is RPKI-invalid. No icon means no ROA covers the prefix, so the RPKI
+                        status of the route object is unknown.
                     </dd>
                     <dt className="col-sm-2">Advice</dt>
-                    <dd className="col-sm-10">
-                        Information, warnings, and alerts about this prefix and its BGP, IRR and RPKI
-                        status. IRR explorer makes a best effort at identifying possible misconfigurations,
-                        but do note that there are unusual setups that may raise false alarms.
-                    </dd>
+                    <dd className="col-sm-10">{columnDescriptions.advice}</dd>
                 </dl>
                 <p>
-                    Note that an origin may have an RPKI status, even when there is no RPKI origin, i.e. no ROA,
-                    for that exact prefix. For example, let's say there is a ROA for 192.0.2.0/22 AS65540 with a
-                    max length of 24, and a route object for 192.0.2.0/24 AS65540. You will see two prefix rows:
-                    one for the /22, and one for the /24. The /24 row will not show an RPKI origin, because there
-                    is no ROA for 192.0.2.0/24. However, because there is a covering ROA for the /22, the IRR origin
-                    will be shown as RPKI valid.
+                    A route object can be RPKI-valid even when there is no ROA for its prefix, because a ROA
+                    for a less specific prefix can also allow its origin. For example, say there is a ROA for
+                    2001:db8::/32 AS65540 with a maximum length of 48, and a route object for 2001:db8:1::/48
+                    AS65540. You will see two prefix rows: one for the /32, and one for the /48. The RPKI column
+                    of the /48 row is empty, because there is no ROA for 2001:db8:1::/48. The route object is
+                    still RPKI-valid, because the ROA for the /32 allows AS65540 to originate the /48.
                 </p>
             </>
         );

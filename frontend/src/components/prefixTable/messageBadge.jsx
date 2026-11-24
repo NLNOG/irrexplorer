@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckCircle, faExclamationCircle, faQuestionCircle, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 
-function MessageBadge({category, text, reducedColour}) {
+function MessageBadge({category, text, explanation, reducedColour}) {
     let classes = '';
     if(!reducedColour) {
         classes = `badge bg-${category} `
@@ -20,7 +20,9 @@ function MessageBadge({category, text, reducedColour}) {
     };
     return (
         <>
-            <span className={classes}><FontAwesomeIcon icon={icons[category]} title={category}/> {text}</span>
+            <span className={classes} title={explanation}>
+                <FontAwesomeIcon icon={icons[category]} aria-label={category}/> {text}
+            </span>
             <br/>
         </>
     );
@@ -29,6 +31,7 @@ function MessageBadge({category, text, reducedColour}) {
 MessageBadge.propTypes = {
     category: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
+    explanation: PropTypes.string,
     reducedColour: PropTypes.bool,
 };
 

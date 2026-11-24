@@ -7,10 +7,11 @@ import {findIrrSourceColumns, sortPrefixesDataBy} from "../../utils/prefixData";
 import PrefixTableHeader from "./prefixTableHeader";
 import WhoisModal from "./whoisModal";
 import TableFooter from "../common/tableFooter";
+import api from "../../services/api";
 
 
 class PrefixTable extends Component {
-    state = {sortedPrefixesData: [], irrSourceColumns: []}
+    state = {sortedPrefixesData: [], irrSourceColumns: [], messageExplanations: {}}
 
     constructor(props) {
         super(props);
@@ -19,6 +20,16 @@ class PrefixTable extends Component {
 
     componentDidMount() {
         this.updateState();
+        this.loadMessageExplanations();
+    }
+
+    async loadMessageExplanations() {
+        const {data} = await api.getMessageCatalogue();
+        if (data) {
+            const messageExplanations = Object.fromEntries(
+                data.map(({key, explanation}) => [key, explanation]));
+            this.setState({messageExplanations});
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -55,6 +66,7 @@ class PrefixTable extends Component {
             reducedColour={this.props.reducedColour}
             filterWarningError={this.props.filterWarningError}
             handleIrrRouteSelect={this.handleIrrRouteSelect}
+            messageExplanations={this.state.messageExplanations}
         />
     }
 

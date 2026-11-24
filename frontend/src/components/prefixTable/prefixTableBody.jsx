@@ -15,6 +15,45 @@ import {
 import {Link} from "react-router";
 
 
+function formatAsns(origins) {
+    return origins.map(origin => `AS${origin}`).join(', ');
+}
+
+const rpkiStatusTexts = {
+    VALID: asn => `A ROA allows AS${asn} to originate this prefix, so the route object is RPKI-valid.`,
+    INVALID: asn => `A ROA covers this prefix, but none allows AS${asn} to originate it, so the route object is RPKI-invalid.`,
+    NOT_FOUND: () => 'No ROA covers this prefix, so the RPKI status of the route object is unknown.',
+};
+
+function irrRouteTooltip(prefix, sourceName, asn, rpkiStatus, bgpOrigins) {
+    let match;
+    if (!bgpOrigins.length)
+        match = 'but this prefix is not seen in the DFZ';
+    else if (bgpOrigins.includes(asn))
+        match = 'matching an origin seen in the DFZ';
+    else
+        match = `but this prefix is announced in the DFZ by ${formatAsns(bgpOrigins)}`;
+    return `${sourceName} has a route object for ${prefix} with origin AS${asn}, ${match}. `
+        + `${rpkiStatusTexts[rpkiStatus](asn)} Click to view the object.`;
+}
+
+function rpkiTooltip(prefix, rpkiRoutes, bgpOrigins) {
+    const prefixLength = Number(prefix.split('/')[1]);
+    const texts = rpkiRoutes.map(({asn, rpkiMaxLength}) => {
+        if (asn === 0)
+            return `A ROA for AS0 makes announcements of ${prefix} and more specific prefixes RPKI-invalid, unless another ROA allows them.`;
+        const moreSpecifics = rpkiMaxLength > prefixLength
+            ? ` and more specific prefixes up to /${rpkiMaxLength}` : ', but no more specific prefixes';
+        return `A ROA allows AS${asn} to originate ${prefix}${moreSpecifics}.`;
+    });
+    const roaOrigins = rpkiRoutes.map(({asn}) => asn);
+    const withoutRoa = bgpOrigins.filter(origin => !roaOrigins.includes(origin));
+    for (const origin of withoutRoa)
+        texts.push(`AS${origin} announces this prefix in the DFZ, but has no ROA for it.`);
+    return texts.join(' ');
+}
+
+
 class PrefixTableBody extends Component {
     icons = {
         danger: faTimesCircle,
@@ -23,7 +62,7 @@ class PrefixTableBody extends Component {
         success: faCheckCircle,
     };
 
-    renderSourceCell(prefix, irrRoutes, sourceName) {
+    renderSourceCell(prefix, irrRoutes, sourceName, bgpOrigins) {
         // The irrSourceColumns are dynamic per query. Not all prefixes
         // have data on all sources. This method renders a column
         // for this prefix, given a source.
@@ -34,6 +73,7 @@ class PrefixTableBody extends Component {
                 ({asn, rpkiStatus, rpslText}, idx) => [
                     idx > 0 && ", ",
                     <a className="link-dark" key={asn} href="/"
+                       title={irrRouteTooltip(prefix, sourceName, asn, rpkiStatus, bgpOrigins)}
                        onClick={(e) => {
                            e.preventDefault();
                            this.props.handleIrrRouteSelect(prefix, asn, sourceName, rpslText, rpkiStatus);
@@ -45,8 +85,9 @@ class PrefixTableBody extends Component {
         }</td>;
     }
 
-    renderRpkiCells(rpkiRoutes) {
-        return <td key="rpkiRoutes" className="mono">{rpkiRoutes.map(
+    renderRpkiCells(prefix, rpkiRoutes, bgpOrigins) {
+        const title = rpkiRoutes.length ? rpkiTooltip(prefix, rpkiRoutes, bgpOrigins) : undefined;
+        return <td key="rpkiRoutes" className="mono" title={title}>{rpkiRoutes.map(
             ({asn, rpkiMaxLength}, idx) => [
                 idx > 0 && ", ",
                 asn, " ",
@@ -62,7 +103,7 @@ class PrefixTableBody extends Component {
     }
 
     render() {
-        const {prefixesData, irrSourceColumns, reducedColour, filterWarningError} = this.props;
+        const {prefixesData, irrSourceColumns, reducedColour, filterWarningError, messageExplanations} = this.props;
         let tableData = prefixesData;
         if (filterWarningError) {
             tableData = tableData.filter(({categoryOverall}) => categoryOverall === "danger" || categoryOverall === "warning");
@@ -81,16 +122,18 @@ class PrefixTableBody extends Component {
                     <td key="rir" className="nowrap">{rir}</td>
                     <td key="bgpOrigins"><a href={`https://lg.ring.nlnog.net/prefix?q=${prefix}&match=exact&peer=all`}
                                             className="link-dark">{bgpOrigins.join(', ')}</a></td>
-                    {this.renderRpkiCells(rpkiRoutes)}
+                    {this.renderRpkiCells(prefix, rpkiRoutes, bgpOrigins)}
                     {irrSourceColumns.map(
-                        sourceName => this.renderSourceCell(prefix, irrRoutes, sourceName)
+                        sourceName => this.renderSourceCell(prefix, irrRoutes, sourceName, bgpOrigins)
                     )}
-                    {reducedColour && <td key="adviceIcon" className="lead">
-                        <FontAwesomeIcon icon={this.icons[categoryOverall]} title={`Status: ${categoryOverall}`}/>
+                    {reducedColour && <td key="adviceIcon" className="lead"
+                        title={`Overall status: ${categoryOverall}`}>
+                        <FontAwesomeIcon icon={this.icons[categoryOverall]} aria-label={`Overall status: ${categoryOverall}`}/>
                     </td>}
                     <td key="messages">
-                        {messages.map(({category, text}) =>
+                        {messages.map(({category, key: messageKey, text}) =>
                             <MessageBadge key={text} category={category} text={text}
+                                          explanation={messageExplanations[messageKey]}
                                           reducedColour={reducedColour}/>
                         )}
                     </td>
@@ -107,6 +150,7 @@ PrefixTableBody.propTypes = {
     reducedColour: PropTypes.bool,
     filterWarningError: PropTypes.bool,
     handleIrrRouteSelect: PropTypes.func,
+    messageExplanations: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
 
