@@ -22,6 +22,13 @@ class PrefixTableHeader extends Component {
         this.props.onSort(sortColumn);
     }
 
+    handleSortKeyDown = (event, key) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        // Space would otherwise scroll the page
+        event.preventDefault();
+        this.handleSort(key);
+    }
+
     renderCell = (label, cellSortKey, description) => {
         if (!cellSortKey)
             return <th key={label} scope="col">{label}</th>;
@@ -38,7 +45,7 @@ class PrefixTableHeader extends Component {
                 className="clickable nowrap"
                 tabIndex="0"
                 onClick={() => this.handleSort(cellSortKey)}
-                onKeyDown={() => this.handleSort(cellSortKey)}
+                onKeyDown={(event) => this.handleSortKeyDown(event, cellSortKey)}
                 title={`${description} Click to sort.`}
             >
                 {label} <FontAwesomeIcon icon={sortIcon}/>
