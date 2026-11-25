@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^3",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.13",
-    "bootstrap": "^5.3.7",
+    "bootstrap": "^5.3.9",
     "dayjs": "^1.11.13",
     "lodash": "^4.17",
     "prop-types": "^15.8.1",
