@@ -183,3 +183,45 @@ class SetExpansion:
     depth: int
     path: List[str]
     members: List[str]
+
+
+@camel_case_json
+@dataclass
+class SetTraceRoute:
+    """A route(6) object that covers the traced prefix."""
+
+    prefix: IPNetwork = field(metadata=ip_field_metadata)
+    asn: int
+    source: str
+    rpsl_pk: Optional[str] = None
+    rpki_status: Optional[RPKIStatus] = None
+    rpki_max_length: Optional[int] = None
+
+
+@camel_case_json
+@dataclass
+class SetTracePath:
+    """
+    One way the traced ASN is included in the set: the chain of sets from
+    the queried set down to the set that lists the ASN, followed by the ASN.
+    source is the IRR of the last set in the chain.
+    """
+
+    asn: int
+    source: str
+    path: List[str]
+
+
+@camel_case_json
+@dataclass
+class SetTrace:
+    target: str
+    query: str
+    # The ASNs that were traced: the query itself, or the origins of the routes
+    origins: List[int] = field(default_factory=list)
+    routes: List[SetTraceRoute] = field(default_factory=list)
+    paths: List[SetTracePath] = field(default_factory=list)
+    # Traced ASNs for which no path into the set was found
+    not_included: List[int] = field(default_factory=list)
+    # Whether the set exists; None if it was not expanded (nothing to trace)
+    set_found: Optional[bool] = None

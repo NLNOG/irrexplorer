@@ -84,6 +84,10 @@ export async function getSetExpansion(target) {
     return await performRequest(`${apiUrl}/sets/expand/${target}`);
 }
 
+export async function getSetTrace(target, query) {
+    return await performRequest(`${apiUrl}/sets/trace/${target}/${query}`);
+}
+
 export async function cancelAllRequests() {
     await source.cancel('cancel');
     source = axios.CancelToken.source();
@@ -96,6 +100,7 @@ const api = {
     cleanQuery,
     getSetMemberOf,
     getSetExpansion,
+    getSetTrace,
     cancelAllRequests,
 }
 export default api;
