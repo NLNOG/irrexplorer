@@ -24,9 +24,7 @@ function AsnWithRPKIStatus({rpkiStatus, asn}) {
                 <span className={asnClass}>{asn}</span>
                 {rpkiIcon && <>
                     {' '}
-                    <span className="d-inline-block" data-bs-toggle="tooltip" title={text}>
-                    <FontAwesomeIcon icon={rpkiIcon} title={text}/>
-                </span>
+                    <FontAwesomeIcon icon={rpkiIcon} aria-label={text}/>
                 </>}
             </span>
         </>

@@ -26,6 +26,7 @@ async def lifespan(app):
 
 routes = [
     Route("/api/metadata/", queries.metadata),
+    Route("/api/messages/", queries.messages),
     Route("/api/clean_query/{query:path}", queries.clean_query),
     Route("/api/prefixes/asn/AS{asn:int}", queries.prefixes_asn),
     Route("/api/prefixes/asn/{asn:int}", queries.prefixes_asn),

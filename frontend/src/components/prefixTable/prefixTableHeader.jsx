@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faSort, faSortDown, faSortUp} from '@fortawesome/free-solid-svg-icons'
 
+import columnDescriptions from "./columnDescriptions";
+
 
 class PrefixTableHeader extends Component {
     state = {sortColumn: {key: 'prefix', order: 'asc'}};
@@ -20,7 +22,14 @@ class PrefixTableHeader extends Component {
         this.props.onSort(sortColumn);
     }
 
-    renderCell = (label, cellSortKey) => {
+    handleSortKeyDown = (event, key) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        // Space would otherwise scroll the page
+        event.preventDefault();
+        this.handleSort(key);
+    }
+
+    renderCell = (label, cellSortKey, description) => {
         if (!cellSortKey)
             return <th key={label} scope="col">{label}</th>;
 
@@ -36,7 +45,8 @@ class PrefixTableHeader extends Component {
                 className="clickable nowrap"
                 tabIndex="0"
                 onClick={() => this.handleSort(cellSortKey)}
-                onKeyDown={() => this.handleSort(cellSortKey)}
+                onKeyDown={(event) => this.handleSortKeyDown(event, cellSortKey)}
+                title={`${description} Click to sort.`}
             >
                 {label} <FontAwesomeIcon icon={sortIcon}/>
             </th>
@@ -46,15 +56,15 @@ class PrefixTableHeader extends Component {
     render() {
         return <thead>
         <tr>
-            {this.renderCell('Prefix', 'prefix')}
-            {this.renderCell('RIR', 'rir')}
-            {this.renderCell('BGP', 'bgpOrigins')}
-            {this.renderCell('RPKI', 'rpkiRoutes')}
+            {this.renderCell('Prefix', 'prefix', columnDescriptions.prefix)}
+            {this.renderCell('RIR', 'rir', columnDescriptions.rir)}
+            {this.renderCell('BGP', 'bgpOrigins', columnDescriptions.bgp)}
+            {this.renderCell('RPKI', 'rpkiRoutes', columnDescriptions.rpki)}
             {this.props.irrSourceColumns.map(sourceName =>
-                this.renderCell(sourceName, `irrRoutes.${sourceName}`)
+                this.renderCell(sourceName, `irrRoutes.${sourceName}`, columnDescriptions.irr)
             )}
             {this.props.reducedColour && this.renderCell('', null)}
-            {this.renderCell('Advice', 'messages')}
+            {this.renderCell('Advice', 'messages', columnDescriptions.advice)}
         </tr>
         </thead>;
     }

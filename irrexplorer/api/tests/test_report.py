@@ -38,7 +38,11 @@ def test_report_good():
     assert summary.category_overall == MessageCategory.SUCCESS
     assert summary.goodness_overall == 3
     assert summary.messages == [
-        ReportMessage(category=MessageCategory.SUCCESS, text="Everything looks good"),
+        ReportMessage(
+            category=MessageCategory.SUCCESS,
+            key="everything_good",
+            text="Everything looks good",
+        ),
     ]
     assert summary.prefix_sort_key_ip_prefix == "42540766411282592856903984951653826560/48"
     assert summary.prefix_sort_key_reverse_networklen_ip == "80-42540766411282592856903984951653826560"
@@ -73,10 +77,13 @@ def test_report_no_origin():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.INFO,
+            key="route_objects_not_in_dfz",
             text="Route objects exist, but prefix not seen in DFZ",
         ),
         ReportMessage(
-            category=MessageCategory.INFO, text="RPKI ROA exists, but prefix not seen in DFZ"
+            category=MessageCategory.INFO,
+            key="rpki_roa_not_in_dfz",
+            text="RPKI ROA exists, but prefix not seen in DFZ",
         ),
     ]
 
@@ -102,13 +109,18 @@ def test_report_no_origin_no_roa():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.WARNING,
+            key="expected_irr_no_route_object",
             text="Expected route object in RIPE, but only found in other IRRs",
         ),
         ReportMessage(
-            category=MessageCategory.INFO, text="Route objects exist, but prefix not seen in DFZ"
+            category=MessageCategory.INFO,
+            key="route_objects_not_in_dfz",
+            text="Route objects exist, but prefix not seen in DFZ",
         ),
         ReportMessage(
-            category=MessageCategory.INFO, text="No (covering) RPKI ROA found for route objects"
+            category=MessageCategory.INFO,
+            key="no_rpki_roa",
+            text="No (covering) RPKI ROA found for route objects",
         ),
     ]
 
@@ -150,9 +162,15 @@ def test_report_rpki_invalid():
     assert summary.goodness_overall == 0
     assert summary.messages == [
         ReportMessage(
-            category=MessageCategory.DANGER, text="RPKI origin does not match BGP origin"
+            category=MessageCategory.DANGER,
+            key="rpki_origin_mismatch",
+            text="RPKI origin does not match BGP origin",
         ),
-        ReportMessage(category=MessageCategory.DANGER, text="RPKI-invalid route objects found"),
+        ReportMessage(
+            category=MessageCategory.DANGER,
+            key="rpki_invalid_route_objects",
+            text="RPKI-invalid route objects found",
+        ),
     ]
 
 
@@ -186,6 +204,7 @@ def test_report_invalid_origin_expected_irr():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.DANGER,
+            key="expected_irr_origin_mismatch",
             text="Expected route object in RIPE, but BGP origin does not match. Objects from other IRRs do match BGP origin",
         ),
     ]
@@ -221,6 +240,7 @@ def test_report_invalid_origin_other_irr():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.WARNING,
+            key="other_irr_origin_mismatch",
             text="Expected route object in RIPE matches BGP origin, but non-matching objects exist in other IRRs",
         ),
     ]
@@ -262,6 +282,7 @@ def test_report_multiple_irr_origins():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.WARNING,
+            key="multiple_irr_origins_single_dfz_origin",
             text="Multiple route objects exist with different origins, but DFZ only has one",
         ),
     ]
@@ -303,6 +324,7 @@ def test_report_multiple_bgp_and_irr_origins():
     assert summary.messages == [
         ReportMessage(
             category=MessageCategory.DANGER,
+            key="no_route_objects_for_some_origins",
             text="No route objects for some DFZ origins",
         ),
     ]

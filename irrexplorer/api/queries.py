@@ -6,10 +6,11 @@ from dataclasses import dataclass
 from ipaddress import ip_network
 
 import IPy
-from starlette.responses import PlainTextResponse, Response
+from starlette.responses import JSONResponse, PlainTextResponse, Response
 
 from irrexplorer.api.interfaces import ObjectClass, camel_case_json
 from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
+from irrexplorer.api.messages import message_catalogue
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
 from irrexplorer.backends.irrd import IRRDQuery
@@ -80,6 +81,10 @@ async def metadata(request):
         }
     }
     return Response(json.dumps(data, default=str), media_type="application/json")
+
+
+async def messages(request):
+    return JSONResponse(message_catalogue())
 
 
 async def clean_query(request):
