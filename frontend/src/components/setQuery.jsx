@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import SetIncludedTable from "./common/setIncludedTable";
 import SetExpansionTable from "./setExpansionTable/setExpansionTable";
+import SetTrace from "./setTrace/setTrace";
 
 class setQuery extends Component {
     render() {
@@ -9,6 +10,8 @@ class setQuery extends Component {
         return (
             <>
                 <h1>Report for {queryCategory} {query}</h1>
+
+                {queryCategory === 'as-set' && <SetTrace setName={query}/>}
 
                 <h2 className="h3 mt-4">
                     Expands to:

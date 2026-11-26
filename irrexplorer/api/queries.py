@@ -9,7 +9,12 @@ import IPy
 from starlette.responses import PlainTextResponse, Response
 
 from irrexplorer.api.interfaces import ObjectClass, camel_case_json
-from irrexplorer.api.collectors import PrefixCollector, collect_member_of, collect_set_expansion
+from irrexplorer.api.collectors import (
+    PrefixCollector,
+    collect_member_of,
+    collect_set_expansion,
+    collect_set_trace,
+)
 from irrexplorer.api.report import enrich_prefix_summaries_with_report
 from irrexplorer.api.utils import DataClassJSONResponse
 from irrexplorer.backends.irrd import IRRDQuery
@@ -125,5 +130,40 @@ async def set_expansion(request):
         return PlainTextResponse(
             status_code=504,
             content=f"Expansion of {target} timed out after {SET_EXPANSION_TIMEOUT} seconds.",
+        )
+    return DataClassJSONResponse(result)
+
+
+async def set_trace(request):
+    try:
+        target = Query(request.path_params["target"])
+        query = Query(request.path_params["query"])
+    except InvalidQueryError as iqe:
+        return PlainTextResponse(status_code=400, content=str(iqe))
+    if target.category != QueryCategory.ASSET:
+        return PlainTextResponse(status_code=400, content=f"Not an as-set: {target.cleaned_value}")
+
+    kwargs = {}
+    if query.category == QueryCategory.ASN:
+        kwargs["asn"] = int(query.cleaned_value[2:])
+    elif query.category == QueryCategory.PREFIX:
+        kwargs["prefix"] = ip_network(query.cleaned_value)
+    else:
+        return PlainTextResponse(
+            status_code=400, content="Only an ASN or prefix can be traced through a set."
+        )
+
+    try:
+        result = await asyncio.wait_for(
+            collect_set_trace(target.cleaned_value, query.cleaned_value, **kwargs),
+            timeout=SET_EXPANSION_TIMEOUT,
+        )
+    except asyncio.TimeoutError:
+        return PlainTextResponse(
+            status_code=504,
+            content=(
+                f"Expansion of {target.cleaned_value} timed out "
+                f"after {SET_EXPANSION_TIMEOUT} seconds."
+            ),
         )
     return DataClassJSONResponse(result)

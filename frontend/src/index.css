@@ -30,3 +30,35 @@ pre {
     position: sticky;
     top: 0;
 }
+
+/* Set trace: nested lists drawn as a tree */
+.set-trace-tree, .set-trace-tree ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.set-trace-tree ul {
+    margin-left: 0.6em;
+}
+
+.set-trace-tree ul li {
+    position: relative;
+    padding-left: 1.6em;
+    border-left: 1px solid var(--bs-border-color);
+}
+
+.set-trace-tree ul li:last-child {
+    border-left-color: transparent;
+}
+
+.set-trace-tree ul li::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 1.2em;
+    height: 0.8em;
+    border-left: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--bs-border-color);
+}

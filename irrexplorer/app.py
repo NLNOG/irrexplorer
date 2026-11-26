@@ -34,6 +34,8 @@ routes = [
     # legacy endpoint before object class was added:
     Route("/api/sets/member-of/{target}", queries.member_of),
     Route("/api/sets/expand/{target}", queries.set_expansion),
+    # A prefix query contains a slash, hence the path converter
+    Route("/api/sets/trace/{target}/{query:path}", queries.set_trace),
     Mount(
         "/",
         DefaultIndexStaticFiles(

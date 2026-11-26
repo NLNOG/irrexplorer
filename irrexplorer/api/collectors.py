@@ -14,6 +14,9 @@ from irrexplorer.api.interfaces import (
     PrefixIRRDetail,
     PrefixSummary,
     SetExpansion,
+    SetTrace,
+    SetTracePath,
+    SetTraceRoute,
 )
 from irrexplorer.backends.bgp import BGPQuery
 from irrexplorer.backends.irrd import IRRDQuery
@@ -276,6 +279,67 @@ async def collect_set_expansion(name: str):
         f"{len(results)} results"
     )
     return results
+
+
+async def collect_set_trace(
+    target: str,
+    query: str,
+    asn: Optional[int] = None,
+    prefix: Optional[IPNetwork] = None,
+) -> SetTrace:
+    """
+    Explain why an ASN or prefix is included in the set `target`: find
+    every path of sets that leads from `target` to a set listing the ASN.
+    For a prefix, the ASNs traced are the origins of all route(6) objects,
+    including RPKI pseudo-objects, that cover the prefix (exact or less specific).
+    Exactly one of `asn` or `prefix` must be given.
+    """
+    result = SetTrace(target=target, query=query)
+
+    if prefix is not None:
+        for route in await IRRDQuery().query_prefixes_any([prefix]):
+            # An overlapping route that is not more specific covers the prefix.
+            # RPKI AS0 has no origin to trace.
+            if not route.asn or route.prefix.version != prefix.version:
+                continue
+            if route.prefix.prefixlen > prefix.prefixlen:
+                continue
+            if not route.prefix.overlaps(prefix):
+                continue
+            result.routes.append(
+                SetTraceRoute(
+                    prefix=route.prefix,
+                    asn=route.asn,
+                    source=route.irr_source or "",
+                    rpsl_pk=route.rpsl_pk,
+                    rpki_status=route.rpki_status,
+                    rpki_max_length=route.rpki_max_length,
+                )
+            )
+        result.routes.sort(key=lambda route: (route.prefix.prefixlen, route.asn, route.source))
+        result.origins = sorted({route.asn for route in result.routes})
+    elif asn is not None:
+        result.origins = [asn]
+
+    if not result.origins:
+        return result
+
+    expansion = await collect_set_expansion(target)
+    result.set_found = bool(expansion)
+    for origin in result.origins:
+        member_name = f"AS{origin}"
+        for entry in expansion:
+            # RPSL names are case insensitive
+            if member_name not in (member.upper() for member in entry.members):
+                continue
+            result.paths.append(
+                SetTracePath(asn=origin, source=entry.source, path=entry.path + [member_name])
+            )
+
+    included = {path.asn for path in result.paths}
+    result.not_included = [origin for origin in result.origins if origin not in included]
+    result.paths.sort(key=lambda path: (path.asn, len(path.path), path.path, path.source))
+    return result
 
 
 async def _execute_tasks(tasks: List[Coroutine]):
